@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONEGOAL</title>
+
+  <!-- Google Fonts y Banana Brick -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
+  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body, html { font-family: 'Poppins', sans-serif; height:100%;  background: url("imagenes/2.png"); color:white; }
+
+    header .menu::before {
+      content:"";
+      position:absolute;
+      top:0; left:0; width:100%; height:100%;
+      background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+      opacity:0.15;
+      pointer-events:none;
+      z-index: -1;
+    }
+
+    .menu a {
+      color:white;
+      text-decoration:none;
+      font-weight:500;
+    }
+
+    .menu a:hover {
+      color:#00aaff;
+    }
+
+    /* Contenido */
+    main { margin-top:10px; padding:20px; }
+
+    .lexend-mega {
+      font-family: "Lexend Mega", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    /* Sección mundial */
+    .mundial-section {
+      padding: 80px 20px;
+      background: url("imagenes/2.png");
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,1);
+    }
+
+    .mundial-section p {
+      font-size: 1.2rem;
+    }
+
+    /* SECCIÓN TORNEOS - mantiene estilo dentro de tu diseño */
+    .torneos {
+      padding: 3rem 2rem;
+      text-align: center;
+      background: url("imagenes/11.png");
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      font-family: 'Chillax', Courier, monospace;
+    }
+
+    .torneos h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    .equipos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .equipo-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .equipo-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .equipo-card h3 {
+      margin: 0.5rem 0;
+    }
+
+    .equipo-card button {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      background: #00aaff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .equipo-card button:hover {
+      background: #0088cc;
+    }
+
+    header {
+      background: url("imagenes/2.png") no-repeat center center/cover; 
+      height: 300px;
+      display: flex;
+      flex-direction: column; /* apila elementos verticalmente */
+      justify-content: flex-start; /* desde arriba */
+      align-items: center; /* centra horizontalmente */
+      padding-top: 30px;
+      font-family: "BananaBrickRegular", sans-serif; 
+      font-size: 20px;
+    }
+
+    nav {
+      background: white;
+      padding: 15px 40px;
+      border-radius: 50px; /* Ovalado */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin-bottom: 50px; 
+      background-image: url("imagenes/Paper_02.png");
+      background-repeat: repeat;
+      background-size: cover;
+      opacity: 0.9; 
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 30px;
+    }
+
+    nav ul li {
+      display: inline;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: lighter;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #007bff;
+    }
+
+    .logo {
+      font-size: 100px;
+      color: white;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.5); /* para que destaque sobre la imagen */
+    }
+    .header-subtitle {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+
+    .cta-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .btn-primary, .btn-secondary {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #00aaff;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+      color: white !important;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Sección de características */
+    .features-section {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: url("imagenes/9.png");
+      background-repeat: repeat;
+      background-size: cover;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(59, 16, 16, 0.5);
+      font-family:'Chillax', Courier, monospace;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: rgba(0, 0, 0, 0.478);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Sistema de puntos */
+    .points-system {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: url("imagenes/8.png");
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      font-family: 'Chillax', Courier, monospace;
+    }
+
+    .points-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .point-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .points-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Logros y niveles */
+    .achievements-section {
+      font-family: 'Chillax', Courier, monospace;
+      padding: 4rem 2rem;
+      text-align: center;
+      background: url("imagenes/10.png");
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .levels-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .level-card {
+      background: rgba(23, 20, 20, 0.558);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .level-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+      color: #ffffff;
+    }
+
+    .level-points {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .medals-title {
+      margin-top: 3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .medals-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .medal {
+      background: rgba(23, 20, 20, 0.558);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .medal-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Sección de registro */
+    .register-section {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: linear-gradient(to bottom, #09167a, #560404);
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      max-width: 400px;
+      margin: 2rem auto;
+      gap: 1rem;
+    }
+
+    .register-form input {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+    }
+
+    .register-form button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #00aaff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .register-form button:hover {
+      background: #0088cc;
+    }
+
+    .login-link {
+      margin-top: 1rem;
+    }
+
+    .login-link a {
+      color: #00aaff;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background-image: url("imagenes/azul2.png");
+      margin-top: 2rem;
+    }
+
+    footer nav {
+      background: transparent;
+      box-shadow: none;
+      margin: 1rem 0;
+    }
+
+    footer nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+    }
+
+    footer nav a:hover {
+      color: #00aaff;
+    }
+
+    /* Navegación */
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .login-btn {
+      background: #00aaff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: white !important;
+    }
+
+    .login-btn:hover {
+      background: #0088cc;
+      color: white !important;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .features-grid,
+      .points-grid,
+      .levels-container,
+      .medals-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    /* Animación de carga */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1A3D7C 0%, #00509E 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .pixel-player {
+      position: relative;
+      width: 80px;
+      height: 100px;
+      margin-bottom: 40px;
+    }
+
+    .pixel-body {
+      width: 40px;
+      height: 60px;
+      background: #fff;
+      position: absolute;
+      top: 0;
+      left: 20px;
+      animation: bodyMove 1.5s infinite alternate;
+    }
+
+    .pixel-leg {
+      width: 12px;
+      height: 40px;
+      background: #00509E;
+      position: absolute;
+      bottom: 0;
+      left: 34px;
+      transform-origin: top center;
+      animation: kick 1.5s infinite;
+    }
+
+    .pixel-ball {
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 10px;
+      left: 46px;
+      animation: ballMove 1.5s infinite;
+    }
+
+    .loading-logo {
+      display: flex;
+      font-family: "BananaBrickRegular", sans-serif;
+      font-size: 48px;
+      color: white;
+    }
+
+    .logo-letter {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes bodyMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    @keyframes kick {
+      0%, 70% { transform: rotate(0deg); }
+      80% { transform: rotate(-30deg); }
+      90%, 100% { transform: rotate(0deg); }
+    }
+
+    @keyframes ballMove {
+      0%, 70% { transform: translate(0, 0) scale(1); }
+      80% { transform: translate(30px, -20px) scale(1); }
+      90% { transform: translate(60px, -40px) scale(1); }
+      100% { transform: translate(100px, -60px) scale(0); }
+    }
+
+    /* Animaciones para elementos al hacer scroll */
+    [data-aos] {
+      opacity: 0;
+      transition: all 0.8s ease;
+    }
+
+    [data-aos].aos-animate {
+      opacity: 1;
+    }
+
+    .aos-fade-up {
+      transform: translateY(50px);
+    }
+
+    .aos-fade-up.aos-animate {
+      transform: translateY(0);
+    }
+
+    .aos-fade-down {
+      transform: translateY(-50px);
+    }
+
+    .aos-fade-down.aos-animate {
+      transform: translateY(0);
+    }
+
+    .aos-fade-left {
+      transform: translateX(-50px);
+    }
+
+    .aos-fade-left.aos-animate {
+      transform: translateX(0);
+    }
+
+    .aos-fade-right {
+      transform: translateX(50px);
+    }
+
+    .aos-fade-right.aos-animate {
+      transform: translateX(0);
+    }
+
+    .aos-zoom-in {
+      transform: scale(0.9);
+    }
+
+    .aos-zoom-in.aos-animate {
+      transform: scale(1);
+    }
+
+    .aos-flip {
+      transform: perspective(1000px) rotateY(90deg);
+    }
+
+    .aos-flip.aos-animate {
+      transform: perspective(1000px) rotateY(0);
+    }
+
+    /* Animación para el logo en el header */
+    .logo {
+      font-size: 100px;
+      color: white;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+      animation: logoReveal 1.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes logoReveal {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg);
+      }
+      70% {
+        transform: scale(1.1) rotate(2deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de carga con animación -->
+  <div class="loading-screen">
+    <div class="pixel-player">
+      <div class="pixel-body"></div>
+      <div class="pixel-leg"></div>
+      <div class="pixel-ball"></div>
+    </div>
+    <div class="loading-logo">
+      <span class="logo-letter">O</span>
+      <span class="logo-letter">N</span>
+      <span class="logo-letter">E</span>
+      <span class="logo-letter">G</span>
+      <span class="logo-letter">O</span>
+      <span class="logo-letter">A</span>
+      <span class="logo-letter">L</span>
+    </div>
+  </div>
+
+  <header>
+    <nav>
+      <ul>
+        <li><a href="pronosticos.html">Pronósticos</a></li>
+        <li><a href="torneos.html">Torneos</a></li>
+        <li><a href="ranking.html">Ranking</a></li>
+        <li><a href="tareas.html">Tareas</a></li>
+        <li><a href="chat.html">Chats</a></li>
+        <li><a href="login.html" class="login-btn">Log In</a></li>
+      </ul>
+    </nav>
+    <div class="logo">ONEGOAL</div>
+    <div class="header-subtitle">La plataforma definitiva para el Mundial 2026</div>
+  </header>
+
+  <main>
+    <!-- Sección Principal -->
+    <section class="mundial-section">
+      <p data-aos="fade-down" data-aos-delay="200" style="font-family: 'chillax', sans-serif; font-size: 60px; font-weight: bold;">¡PREPARATE PARA EL MUNDIAL 2026!</p><br>
+      <p data-aos="fade-up" data-aos-delay="400" class="lexend-mega">Chatea, llama y comparte la pasión por el fútbol con tus amigos.</p>
+      <div data-aos="zoom-in" data-aos-delay="600" class="cta-buttons">
+        <button class="btn-primary">Crear Grupo</button>
+        <button class="btn-secondary">Ver Pronósticos</button>
+      </div>
+    </section>
+
+    <!-- Sección de Funcionalidades -->
+    <section class="features-section">
+      <h2 data-aos="fade-down">¿CÓMO FUNCIONA?</h2>
+      <div class="features-grid">
+        <div data-aos="fade-right" data-aos-delay="200" class="feature-card">
+          <div class="feature-icon">👥</div>
+          <h3>Crea Grupos</h3>
+          <p>Forma grupos con amigos y compite en quinielas.</p>
+        </div>
+        <div data-aos="fade-right" data-aos-delay="300" class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Haz Pronósticos</h3>
+          <p>Predice resultados, marcadores y goleadores.</p>
+        </div>
+        <div data-aos="fade-left" data-aos-delay="400" class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Chat en Tiempo Real</h3>
+          <p>Comunícate con tu grupo mediante chat y videollamadas.</p>
+        </div>
+        <div data-aos="fade-left" data-aos-delay="500" class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Gana Puntos</h3>
+          <p>Acumula puntos y sube de nivel con tus aciertos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Equipos -->
+    <section id="torneos" class="torneos">
+      <h2 data-aos="fade-down">ESCOGE TU EQUIPO</h2>
+      <div class="equipos-grid">
+        <div data-aos="flip-left" data-aos-delay="200" class="equipo-card">
+          <img src="https://flagcdn.com/w320/br.png" alt="Brasil">
+          <h3>Brasil</h3>
+          <button>Escoger</button>
+        </div>
+        <div data-aos="flip-left" data-aos-delay="250" class="equipo-card">
+          <img src="https://flagcdn.com/w320/ar.png" alt="Argentina">
+          <h3>Argentina</h3>
+          <button>Escoger</button>
+        </div>
+        <div data-aos="flip-left" data-aos-delay="300" class="equipo-card">
+          <img src="https://flagcdn.com/w320/es.png" alt="España">
+          <h3>España</h3>
+          <button>Escoger</button>
+        </div>
+        <div data-aos="flip-left" data-aos-delay="350" class="equipo-card">
+          <img src="https://flagcdn.com/w320/fr.png" alt="Francia">
+          <h3>Francia</h3>
+          <button>Escoger</button>
+        </div>
+        <div data-aos="flip-left" data-aos-delay="400" class="equipo-card">
+          <img src="https://flagcdn.com/w320/de.png" alt="Alemania">
+          <h3>Alemania</h3>
+          <button>Escoger</button>
+        </div>
+        <div data-aos="flip-left" data-aos-delay="450" class="equipo-card">
+          <img src="https://flagcdn.com/w320/pt.png" alt="Portugal">
+          <h3>Portugal</h3>
+          <button>Escoger</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Sistema de Puntos -->
+    <section class="points-system">
+      <h1 data-aos="fade-down">SISTEMA DE PUNTOS</h1>
+      <div class="points-grid">
+        <div data-aos="zoom-in" data-aos-delay="200" class="point-item">
+          <div class="points-value">5 pts</div>
+          <p>Acierto exacto del marcador</p>
+        </div>
+        <div data-aos="zoom-in" data-aos-delay="250" class="point-item">
+          <div class="points-value">3 pts</div>
+          <p>Acierto de ganador/empate</p>
+        </div>
+        <div data-aos="zoom-in" data-aos-delay="300" class="point-item">
+          <div class="points-value">2 pts</div>
+          <p>Jugador que anota primero</p>
+        </div>
+        <div data-aos="zoom-in" data-aos-delay="350" class="point-item">
+          <div class="points-value">1 pt</div>
+          <p>Participación en chats (10 mensajes min)</p>
+        </div>
+        <div data-aos="zoom-in" data-aos-delay="400" class="point-item">
+          <div class="points-value">1 pt</div>
+          <p>Completar tareas en grupo</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Niveles y Logros -->
+    <section class="achievements-section">
+      <h1 data-aos="fade-down">NIVELES Y LOGROS</h1>
+      <div class="levels-container">
+        <div data-aos="fade-up" data-aos-delay="200" class="level-card">
+          <h3>Nivel 1</h3>
+          <div class="level-name">NOVATO</div>
+          <div class="level-points">0-20 puntos</div>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="250" class="level-card">
+          <h3>Nivel 2</h3>
+          <div class="level-name">FANATICO</div>
+          <div class="level-points">21-50 puntos</div>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="300" class="level-card">
+          <h3>Nivel 3</h3>
+          <div class="level-name">ANALISTA</div>
+          <div class="level-points">51-100 puntos</div>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="350" class="level-card">
+          <h3>Nivel 4</h3>
+          <div class="level-name">LEYENDA</div>
+          <div class="level-points">101+ puntos</div>
+        </div>
+      </div>
+
+      <h2 data-aos="fade-down" class="medals-title">MEDALLAS DISPONIBLES</h2>
+      <div class="medals-container">
+        <div data-aos="flip-up" data-aos-delay="200" class="medal">
+          <div class="medal-icon">🔮</div>
+          <h4>ORÁCULO</h4>
+          <p>3 marcadores exactos seguidos</p>
+        </div>
+        <div data-aos="flip-up" data-aos-delay="250" class="medal">
+          <div class="medal-icon">⚡</div>
+          <h4>VELOCISTA</h4>
+          <p>Entregar pronósticos antes de 24h</p>
+        </div>
+        <div data-aos="flip-up" data-aos-delay="300" class="medal">
+          <div class="medal-icon">🤝</div>
+          <h4>COLABORADOR</h4>
+          <p>Más de 10 tareas completadas</p>
+        </div>
+        <div data-aos="flip-up" data-aos-delay="350" class="medal">
+          <div class="medal-icon">💬</div>
+          <h4>CONVENCEDOR</h4>
+          <p>50 mensajes en chats</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Registro -->
+    <section class="register-section">
+      <h2 data-aos="fade-down" class="lexend-mega">¿LISTO PARA UNIRTE?</h2>
+      <p data-aos="fade-up" data-aos-delay="200">Regístrate ahora y comienza a disfrutar de la mejor experiencia del Mundial 2026</p>
+      <form data-aos="zoom-in" data-aos-delay="400" class="register-form">
+        <input type="email" placeholder="Correo electrónico" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Registrarse</button>
+      </form>
+      <p data-aos="fade-up" data-aos-delay="600" class="login-link">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>ONEGOAL &copy; 2025 - Plataforma de Pronósticos para el Mundial 2026</p>
+    <nav>
+      <a href="#">Términos y Condiciones</a>
+      <a href="#">Política de Privacidad</a>
+      <a href="#">Contacto</a>
+    </nav>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animación de carga con el monito pixeleado
+      animateLoadingScreen();
+      
+      // Menu hamburguesa para móviles
+      const hamburger = document.querySelector('.hamburger');
+      const navMenu = document.querySelector('.nav-menu');
+      
+      if (hamburger) {
+        hamburger.addEventListener('click', () => {
+          hamburger.classList.toggle('active');
+          navMenu.classList.toggle('active');
+        });
+      }
+
+      // Cerrar menú al hacer clic en un enlace
+      document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (hamburger) hamburger.classList.remove('active');
+          if (navMenu) navMenu.classList.remove('active');
+        });
+      });
+
+      // Inicializar animaciones al hacer scroll
+      initAnimations();
+
+      // Smooth scroll para enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    });
+
+    // Función para la animación de carga
+    function animateLoadingScreen() {
+      const loadingScreen = document.querySelector('.loading-screen');
+      const logoLetters = document.querySelectorAll('.logo-letter');
+      const pixelBall = document.querySelector('.pixel-ball');
+      
+      // Si no existe la pantalla de carga, salir
+      if (!loadingScreen) return;
+      
+      // Animación de las letras del logo
+      logoLetters.forEach((letter, index) => {
+        setTimeout(() => {
+          letter.style.opacity = '1';
+          letter.style.transform = 'translateY(0)';
+          letter.style.transition = 'all 0.5s ease-out';
+        }, 1800 + (index * 100));
+      });
+      
+      // Ocultar pantalla de carga después de que termine la animación
+      setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          
+          // Animación de entrada del logo principal
+          const mainLogo = document.querySelector('.logo');
+          if (mainLogo) {
+            mainLogo.style.animation = 'logoReveal 1.5s ease-out forwards';
+          }
+        }, 500);
+      }, 3000);
+    }
+
+    // Inicializar animaciones al hacer scroll
+    function initAnimations() {
+      const animatedElements = document.querySelectorAll('[data-aos]');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Extraer el tipo de animación del atributo data-aos
+            const animationType = entry.target.getAttribute('data-aos');
+            const delay = entry.target.getAttribute('data-aos-delay') || 0;
+            
+            // Aplicar la animación después del delay
+            setTimeout(() => {
+              entry.target.classList.add('aos-animate');
+              if (animationType === 'fade-up') entry.target.classList.add('aos-fade-up');
+              if (animationType === 'fade-down') entry.target.classList.add('aos-fade-down');
+              if (animationType === 'fade-left') entry.target.classList.add('aos-fade-left');
+              if (animationType === 'fade-right') entry.target.classList.add('aos-fade-right');
+              if (animationType === 'zoom-in') entry.target.classList.add('aos-zoom-in');
+              if (animationType === 'flip-left' || animationType === 'flip-up') entry.target.classList.add('aos-flip');
+            }, parseInt(delay));
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      animatedElements.forEach(el => observer.observe(el));
+    }
+
+    // Efecto de escritura para el título
+    function typeWriterEffect() {
+      const titleElement = document.querySelector('.hero-title');
+      if (!titleElement) return;
+      
+      const text = titleElement.textContent;
+      titleElement.textContent = '';
+      
+      let i = 0;
+      const speed = 100;
+      
+      function typeWriter() {
+        if (i < text.length) {
+          titleElement.textContent += text.charAt(i);
+          i++;
+          setTimeout(typeWriter, speed);
+        }
+      }
+      
+      // Iniciar el efecto después de que la página cargue
+      setTimeout(typeWriter, 1000);
+    }
+
+    // Llamar a la función de efecto de escritura cuando la página cargue
+    window.addEventListener('load', typeWriterEffect);
+  </script>
+</body>
+</html>

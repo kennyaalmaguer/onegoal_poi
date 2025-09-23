@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
+  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
+  <!-- CSS -->
+
+    <title>ONE GOAL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        
+        /* Panel izquierdo - Lista de chats (35%) */
+        .chats-panel {
+            width: 35%;
+            background-color: rgb(237, 237, 237);
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header-left {
+            padding: 15px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+             
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6e77ba;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background-color: #1e0470;
+            border-bottom: 1px solid #9a91b0;
+        }
+        
+        .round-button {
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: white;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+           font-family: 'Chillax', Courier, monospace;
+        }
+        
+        .round-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .round-button.active {
+          background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  
+            color: rgb(211, 205, 255);
+        }
+        
+        .search-container {
+            padding: 10px 15px;
+            background-color: #6f6890;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: white;
+        }
+        
+        .chats-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .chat-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #6b6aaa;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .chat-item:hover {
+            background-color: #7283c9;
+        }
+        
+        .chat-item.active {
+            background-color: #e9f5e9;
+        }
+        
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #777;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .chat-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .chat-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .chat-preview {
+            color: #777;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .chat-time {
+            color: #777;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        /* Panel derecho - Chat (65%) */
+        .chat-panel {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            background-color: #e5ddd5;
+            background-image: url("imagenes/azul2.png")
+        }
+        
+        .chat-header {
+            padding: 15px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 1px solid #e0e0e0;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-actions {
+            display: flex;
+            gap: 15px;
+            color: #777;
+        }
+        
+        .contact-actions i {
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .contact-actions i:hover {
+            color: #d32525;
+        }
+        
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        
+        .message.received {
+            background-color: white;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent {
+   background-color: #a9adc9;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: #e5e5e5;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .input-container {
+            padding: 15px;
+            background-color: #333765;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 1px solid #e0e0e0;
+        }
+        
+        .input-container i {
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .input-container i:hover {
+            color: #ff0000;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+        
+        .send-button {
+             background: linear-gradient(to bottom, #09167a, #560404);
+ 
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .world-cup-theme {
+            background: linear-gradient(to right, #0038a8, #ce1126);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        .logo-link,
+.logo-link:visited {
+ color:  navy;
+ font-size: 30px;
+  text-decoration: none;
+   font-family: "BananaBrickRegular", sans-serif;
+}
+
+/* --- Modal de llamada --- */
+.call-modal {
+  display: none;                /* Oculto por defecto */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.call-content {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.call-content h2 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.hangup-btn {
+  font-size: 2rem;
+  color: red;
+  cursor: pointer;
+  background: #fceaea;
+  padding: 15px;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.hangup-btn:hover {
+  transform: scale(1.1);
+}
+
+    </style>
+</head>
+<body>
+    <!-- Panel izquierdo con lista de chats (35%) -->
+    <div class="chats-panel">
+        <div class="header-left">
+            <div class="user-info">
+                <div><a href="index.html" class="logo-link">ONEGOAL</a></div>
+                
+            </div>
+            <div class="status-indicator">
+                <i class="fas fa-circle-notch"></i>
+            </div>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="round-button active">Conversaciones</button>
+            <button class="round-button">Llamadas</button>
+            <button class="round-button">Estados</button>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Buscar o empezar un chat nuevo">
+        </div>
+        
+        <div class="chats-list">
+            <!-- Lista de chats con scroll - Temática Mundial 2026 -->
+            <div class="chat-item active">
+                <div class="chat-avatar">M</div>
+                <div class="chat-info">
+                    <div class="chat-name">Messi <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">¿Preparado para el torneo?</div>
+                </div>
+                <div class="chat-time">15:20</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">C</div>
+                <div class="chat-info">
+                    <div class="chat-name">Comité Organizador <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Confirmación de sedes del torneo</div>
+                </div>
+                <div class="chat-time">14:35</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">A</div>
+                <div class="chat-info">
+                    <div class="chat-name">Alejandro (Aficionado) <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">¿Vas a ir a ver los partidos?</div>
+                </div>
+                <div class="chat-time">13:12</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">S</div>
+                <div class="chat-info">
+                    <div class="chat-name">Selección Argentina <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Preparativos para el torneo</div>
+                </div>
+                <div class="chat-time">Ayer</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">F</div>
+                <div class="chat-info">
+                    <div class="chat-name">FIFA <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Nuevo formato del torneo</div>
+                </div>
+                <div class="chat-time">Ayer</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">B</div>
+                <div class="chat-info">
+                    <div class="chat-name">Brasil FC <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Amistoso previo al torneo</div>
+                </div>
+                <div class="chat-time">Miér</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">T</div>
+                <div class="chat-info">
+                    <div class="chat-name">Tienda Oficial <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Nuevas camisetas del torneo</div>
+                </div>
+                <div class="chat-time">Lun</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">P</div>
+                <div class="chat-info">
+                    <div class="chat-name">Periodismo Deportivo <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Entrevista sobre el torneo</div>
+                </div>
+                <div class="chat-time">Lun</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">E</div>
+                <div class="chat-info">
+                    <div class="chat-name">Estados Unidos 2026 <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Información de sedes y alojamiento</div>
+                </div>
+                <div class="chat-time">Dom</div>
+            </div>
+            
+            <div class="chat-item">
+                <div class="chat-avatar">V</div>
+                <div class="chat-info">
+                    <div class="chat-name">Ventas Entradas <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">Preventa para el torneo disponible</div>
+                </div>
+                <div class="chat-time">Dom</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel derecho con el chat seleccionado (65%) -->
+    <div class="chat-panel">
+        <div class="chat-header">
+            <div class="contact-info">
+                <div class="user-avatar">M</div>
+                <div>
+                    <div class="chat-name">Lionel Messi <span class="world-cup-theme">Mundial 2026</span></div>
+                    <div class="chat-preview">En línea</div>
+                </div>
+            </div>
+            <div class="contact-actions">
+                <i class="fas fa-video"></i>
+                <i class="fas fa-phone"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+        
+        <div class="messages-container">
+            <!-- Mensajes del chat sobre el Mundial 2026 -->
+            <div class="message received">
+                <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
+                <div class="message-time">10:30</div>
+            </div>
+            
+            <div class="message sent">
+                <div class="message-text">¡Claro que sí! Será un torneo histórico con 48 selecciones.</div>
+                <div class="message-time">10:31</div>
+            </div>
+            
+            <div class="message received">
+                <div class="message-text">¿Qué opinas del formato con 12 grupos de 4 equipos?</div>
+                <div class="message-time">10:32</div>
+            </div>
+            
+            <div class="message sent">
+                <div class="message-text">Es interesante. Los 8 mejores terceros también avanzan, así que habrá más emoción.</div>
+                <div class="message-time">10:33</div>
+            </div>
+            
+            <div class="message received">
+                <div class="message-text">¿Crees que Argentina puede repetir el título?</div>
+                <div class="message-time">10:35</div>
+            </div>
+            
+            <div class="message sent">
+                <div class="message-text">Siempre vamos a competir, pero con 48 equipos habrá más sorpresas.</div>
+                <div class="message-time">10:36</div>
+            </div>
+            
+            <div class="message received">
+                <div class="message-text">¿Ya conoces las sedes donde jugaremos?</div>
+                <div class="message-time">10:37</div>
+            </div>
+            
+            <div class="message sent">
+                <div class="message-text">Sí, principalmente en la zona este de Estados Unidos. El MetLife Stadium en Nueva Jersey es espectacular.</div>
+                <div class="message-time">10:38</div>
+            </div>
+            
+            <div class="message received">
+                <div class="message-text">¿Y qué tal la preparación con el equipo?</div>
+                <div class="message-time">10:40</div>
+            </div>
+            
+            <div class="message sent">
+                <div class="message-text">Muy bien. Los jóvenes tienen mucha hambre y los veteranos estamos motivados.</div>
+                <div class="message-time">10:41</div>
+            </div>
+            
+            <div class="message received">
+                <div class="message-text">¡Genial! Espero que sea un torneo inolvidable. ¡Mucha suerte!</div>
+                <div class="message-time">10:42</div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <i class="far fa-smile"></i>
+            <i class="fas fa-paperclip"></i>
+            <input type="text" class="message-input" placeholder="Escribe un mensaje">
+            <i class="fas fa-microphone"></i>
+            <button class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad básica para cambiar entre chats
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.chat-item').forEach(chat => {
+                    chat.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Aquí se cargaría el chat seleccionado
+                const contactName = this.querySelector('.chat-name').textContent;
+                const contactAvatar = this.querySelector('.chat-avatar').textContent;
+                
+                document.querySelector('.chat-header .chat-name').textContent = contactName;
+                document.querySelector('.chat-header .user-avatar').textContent = contactAvatar;
+                
+                // Cambiar la conversación según el chat seleccionado
+                updateChatConversation(contactName);
+            });
+        });
+        
+        // Funcionalidad para los botones de filtro
+        document.querySelectorAll('.round-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.round-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Función para actualizar la conversación según el chat seleccionado
+        function updateChatConversation(contactName) {
+            const messagesContainer = document.querySelector('.messages-container');
+            messagesContainer.innerHTML = '';
+            
+            if (contactName.includes('Messi')) {
+                messagesContainer.innerHTML = `
+                    <div class="message received">
+                        <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
+                        <div class="message-time">10:30</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-text">¡Claro que sí! Será un torneo histórico con 48 selecciones.</div>
+                        <div class="message-time">10:31</div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-text">¿Qué opinas del formato con 12 grupos de 4 equipos?</div>
+                        <div class="message-time">10:32</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-text">Es interesante. Los 8 mejores terceros también avanzan, así que habrá más emoción.</div>
+                        <div class="message-time">10:33</div>
+                    </div>
+                `;
+            } else if (contactName.includes('Comité Organizador')) {
+                messagesContainer.innerHTML = `
+                    <div class="message received">
+                        <div class="message-text">Hola, te escribimos para confirmar las sedes del Mundial 2026.</div>
+                        <div class="message-time">09:15</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-text">Perfecto, ¿ya tienen definidos los estadios?</div>
+                        <div class="message-time">09:16</div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-text">Sí, serán 16 ciudades: 11 en USA, 2 en Canadá y 3 en México.</div>
+                        <div class="message-time">09:17</div>
+                    </div>
+                `;
+            } else {
+                messagesContainer.innerHTML = `
+                    <div class="message received">
+                        <div class="message-text">Hola, soy ${contactName.split(' ')[0]}.</div>
+                        <div class="message-time">12:00</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-text">¡Hola! ¿Qué tal? ¿Cómo va todo con el Mundial 2026?</div>
+                        <div class="message-time">12:01</div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-text">Todo marcha bien. Estamos emocionados con el torneo.</div>
+                        <div class="message-time">12:02</div>
+                    </div>
+                `;
+            }
+            
+            // Hacer scroll al final de los mensajes
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // --- Abrir/Cerrar modal de llamada ---
+const callIcon = document.querySelector('.contact-actions .fa-phone');
+const callModal = document.getElementById('callModal');
+const hangupBtn = document.querySelector('.hangup-btn');
+
+callIcon.addEventListener('click', () => {
+  callModal.style.display = 'flex';
+});
+
+hangupBtn.addEventListener('click', () => {
+  callModal.style.display = 'none';
+});
+
+    </script>
+    <!-- Modal de llamada -->
+<div id="callModal" class="call-modal">
+  <div class="call-content">
+    <h2>Llamando a Lionel Messi…</h2>
+    <i class="fas fa-phone-slash hangup-btn"></i>
+  </div>
+</div>
+
+</body>
+</html>

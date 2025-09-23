@@ -1,0 +1,467 @@
+/* Reset */
+* { margin:0; padding:0; box-sizing:border-box; }
+body, html { font-family: 'Poppins', sans-serif; height:100%;  background: url("imagenes/2.png"); color:white; }
+
+
+header .menu::before {
+  content:"";
+  position:absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  opacity:0.15;
+  pointer-events:none;
+  z-index: -1;
+}
+
+.menu a {
+  color:white;
+  text-decoration:none;
+  font-weight:500;
+}
+
+.menu a:hover {
+  color:#00aaff;
+}
+
+/* Contenido */
+main { margin-top:10px; padding:20px; }
+
+.lexend-mega {
+  font-family: "Lexend Mega", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Sección mundial */
+.mundial-section {
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #1A3D7C, #00509E);
+    background: url("imagenes/2.png");
+ 
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 30px rgba(0,0,0,1);
+}
+
+
+
+.mundial-section p {
+  font-size: 1.2rem;
+}
+
+/* SECCIÓN TORNEOS - mantiene estilo dentro de tu diseño */
+.torneos {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #1A3D7C; /* mismo azul general */
+  background: url("imagenes/11.png");
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  font-family: 'Chillax', Courier, monospace;
+}
+
+.torneos h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.equipos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+
+.equipo-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.equipo-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.equipo-card h3 {
+  margin: 0.5rem 0;
+}
+
+.equipo-card button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: #00aaff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.equipo-card button:hover {
+  background: #0088cc;
+}
+
+header {
+  background: url("imagenes/2.png") no-repeat center center/cover; 
+  height: 300px;
+  display: flex;
+ flex-direction: column; /* apila elementos verticalmente */
+  justify-content: flex-start; /* desde arriba */
+  align-items: center; /* centra horizontalmente */
+  padding-top: 30px;
+  
+  font-family: "BananaBrickRegular", sans-serif; 
+  font-size: 20px;
+  
+}
+
+
+
+nav {
+  background: white;
+  padding: 15px 40px;
+  border-radius: 50px; /* Ovalado */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+   margin-bottom: 50px; 
+
+  background-image: url("imagenes/Paper_02.png");
+  background-repeat: repeat;
+  background-size: cover;
+  opacity: 0.9; 
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 30px;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: lighter;
+  transition: color 0.3s;
+}
+
+nav ul li a:hover {
+  color: #007bff;
+}
+
+.logo {
+  font-size: 100px;
+  color: white;
+  text-shadow: 1px 1px 5px rgba(0,0,0,0.5); /* para que destaque sobre la imagen */
+}
+.header-subtitle {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+.cta-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #00aaff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0088cc;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  color: white !important;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+/* Sección de características */
+.features-section {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: url("imagenes/9.png");
+  background-repeat: repeat;
+  background-size: cover;
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(59, 16, 16, 0.5);
+  font-family:'Chillax', Courier, monospace;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background: rgba(0, 0, 0, 0.478);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Sistema de puntos */
+.points-system {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: url("imagenes/8.png");
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  font-family: 'Chillax', Courier, monospace;
+}
+
+.points-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.point-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.points-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+/* Logros y niveles */
+.achievements-section {
+  font-family: 'Chillax', Courier, monospace;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: url("imagenes/10.png");
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.levels-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.level-card {
+  background: rgba(23, 20, 20, 0.558);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.level-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: #ffffff;
+}
+
+.level-points {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.medals-title {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.medals-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.medal {
+  background: rgba(23, 20, 20, 0.558);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.medal-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Sección de registro */
+.register-section {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(to bottom, #09167a, #560404);
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 2rem auto;
+  gap: 1rem;
+}
+
+.register-form input {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+}
+
+.register-form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #00aaff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.register-form button:hover {
+  background: #0088cc;
+}
+
+.login-link {
+  margin-top: 1rem;
+}
+
+.login-link a {
+  color: #00aaff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem;
+  background-image: url("imagenes/azul2.png");
+  margin-top: 2rem;
+}
+
+footer nav {
+  background: transparent;
+  box-shadow: none;
+  margin: 1rem 0;
+}
+
+footer nav a {
+  color: white;
+  margin: 0 1rem;
+  text-decoration: none;
+}
+
+footer nav a:hover {
+  color: #00aaff;
+}
+
+/* Navegación */
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.login-btn {
+  background: #00aaff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white !important;
+}
+
+.login-btn:hover {
+  background: #0088cc;
+  color: white !important;
+}
+
+
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .features-grid,
+  .points-grid,
+  .levels-container,
+  .medals-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
