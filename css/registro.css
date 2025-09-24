@@ -1,0 +1,165 @@
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+     body, html { 
+      font-family: 'Poppins', sans-serif; 
+      
+      background: url("imagenes/2.png"); 
+      color:white; 
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    
+    header {
+      background: url("imagenes/2.png") no-repeat center center/cover;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding-top: 20px;
+      font-family: "BananaBrickRegular", sans-serif; 
+    }
+    
+    .logo {
+      font-size: 60px;
+      color: white;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+    }
+    
+    .header-subtitle {
+      font-size: 1rem;
+      margin-top: 5px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+    
+    .register-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .register-box {
+      background: rgba(26, 61, 124, 0.9);
+      border-radius: 15px;
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .register-box h2 {
+      font-family: 'Chillax', sans-serif;
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+    
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .form-group {
+      text-align: left;
+      flex: 1;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .form-group-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .form-group-check input {
+      width: auto;
+    }
+    
+    .register-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #00aaff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 15px;
+    }
+    
+    .register-btn:hover {
+      background: #0088cc;
+    }
+    
+    .login-link {
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .login-link a {
+      color: #00aaff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-image: url("imagenes/azul2.png");
+    }
+    
+    footer nav {
+      background: transparent;
+      box-shadow: none;
+      margin: 0.5rem 0;
+    }
+    
+    footer nav a {
+      color: white;
+      margin: 0 0.5rem;
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+    
+    footer nav a:hover {
+      color: #00aaff;
+    }
+.logo-link,
+.logo-link:visited {
+  color: white;
+  text-decoration: none;
+}
+
+
