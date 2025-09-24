@@ -1,4 +1,18 @@
+
+
+
+
+
+
+
+
+
+
 // Esperar a que el DOM esté completamente cargado
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
   // Ocultar pantalla de carga después de 2 segundos
   setTimeout(() => {

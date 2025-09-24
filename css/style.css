@@ -1,6 +1,6 @@
 /* Reset */
 * { margin:0; padding:0; box-sizing:border-box; }
-body, html { font-family: 'Poppins', sans-serif; height:100%;  background: url("imagenes/2.png"); color:white; }
+body, html { font-family: 'Poppins', sans-serif; height:100%;  background: url("../imagenes/2.png"); color:white; }
 
 
 header .menu::before {
@@ -37,7 +37,7 @@ main { margin-top:10px; padding:20px; }
 .mundial-section {
   padding: 80px 20px;
   background: linear-gradient(to bottom, #1A3D7C, #00509E);
-    background: url("imagenes/2.png");
+    background: url("../imagenes/2.png");
  
   text-align: center;
   border-radius: 10px;
@@ -56,7 +56,7 @@ main { margin-top:10px; padding:20px; }
   padding: 3rem 2rem;
   text-align: center;
   background: #1A3D7C; /* mismo azul general */
-  background: url("imagenes/11.png");
+  background: url("../imagenes/11.png");
   border-radius: 10px;
   margin: 20px 0;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -109,7 +109,7 @@ main { margin-top:10px; padding:20px; }
 }
 
 header {
-  background: url("imagenes/2.png") no-repeat center center/cover; 
+  background: url("../imagenes/2.png") no-repeat center center/cover; 
   height: 300px;
   display: flex;
  flex-direction: column; /* apila elementos verticalmente */
@@ -131,7 +131,7 @@ nav {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
    margin-bottom: 50px; 
 
-  background-image: url("imagenes/Paper_02.png");
+  background-image: url("../imagenes/Paper_02.png");
   background-repeat: repeat;
   background-size: cover;
   opacity: 0.9; 
@@ -213,7 +213,7 @@ nav ul li a:hover {
 .features-section {
   padding: 4rem 2rem;
   text-align: center;
-  background: url("imagenes/9.png");
+  background: url("../imagenes/9.png");
   background-repeat: repeat;
   background-size: cover;
   border-radius: 10px;
@@ -252,7 +252,7 @@ nav ul li a:hover {
 .points-system {
   padding: 4rem 2rem;
   text-align: center;
-  background: url("imagenes/8.png");
+  background: url("../imagenes/8.png");
   border-radius: 10px;
   margin: 20px 0;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -287,7 +287,7 @@ nav ul li a:hover {
   font-family: 'Chillax', Courier, monospace;
   padding: 4rem 2rem;
   text-align: center;
-  background: url("imagenes/10.png");
+  background: url("../imagenes/10.png");
   border-radius: 10px;
   margin: 20px 0;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -403,7 +403,7 @@ nav ul li a:hover {
 footer {
   text-align: center;
   padding: 2rem;
-  background-image: url("imagenes/azul2.png");
+  background-image: url("../imagenes/azul2.png");
   margin-top: 2rem;
 }
 
