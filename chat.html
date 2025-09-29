@@ -18,36 +18,35 @@
 
     <title>ONE GOAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/chat.css" >
-
+    <link rel="stylesheet" href="css/chat.css">
 </head>
 
 <body>
-    <!-- Panel izquierdo con lista de chats (35%) -->
-    <div class="chats-panel">
+    <!-- Panel izquierdo con lista de chats (100% en móvil) -->
+    <div class="chats-panel" id="chatsPanel">
         <div class="header-left">
             <div class="user-info">
                 <div><a href="index.html" class="logo-link">ONEGOAL</a></div>
-
             </div>
-            <div class="status-indicator">
-                <i class="fas fa-circle-notch"></i>
-            </div>
+            <!-- Botón para crear grupos en lugar del indicador de estado -->
+            <button class="create-group-btn" id="createGroupBtn">
+                <i class="fas fa-plus"></i>
+            </button>
         </div>
 
         <div class="buttons-container">
-            <button class="round-button active">Conversaciones</button>
-            <button class="round-button">Grupos</button>
-            <button class="round-button">Llamadas</button>
+            <button class="round-button active" data-tab="conversations">Conversaciones</button>
+            <button class="round-button" data-tab="groups">Grupos</button>
+            <button class="round-button" data-tab="calls">Llamadas</button>
         </div>
 
         <div class="search-container">
             <input type="text" class="search-box" placeholder="Buscar o empezar un chat nuevo">
         </div>
 
-        <div class="chats-list">
-            <!-- Lista de chats con scroll - Temática Mundial 2026 -->
-            <div class="chat-item active">
+        <!-- Lista de conversaciones -->
+        <div class="chats-list" id="conversationsList">
+            <div class="chat-item active" data-chat="messi">
                 <div class="chat-avatar">M</div>
                 <div class="chat-info">
                     <div class="chat-name">Messi <span class="world-cup-theme">Mundial 2026</span></div>
@@ -56,7 +55,7 @@
                 <div class="chat-time">15:20</div>
             </div>
 
-            <div class="chat-item">
+            <div class="chat-item" data-chat="comite">
                 <div class="chat-avatar">C</div>
                 <div class="chat-info">
                     <div class="chat-name">Comité Organizador <span class="world-cup-theme">Mundial 2026</span></div>
@@ -65,7 +64,7 @@
                 <div class="chat-time">14:35</div>
             </div>
 
-            <div class="chat-item">
+            <div class="chat-item" data-chat="alejandro">
                 <div class="chat-avatar">A</div>
                 <div class="chat-info">
                     <div class="chat-name">Alejandro (Aficionado) <span class="world-cup-theme">Mundial 2026</span>
@@ -75,7 +74,7 @@
                 <div class="chat-time">13:12</div>
             </div>
 
-            <div class="chat-item">
+            <div class="chat-item" data-chat="argentina">
                 <div class="chat-avatar">S</div>
                 <div class="chat-info">
                     <div class="chat-name">Selección Argentina <span class="world-cup-theme">Mundial 2026</span></div>
@@ -84,7 +83,7 @@
                 <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item">
+            <div class="chat-item" data-chat="fifa">
                 <div class="chat-avatar">F</div>
                 <div class="chat-info">
                     <div class="chat-name">FIFA <span class="world-cup-theme">Mundial 2026</span></div>
@@ -92,58 +91,118 @@
                 </div>
                 <div class="chat-time">Ayer</div>
             </div>
+        </div>
 
-            <div class="chat-item">
-                <div class="chat-avatar">B</div>
+        <!-- Lista de grupos (oculta por defecto) -->
+        <div class="chats-list" id="groupsList" style="display: none;">
+            <div class="chat-item" data-chat="grupo1">
+                <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
-                    <div class="chat-name">Brasil FC <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Amistoso previo al torneo</div>
+                    <div class="chat-name">Fans Mundial 2026 <span class="world-cup-theme">48 miembros</span></div>
+                    <div class="chat-preview">Último partido: Argentina vs Brasil</div>
                 </div>
-                <div class="chat-time">Miér</div>
+                <div class="chat-time">10:15</div>
             </div>
 
-            <div class="chat-item">
-                <div class="chat-avatar">T</div>
+            <div class="chat-item" data-chat="grupo2">
+                <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
-                    <div class="chat-name">Tienda Oficial <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Nuevas camisetas del torneo</div>
+                    <div class="chat-name">Amantes del Fútbol <span class="world-cup-theme">23 miembros</span></div>
+                    <div class="chat-preview">Discusión sobre las nuevas reglas</div>
                 </div>
-                <div class="chat-time">Lun</div>
+                <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item">
-                <div class="chat-avatar">P</div>
+            <div class="chat-item" data-chat="grupo3">
+                <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
-                    <div class="chat-name">Periodismo Deportivo <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Entrevista sobre el torneo</div>
+                    <div class="chat-name">Viaje al Mundial <span class="world-cup-theme">15 miembros</span></div>
+                    <div class="chat-preview">Organizando viaje a USA</div>
                 </div>
-                <div class="chat-time">Lun</div>
+                <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item">
-                <div class="chat-avatar">E</div>
+            <div class="chat-item" data-chat="grupo4">
+                <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
-                    <div class="chat-name">Estados Unidos 2026 <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Información de sedes y alojamiento</div>
+                    <div class="chat-name">Fantasy League <span class="world-cup-theme">32 miembros</span></div>
+                    <div class="chat-preview">Nuevos jugadores disponibles</div>
                 </div>
-                <div class="chat-time">Dom</div>
+                <div class="chat-time">15 mar</div>
+            </div>
+        </div>
+
+        <!-- Lista de llamadas (oculta por defecto) -->
+        <div class="chats-list" id="callsList" style="display: none;">
+            <div class="call-item">
+                <div class="call-avatar">M</div>
+                <div class="call-info">
+                    <div class="call-name">Messi</div>
+                    <div class="call-details">
+                        <i class="fas fa-phone outgoing"></i>
+                        <span>Llamada saliente</span>
+                    </div>
+                </div>
+                <div class="call-time">Hoy 15:30</div>
             </div>
 
-            <div class="chat-item">
-                <div class="chat-avatar">V</div>
-                <div class="chat-info">
-                    <div class="chat-name">Ventas Entradas <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Preventa para el torneo disponible</div>
+            <div class="call-item">
+                <div class="call-avatar">C</div>
+                <div class="call-info">
+                    <div class="call-name">Comité Organizador</div>
+                    <div class="call-details">
+                        <i class="fas fa-phone incoming"></i>
+                        <span>Llamada entrante</span>
+                    </div>
                 </div>
-                <div class="chat-time">Dom</div>
+                <div class="call-time">Ayer 11:20</div>
+            </div>
+
+            <div class="call-item">
+                <div class="call-avatar">A</div>
+                <div class="call-info">
+                    <div class="call-name">Alejandro</div>
+                    <div class="call-details">
+                        <i class="fas fa-video outgoing"></i>
+                        <span>Videollamada saliente</span>
+                    </div>
+                </div>
+                <div class="call-time">12 mar 09:45</div>
+            </div>
+
+            <div class="call-item">
+                <div class="call-avatar">S</div>
+                <div class="call-info">
+                    <div class="call-name">Selección Argentina</div>
+                    <div class="call-details">
+                        <i class="fas fa-phone missed"></i>
+                        <span>Llamada perdida</span>
+                    </div>
+                </div>
+                <div class="call-time">10 mar 16:15</div>
+            </div>
+
+            <div class="call-item">
+                <div class="call-avatar">F</div>
+                <div class="call-info">
+                    <div class="call-name">FIFA</div>
+                    <div class="call-details">
+                        <i class="fas fa-video incoming"></i>
+                        <span>Videollamada entrante</span>
+                    </div>
+                </div>
+                <div class="call-time">8 mar 14:30</div>
             </div>
         </div>
     </div>
 
-    <!-- Panel derecho con el chat seleccionado (65%) -->
-    <div class="chat-panel">
+    <!-- Panel derecho con el chat seleccionado (oculto en móvil por defecto) -->
+    <div class="chat-panel" id="chatPanel">
         <div class="chat-header">
             <div class="contact-info">
+                <button class="back-button" id="backButton">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
                 <div class="user-avatar">M</div>
                 <div>
                     <div class="chat-name">Lionel Messi <span class="world-cup-theme">Mundial 2026</span></div>
@@ -151,13 +210,13 @@
                 </div>
             </div>
             <div class="contact-actions">
-                <i class="fas fa-video"></i>
-                <i class="fas fa-phone"></i>
+                <i class="fas fa-video" id="videoCallBtn"></i>
+                <i class="fas fa-phone" id="voiceCallBtn"></i>
                 <i class="fas fa-ellipsis-v"></i>
             </div>
         </div>
 
-        <div class="messages-container">
+        <div class="messages-container" id="messagesContainer">
             <!-- Mensajes del chat sobre el Mundial 2026 -->
             <div class="message received">
                 <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
@@ -220,135 +279,114 @@
 
         <div class="input-container">
             <i class="far fa-smile"></i>
-            <i class="fas fa-paperclip"></i>
-            <input type="text" class="message-input" placeholder="Escribe un mensaje">
-            <i class="fas fa-microphone"></i>
-            <button class="send-button">
+            <input type="file" id="fileInput" style="display:none" accept="*/*">
+            <i class="fas fa-paperclip" id="attachBtn"></i>
+            <input type="text" class="message-input" id="messageInput" placeholder="Escribe un mensaje">
+            <i class="fas fa-microphone" id="recordBtn"></i>
+            <button class="send-button" id="sendBtn">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
     </div>
 
-    <script>
-        // Funcionalidad básica para cambiar entre chats
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.addEventListener('click', function () {
-                document.querySelectorAll('.chat-item').forEach(chat => {
-                    chat.classList.remove('active');
-                });
-                this.classList.add('active');
-
-                // Aquí se cargaría el chat seleccionado
-                const contactName = this.querySelector('.chat-name').textContent;
-                const contactAvatar = this.querySelector('.chat-avatar').textContent;
-
-                document.querySelector('.chat-header .chat-name').textContent = contactName;
-                document.querySelector('.chat-header .user-avatar').textContent = contactAvatar;
-
-                // Cambiar la conversación según el chat seleccionado
-                updateChatConversation(contactName);
-            });
-        });
-
-        // Funcionalidad para los botones de filtro
-        document.querySelectorAll('.round-button').forEach(button => {
-            button.addEventListener('click', function () {
-                document.querySelectorAll('.round-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-
-        // Función para actualizar la conversación según el chat seleccionado
-        function updateChatConversation(contactName) {
-            const messagesContainer = document.querySelector('.messages-container');
-            messagesContainer.innerHTML = '';
-
-            if (contactName.includes('Messi')) {
-                messagesContainer.innerHTML = `
-                    <div class="message received">
-                        <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
-                        <div class="message-time">10:30</div>
-                    </div>
-                    
-                    <div class="message sent">
-                        <div class="message-text">¡Claro que sí! Será un torneo histórico con 48 selecciones.</div>
-                        <div class="message-time">10:31</div>
-                    </div>
-                    
-                    <div class="message received">
-                        <div class="message-text">¿Qué opinas del formato con 12 grupos de 4 equipos?</div>
-                        <div class="message-time">10:32</div>
-                    </div>
-                    
-                    <div class="message sent">
-                        <div class="message-text">Es interesante. Los 8 mejores terceros también avanzan, así que habrá más emoción.</div>
-                        <div class="message-time">10:33</div>
-                    </div>
-                `;
-            } else if (contactName.includes('Comité Organizador')) {
-                messagesContainer.innerHTML = `
-                    <div class="message received">
-                        <div class="message-text">Hola, te escribimos para confirmar las sedes del Mundial 2026.</div>
-                        <div class="message-time">09:15</div>
-                    </div>
-                    
-                    <div class="message sent">
-                        <div class="message-text">Perfecto, ¿ya tienen definidos los estadios?</div>
-                        <div class="message-time">09:16</div>
-                    </div>
-                    
-                    <div class="message received">
-                        <div class="message-text">Sí, serán 16 ciudades: 11 en USA, 2 en Canadá y 3 en México.</div>
-                        <div class="message-time">09:17</div>
-                    </div>
-                `;
-            } else {
-                messagesContainer.innerHTML = `
-                    <div class="message received">
-                        <div class="message-text">Hola, soy ${contactName.split(' ')[0]}.</div>
-                        <div class="message-time">12:00</div>
-                    </div>
-                    
-                    <div class="message sent">
-                        <div class="message-text">¡Hola! ¿Qué tal? ¿Cómo va todo con el Mundial 2026?</div>
-                        <div class="message-time">12:01</div>
-                    </div>
-                    
-                    <div class="message received">
-                        <div class="message-text">Todo marcha bien. Estamos emocionados con el torneo.</div>
-                        <div class="message-time">12:02</div>
-                    </div>
-                `;
-            }
-
-            // Hacer scroll al final de los mensajes
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // --- Abrir/Cerrar modal de llamada ---
-        const callIcon = document.querySelector('.contact-actions .fa-phone');
-        const callModal = document.getElementById('callModal');
-        const hangupBtn = document.querySelector('.hangup-btn');
-
-        callIcon.addEventListener('click', () => {
-            callModal.style.display = 'flex';
-        });
-
-        hangupBtn.addEventListener('click', () => {
-            callModal.style.display = 'none';
-        });
-
-    </script>
-    <!-- Modal de llamada -->
-    <div id="callModal" class="call-modal">
+    <!-- Modal para crear grupos -->
+    <div id="createGroupModal" class="call-modal">
         <div class="call-content">
-            <h2>Llamando a Lionel Messi…</h2>
-            <i class="fas fa-phone-slash hangup-btn"></i>
+            <h2>Crear nuevo grupo</h2>
+            <p>Esta funcionalidad te llevará a la página de creación de grupos.</p>
+            <button class="hangup-btn" id="confirmCreateGroup">
+                <i class="fas fa-check"></i>
+            </button>
         </div>
     </div>
 
-</body>
+    <!-- Modal de llamada de voz -->
+    <div id="voiceCallModal" class="call-modal">
+        <div class="call-content">
+            <div class="caller-info">
+                <div class="caller-avatar">M</div>
+                <h2>Lionel Messi</h2>
+                <p class="call-status">Llamando...</p>
+            </div>
+            <div class="call-controls">
+                <button class="call-btn" id="muteBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span>Mute</span>
+                </button>
+                <button class="call-btn hangup" id="hangupVoiceCall">
+                    <i class="fas fa-phone-slash"></i>
+                    <span>Colgar</span>
+                </button>
+                <button class="call-btn" id="speakerBtn">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Speaker</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal de videollamada -->
+    <div id="videoCallModal" class="call-modal">
+        <div class="call-content">
+            <div class="video-container">
+                <div class="remote-video">
+                    <!-- Video del contacto -->
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-placeholder" id="remotePlaceholder">
+                        <div class="caller-avatar">M</div>
+                        <p>Lionel Messi</p>
+                    </div>
+                </div>
+                <div class="local-video">
+                    <!-- Tu video -->
+                    <video id="localVideo" autoplay playsinline muted></video>
+                    <div class="video-placeholder small" id="localPlaceholder">
+                        <div class="caller-avatar">Tú</div>
+                    </div>
+                </div>
+            </div>
+            <div class="call-controls">
+                <button class="call-btn" id="videoMuteBtn">
+                    <i class="fas fa-video"></i>
+                    <span>Video</span>
+                </button>
+                <button class="call-btn" id="videoAudioMuteBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span>Mute</span>
+                </button>
+                <button class="call-btn hangup" id="hangupVideoCall">
+                    <i class="fas fa-phone-slash"></i>
+                    <span>Colgar</span>
+                </button>
+                <button class="call-btn" id="videoSpeakerBtn">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Speaker</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de llamada entrante -->
+    <div id="incomingCallModal" class="call-modal">
+        <div class="call-content">
+            <div class="caller-info">
+                <div class="caller-avatar">M</div>
+                <h2>Lionel Messi</h2>
+                <p class="call-status">Llamada entrante...</p>
+            </div>
+            <div class="call-controls">
+                <button class="call-btn decline" id="declineCall">
+                    <i class="fas fa-phone-slash"></i>
+                    <span>Rechazar</span>
+                </button>
+                <button class="call-btn accept" id="acceptCall">
+                    <i class="fas fa-phone"></i>
+                    <span>Aceptar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Js/chat.js"></script>
+</body>
 </html>

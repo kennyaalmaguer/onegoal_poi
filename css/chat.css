@@ -1,283 +1,305 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: #f5f5f5;
-        }
-        
-        /* Panel izquierdo - Lista de chats (35%) */
-        .chats-panel {
-            width: 35%;
-            background-color: rgb(237, 237, 237);
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header-left {
-            padding: 15px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-             
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #6e77ba;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .buttons-container {
-            display: flex;
-            gap: 10px;
-            padding: 15px;
-            background-color: #1e0470;
-            border-bottom: 1px solid #9a91b0;
-        }
-        
-        .round-button {
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: none;
-            background-color: white;
-            cursor: pointer;
-            font-weight: 500;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-           font-family: 'Chillax', Courier, monospace;
-        }
-        
-        .round-button:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .round-button.active {
-          background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
-  
-            color: rgb(211, 205, 255);
-        }
-        
-        .search-container {
-            padding: 10px 15px;
-            background-color: #6f6890;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: none;
-            background-color: white;
-        }
-        
-        .chats-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        
-        .chat-item {
-            display: flex;
-            padding: 15px;
-            border-bottom: 1px solid #6b6aaa;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border-radius: 10px;
-            margin-bottom: 5px;
-        }
-        
-        .chat-item:hover {
-            background-color: #7283c9;
-        }
-        
-        .chat-item.active {
-            background-color: #e9f5e9;
-        }
-        
-        .chat-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            color: #777;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-        
-        .chat-info {
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .chat-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .chat-preview {
-            color: #777;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .chat-time {
-            color: #777;
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-        
-        /* Panel derecho - Chat (65%) */
-        .chat-panel {
-            width: 65%;
-            display: flex;
-            flex-direction: column;
-            background-color: #e5ddd5;
-            background-image: url("../imagenes/azul2.png")
-        }
-        
-        .chat-header {
-            padding: 15px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 1px solid #e0e0e0;
-        }
-        
-        .contact-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .contact-actions {
-            display: flex;
-            gap: 15px;
-            color: #777;
-        }
-        
-        .contact-actions i {
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        
-        .contact-actions i:hover {
-            color: #d32525;
-        }
-        
-        .messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 10px;
-            position: relative;
-            margin-bottom: 5px;
-        }
-        
-        .message.received {
-            background-color: white;
-            align-self: flex-start;
-            border-top-left-radius: 0;
-        }
-        
-        .message.sent {
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+/* Panel izquierdo - Lista de chats (35%) */
+.chats-panel {
+    width: 35%;
+    background-color: rgb(237, 237, 237);
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-left {
+    padding: 15px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+     
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #6e77ba;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    background-color: #1e0470;
+    border-bottom: 1px solid #9a91b0;
+}
+
+/* --- Botón para crear grupos --- */
+.create-group-btn {
+    background: linear-gradient(to bottom, #09167a, #560404);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.create-group-btn:hover {
+    background: linear-gradient(to bottom, #0a1a8a, #670505);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.round-button {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+   font-family: 'Chillax', Courier, monospace;
+}
+
+.round-button:hover {
+    background-color: #f0f0f0;
+}
+
+.round-button.active {
+  background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+
+    color: rgb(211, 205, 255);
+}
+
+.search-container {
+    padding: 10px 15px;
+    background-color: #6f6890;
+}
+
+.search-box {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: none;
+    background-color: white;
+}
+
+.chats-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #6b6aaa;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.chat-item:hover {
+    background-color: #7283c9;
+}
+
+.chat-item.active {
+    background-color: #e9f5e9;
+}
+
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #777;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.chat-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.chat-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.chat-preview {
+    color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-time {
+    color: #777;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* Panel derecho - Chat (65%) */
+.chat-panel {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    background-color: #e5ddd5;
+    background-image: url("../imagenes/azul2.png")
+}
+
+.chat-header {
+    padding: 15px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 1px solid #e0e0e0;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 15px;
+    color: #777;
+}
+
+.contact-actions i {
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.contact-actions i:hover {
+    color: #d32525;
+}
+
+.messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.message.received {
+    background-color: white;
+    align-self: flex-start;
+    border-top-left-radius: 0;
+}
+
+.message.sent {
    background-color: #a9adc9;
-            align-self: flex-end;
-            border-top-right-radius: 0;
-        }
-        
-        .message-time {
-            font-size: 0.7rem;
-            color: #e5e5e5;
-            text-align: right;
-            margin-top: 5px;
-        }
-        
-        .input-container {
-            padding: 15px;
-            background-color: #333765;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-left: 1px solid #e0e0e0;
-        }
-        
-        .input-container i {
-            color: #ffffff;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        
-        .input-container i:hover {
-            color: #ff0000;
-        }
-        
-        .message-input {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-        }
-        
-        .send-button {
-             background: linear-gradient(to bottom, #09167a, #560404);
- 
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .world-cup-theme {
-            background: linear-gradient(to right, #0038a8, #ce1126);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-            display: inline-block;
-        }
+    align-self: flex-end;
+    border-top-right-radius: 0;
+}
 
-        .logo-link,
+.message-time {
+    font-size: 0.7rem;
+    color: #e5e5e5;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.input-container {
+    padding: 15px;
+    background-color: #333765;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 1px solid #e0e0e0;
+}
+
+.input-container i {
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.input-container i:hover {
+    color: #ff0000;
+}
+
+.message-input {
+    flex: 1;
+    padding: 12px 15px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+.send-button {
+     background: linear-gradient(to bottom, #09167a, #560404);
+
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.world-cup-theme {
+    background: linear-gradient(to right, #0038a8, #ce1126);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.logo-link,
 .logo-link:visited {
  color:  navy;
  font-size: 30px;
@@ -285,44 +307,402 @@
    font-family: "technor", sans-serif;
 }
 
-/* --- Modal de llamada --- */
+
+/* --- Estilos para mensajes de audio --- */
+.audio-message .audio-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.audio-message .audio-player:hover {
+    background-color: #e0e0e0;
+}
+
+.audio-message .audio-player .play-audio {
+    color: #25D366;
+    font-size: 1rem;
+}
+
+.audio-duration {
+    font-size: 0.8rem;
+    color: #777;
+    margin-left: auto;
+}
+
+/* --- Estilos para mensajes de archivos --- */
+.file-message .file-attachment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    cursor: pointer;
+    max-width: 300px;
+}
+
+.file-message .file-attachment i {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.file-size {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* --- Estilos para grabación de audio --- */
+.recording {
+    color: #ff0000 !important;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* --- Estilos para modales de llamada --- */
 .call-modal {
-   display: none;                /* Oculto por defecto */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
 
 .call-content {
-  background: #fff;
-  padding: 30px 40px;
-  border-radius: 15px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
 }
 
-.call-content h2 {
-  margin-bottom: 20px;
-  font-size: 1.3rem;
+.caller-info {
+    margin-bottom: 30px;
 }
 
-.hangup-btn {
-  font-size: 2rem;
-  color: red;
-  cursor: pointer;
-  background: #fceaea;
-  padding: 15px;
-  border-radius: 50%;
-  transition: transform 0.2s;
+.caller-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
-.hangup-btn:hover {
-  transform: scale(1.1);
+.call-status {
+    font-size: 1.2rem;
+    opacity: 0.8;
 }
 
+.call-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.call-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.call-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.call-btn span {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.call-btn.hangup {
+    background-color: #f44336;
+}
+
+.call-btn.accept {
+    background-color: #4CAF50;
+}
+
+.call-btn.decline {
+    background-color: #f44336;
+}
+
+.call-btn.active {
+    background-color: #2196F3;
+}
+
+/* --- Estilos para videollamada --- */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+.remote-video {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.local-video {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 120px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid white;
+    background: #333;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.video-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+}
+
+.video-placeholder.small {
+    font-size: 0.7rem;
+    padding: 5px;
+}
+
+.video-placeholder .caller-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.video-placeholder:not(.small) .caller-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+/* Estilos para los elementos de video */
+#localVideo, #remoteVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.local-video video {
+    transform: scaleX(-1); /* Espejo para video local */
+}
+
+/* Asegurar que los placeholders se oculten/muestren correctamente */
+.video-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.remote-video .video-placeholder {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+.local-video .video-placeholder {
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+}
+
+/* Estilos para items de llamadas */
+.call-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #6b6aaa;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+.call-item:hover {
+    background-color: #7283c9;
+}
+
+.call-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #777;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.call-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.call-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.call-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.call-details i {
+    font-size: 0.8rem;
+}
+
+.call-details .outgoing {
+    color: #25D366;
+}
+
+.call-details .incoming {
+    color: #128C7E;
+}
+
+.call-details .missed {
+    color: #f44336;
+}
+
+.call-time {
+    color: #777;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* Estilos para avatares de grupos */
+.chat-avatar .fa-users {
+    font-size: 1.2rem;
+    color: #6e77ba;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .chats-panel {
+        width: 100%;
+    }
+    
+    .chat-panel {
+        width: 100%;
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+    }
+    
+    .chat-panel.active {
+        display: flex;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    .call-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .call-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+    }
+}
+
+.back-button {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    margin-right: 10px;
+    cursor: pointer;
+    color: #777;
+}
+
+@media (max-width: 768px) {
+    .back-button {
+        display: block;
+    }
+}
