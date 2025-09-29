@@ -5,30 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ONEGOAL</title>
 
-  <!-- Google Fonts y Banana Brick -->
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
-  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css">
+ 
+<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
+ 
+ <!-- CSS -->
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-  
-  <header>
+ <header>
+    <div class="header-content">
+      <!-- Menú de navegación primero -->
     <nav>
-      <ul>
-        
-        <li><a href="pronosticos.html">Pronósticos</a></li>
-        <li><a href="torneos.html">Torneos</a></li>
-        <li><a href="ranking.html">Ranking</a></li>
-        <li><a href="tareas.html">Tareas</a></li>
-        <li><a href="chat.html">Chats</a></li>
-        <li><a href="login.html" class="login-btn">Log In</a></li>
+  <ul>
+    <li><a href="pronosticos.html">PRONÓSTICOS</a></li>
+    <li><a href="grupos.html">GRUPOS</a></li>
+    <li><a href="ranking.html">RANKING</a></li>
+    <li><a href="tareas.html">TAREAS</a></li>
+    <li><a href="chat.html">CHATS</a></li>
+   <li><a href="login.html" class="login-btn">LOG IN</a></li>
+
+    <!-- Menú Usuario -->
+   
+ <li class="user-menu">
+      <div class="user-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Usuario">
+      </div>
+      <ul class="dropdown">
+        <li><a href="login.html">Iniciar sesión</a></li>
+        <li><a href="register.html">Registrarse</a></li>
       </ul>
-    </nav>
-    <div class="logo">ONEGOAL</div>
-    <div class="header-subtitle">La plataforma definitiva para el Mundial 2026</div>
+    </li>
+
+  </ul>
+</nav>
+
+
+      
+      <!-- Logo y subtítulo debajo -->
+      <div class="logo-container">
+        <div class="logo">ONEGOAL</div>
+        <div class="header-subtitle">La plataforma definitiva para el Mundial 2026</div>
+      </div>
+    </div>
   </header>
 
   <main>
@@ -38,10 +60,12 @@
       <p class="lexend-mega">Chatea, llama y comparte la pasión por el fútbol con tus amigos.</p>
       <div class="cta-buttons">
  
-        <button class="btn-primary">Crear Grupo</button>
-        <button class="btn-secondary">Ver Pronósticos</button>
+       <a href="grupos.html" class="btn-primary">Crear Grupo</a>
+<a href="pronosticos.html" class="btn-secondary">Ver Pronósticos</a>
+
       </div>
     </section>
+
 
     <!-- Sección de Funcionalidades -->
     <section class="features-section">
@@ -72,37 +96,31 @@
 
     <!-- Sección Equipos -->
     <section id="torneos" class="torneos">
-      <h2>ESCOGE TU EQUIPO</h2>
+      <h2>APOYA A TU SELECCIÓN</h2>
       <div class="equipos-grid">
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/br.png" alt="Brasil">
           <h3>Brasil</h3>
-          <button>Escoger</button>
         </div>
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/ar.png" alt="Argentina">
           <h3>Argentina</h3>
-          <button>Escoger</button>
         </div>
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/es.png" alt="España">
           <h3>España</h3>
-          <button>Escoger</button>
         </div>
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/fr.png" alt="Francia">
           <h3>Francia</h3>
-          <button>Escoger</button>
         </div>
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/de.png" alt="Alemania">
           <h3>Alemania</h3>
-          <button>Escoger</button>
         </div>
         <div class="equipo-card">
           <img src="https://flagcdn.com/w320/pt.png" alt="Portugal">
           <h3>Portugal</h3>
-          <button>Escoger</button>
         </div>
       </div>
     </section>
@@ -188,13 +206,14 @@
     <!-- Sección de Registro -->
     <section class="register-section">
       <h2 class="lexend-mega">¿LISTO PARA UNIRTE?</h2>
-      <p>Regístrate ahora y comienza a disfrutar de la mejor experiencia del Mundial 2026</p>
-      <form class="register-form">
-        <input type="email" placeholder="Correo electrónico" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Registrarse</button>
-      </form>
-      <p class="login-link">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+      <p>Regístrate ahora y comienza a disfrutar de la mejor experiencia del Mundial 2026</p><br>
+      <button class="btn-primary" onclick="window.location.href='register.html'">
+  Registrate
+</button>&nbsp;&nbsp;
+<button class="btn-secondary" onclick="window.location.href='login.html'">
+ Iniciar Sesión
+</button>
+
     </section>
   </main>
 
@@ -207,8 +226,7 @@
     </nav>
   </footer>
 
-  <!-- JS -->
-  <script src="Js/script.js"></script>
+ 
     <script src="Js/index.js"></script>
 </body>
 </html>

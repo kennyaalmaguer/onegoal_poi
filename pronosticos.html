@@ -7,11 +7,10 @@
   
   <!-- Google Fonts y Banana Brick -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
-  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/pronosticos.css">
-
+  <link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -22,7 +21,7 @@
   <nav>
     <a href="index.html">Inicio</a>
     <a href="pronosticos.html" class="active">Pronósticos</a>
-    <a href="torneos.html">Torneos</a>
+    <a href="grupos.html">Grupos</a>
     <a href="ranking.html">Ranking</a>
     <a href="tareas.html">Tareas</a>
     <a href="chat.html">Chat</a>
@@ -30,15 +29,6 @@
 
   <div class="main-content">
     <h2 class="section-title">PRONÓSTICOS DEL MUNDIAL 2026</h2>
-    
-    <div class="filters">
-      <button class="filter-btn active">Todos</button>
-      <button class="filter-btn">Fase de Grupos</button>
-      <button class="filter-btn">Octavos</button>
-      <button class="filter-btn">Cuartos</button>
-      <button class="filter-btn">Semifinales</button>
-      <button class="filter-btn">Final</button>
-    </div>
     
     <div class="matches-container">
       <!-- Partido 1 -->
@@ -62,23 +52,24 @@
         
         <form class="prediction-form">
           <div class="score-input">
-            <input type="number" min="0" max="10" value="2">
-            <span>:</span>
-            <input type="number" min="0" max="10" value="1">
+            <div class="score-input-group">
+              <div class="score-label">Argentina</div>
+              <input type="number" min="0" max="10" value="2" class="score-input-field">
+            </div>
+            <div class="score-separator">:</div>
+            <div class="score-input-group">
+              <div class="score-label">Brasil</div>
+              <input type="number" min="0" max="10" value="1" class="score-input-field">
+            </div>
           </div>
           
           <div class="first-scorer">
-            <select>
-              <option value="">Selecciona goleador</option>
-              <option value="messi">L. Messi</option>
-              <option value="alvarez">J. Álvarez</option>
-              <option value="neymar">Neymar Jr</option>
-              <option value="vinijr">Vini Jr</option>
-            </select>
+            <label for="scorer1">Primer Goleador:</label>
+            <input type="text" id="scorer1" placeholder="¿Quién hará el primer gol?" maxlength="30">
           </div>
           
           <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">Cierra en: 2d 5h 30m</div>
+          <div class="countdown">⏰ Cierra en: 2d 5h 30m</div>
         </form>
       </div>
       
@@ -103,23 +94,24 @@
         
         <form class="prediction-form">
           <div class="score-input">
-            <input type="number" min="0" max="10" value="1">
-            <span>:</span>
-            <input type="number" min="0" max="10" value="1">
+            <div class="score-input-group">
+              <div class="score-label">España</div>
+              <input type="number" min="0" max="10" value="1" class="score-input-field">
+            </div>
+            <div class="score-separator">:</div>
+            <div class="score-input-group">
+              <div class="score-label">Alemania</div>
+              <input type="number" min="0" max="10" value="1" class="score-input-field">
+            </div>
           </div>
           
           <div class="first-scorer">
-            <select>
-              <option value="">Selecciona goleador</option>
-              <option value="morata">Á. Morata</option>
-              <option value="olmo">D. Olmo</option>
-              <option value="muller">T. Muller</option>
-              <option value="sane">L. Sané</option>
-            </select>
+            <label for="scorer2">Primer Goleador:</label>
+            <input type="text" id="scorer2" placeholder="¿Quién hará el primer gol?" maxlength="30">
           </div>
           
           <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">Cierra en: 3d 2h 15m</div>
+          <div class="countdown">⏰ Cierra en: 3d 2h 15m</div>
         </form>
       </div>
       
@@ -144,25 +136,28 @@
         
         <form class="prediction-form">
           <div class="score-input">
-            <input type="number" min="0" max="10" value="0">
-            <span>:</span>
-            <input type="number" min="0" max="10" value="0">
+            <div class="score-input-group">
+              <div class="score-label">México</div>
+              <input type="number" min="0" max="10" value="0" class="score-input-field">
+            </div>
+            <div class="score-separator">:</div>
+            <div class="score-input-group">
+              <div class="score-label">Estados Unidos</div>
+              <input type="number" min="0" max="10" value="0" class="score-input-field">
+            </div>
           </div>
           
           <div class="first-scorer">
-            <select>
-              <option value="">Selecciona goleador</option>
-              <option value="jimenez">R. Jiménez</option>
-              <option value="vega">A. Vega</option>
-              <option value="pulisic">C. Pulisic</option>
-              <option value="reyna">G. Reyna</option>
-            </select>
+            <label for="scorer3">Primer Goleador:</label>
+            <input type="text" id="scorer3" placeholder="¿Quién hará el primer gol?" maxlength="30">
           </div>
           
           <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">Cierra en: 5d 22h 45m</div>
+          <div class="countdown">⏰ Cierra en: 5d 22h 45m</div>
         </form>
       </div>
+
+    
     </div>
   </div>
 
@@ -174,5 +169,7 @@
       <a href="#">Contacto</a>
     </nav>
   </footer>
+<script src="Js/pronosticos.js"></script>
+
 </body>
 </html>

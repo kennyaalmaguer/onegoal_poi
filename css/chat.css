@@ -282,12 +282,12 @@
  color:  navy;
  font-size: 30px;
   text-decoration: none;
-   font-family: "BananaBrickRegular", sans-serif;
+   font-family: "technor", sans-serif;
 }
 
 /* --- Modal de llamada --- */
 .call-modal {
-  display: none;                /* Oculto por defecto */
+   display: none;                /* Oculto por defecto */
   position: fixed;
   top: 0;
   left: 0;

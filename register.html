@@ -6,14 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ONEGOAL - Registro</title>
 
-  <!-- Google Fonts y Banana Brick -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link
     href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap"
     rel="stylesheet">
+
+ 
+<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
+ 
+
   <link rel="stylesheet" href="css/registro.css">
 
 
@@ -29,7 +32,12 @@
     <div class="register-box">
       <h2>CREAR CUENTA</h2>
       <form class="register-form" method="POST" action="php/registro.php">
+        
+
+
         <div class="form-row">
+
+
           <div class="form-group">
             <label for="name">Nombre</label>
             <input type="text" name="nombre" id="name" placeholder="Tu nombre" required>
@@ -71,10 +79,22 @@
           </select>
         </div>
 
+        <div class="form-group file-row">
+  <label for="photo">Foto de perfil</label>
+  <div class="file-input-wrapper">
+    <input type="file" name="foto" id="photo" accept="image/*">
+    <label for="photo" class="custom-file-label">Seleccionar archivo</label>
+  </div>
+  <img id="preview" class="preview-img" src="" alt="Previsualización" />
+</div>
+
         <div class="form-group-check">
           <input type="checkbox" name="terms" id="terms" required>
           <label for="terms">Acepto los términos y condiciones y la política de privacidad</label>
         </div>
+
+       
+
 
         <button type="submit" class="register-btn">Crear Cuenta</button>
       </form>
@@ -93,6 +113,7 @@
       <a href="#">Contacto</a>
     </nav>
   </footer>
+  <script src="js/register.js"></script>
 </body>
 
 </html>

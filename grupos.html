@@ -7,10 +7,14 @@
   
   <!-- Google Fonts y Banana Brick -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
-  <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/banana-brick" type="text/css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/torneos.css">
+  
+   
+<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
+ 
+  
+  <link rel="stylesheet" href="css/grupos.css">
   
  
 </head>
@@ -23,14 +27,14 @@
   <nav>
     <a href="index.html">Inicio</a>
     <a href="pronosticos.html">Pronósticos</a>
-    <a href="torneos.html" class="active">Torneos</a>
+    <a href="grupos.html" class="active">Grupos</a>
     <a href="ranking.html">Ranking</a>
     <a href="tareas.html">Tareas</a>
     <a href="chat.html">Chat</a>
   </nav>
 
   <div class="main-content">
-    <h2 class="section-title">TORNEOS Y GRUPOS</h2>
+    <h2 class="section-title">GRUPOS</h2>
     
     <div class="tournaments-container">
       <!-- Torneo 1 -->
@@ -68,7 +72,7 @@
         
         <div class="tournament-actions">
           <button class="view-btn">Ver Detalles</button>
-          <button class="join-btn">Unirse</button>
+          <button class="join-btn">Agregar Participante</button>
         </div>
       </div>
       
@@ -107,54 +111,59 @@
         
         <div class="tournament-actions">
           <button class="view-btn">Ver Detalles</button>
-          <button class="join-btn">Unirse</button>
+          <button class="join-btn">Agregar Participante</button>
         </div>
       </div>
       
-      <!-- Torneo 3 -->
-      <div class="tournament-card">
-        <div class="tournament-header">
-          <div class="tournament-name">Predictores Profesionales</div>
-          <div class="tournament-creator">Creado por: Admin</div>
-        </div>
-        
-        <div class="tournament-details">
-          <div class="tournament-detail">
-            <span>Participantes:</span>
-            <span>25/25</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Puntos:</span>
-            <span>5670</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Estado:</span>
-            <span>Lleno</span>
-          </div>
-        </div>
-        
-        <div class="participants">
-          <div class="participants-title">Participantes:</div>
-          <div class="participants-list">
-            <span class="participant">Admin</span>
-            <span class="participant">Expert22</span>
-            <span class="participant">ProPredict</span>
-            <span class="participant">Mundial2026</span>
-            <span class="participant">+21 más</span>
-          </div>
-        </div>
-        
-        <div class="tournament-actions">
-          <button class="view-btn">Ver Detalles</button>
-          <button class="join-btn" disabled>Lleno</button>
-        </div>
-      </div>
+      
     </div>
     
-    <div class="create-tournament">
-      <button class="create-btn">Crear Nuevo Torneo</button>
+  
+<div class="tournaments-container" id="tournaments-container">
+    <!-- Aquí se insertan torneos -->
+  </div>
+
+  <div class="create-tournament">
+    <button class="create-btn" id="openModalBtn">Crear Grupo</button>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="createModal">
+    <div class="modal-content">
+      <h3>Crear Nuevo Grupo</h3>
+      <label for="groupName">Nombre del grupo:</label>
+      <input type="text" id="groupName" placeholder="Ej. Amigos del Mundial">
+
+      <label for="maxParticipants">Número máximo de participantes:</label>
+      <select id="maxParticipants">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+      </select>
+
+      <label>Selecciona participantes:</label>
+      <div class="checkbox-list" id="participantsList">
+        <label><input type="checkbox" value="JuanPerez"> JuanPerez</label>
+        <label><input type="checkbox" value="MariaG"> MariaG</label>
+        <label><input type="checkbox" value="CarlosR"> CarlosR</label>
+        <label><input type="checkbox" value="AnaT"> AnaT</label>
+        <label><input type="checkbox" value="LuisM"> LuisM</label>
+        <label><input type="checkbox" value="SofiaC"> SofiaC</label>
+        <label><input type="checkbox" value="PedroV"> PedroV</label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelBtn">Cancelar</button>
+        <button class="join-btn" id="createBtn">Crear</button>
+      </div>
     </div>
   </div>
+
+
+  </div>
+
+  
 
   <footer>
     <p>ONEGOAL &copy; 2025 - Plataforma de Pronósticos para el Mundial 2026</p>
@@ -164,5 +173,6 @@
       <a href="#">Contacto</a>
     </nav>
   </footer>
+  <script src="Js/grupos.js"></script>
 </body>
 </html>

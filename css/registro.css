@@ -19,7 +19,7 @@
       justify-content: flex-start;
       align-items: center;
       padding-top: 20px;
-      font-family: "BananaBrickRegular", sans-serif; 
+      font-family: "technor", sans-serif; 
     }
     
     .logo {
@@ -163,3 +163,43 @@
 }
 
 
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+#photo {
+  display: none; 
+}
+
+.custom-file-label {
+  display: inline-block;
+  padding: 10px 15px;
+  background: #00aaff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.custom-file-label:hover {
+  background: #0088cc;
+}
+
+.preview-img {
+  display: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}

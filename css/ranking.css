@@ -19,7 +19,7 @@
       justify-content: flex-start;
       align-items: center;
       padding-top: 20px;
-      font-family: "BananaBrickRegular", sans-serif; 
+      font-family: "technor", sans-serif; 
     }
     
     .logo {
@@ -240,3 +240,145 @@
     footer nav a:hover {
       color: #00aaff;
     }
+
+    /* Estilos para múltiples medallas */
+.user-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  margin-left: 4px;
+  margin-bottom: 3px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+
+/* Espaciado mejorado para las medallas */
+.ranking-table td:nth-child(2) {
+  padding: 12px 15px;
+  line-height: 1.8;
+}
+
+/* Medallas específicas */
+.badge-oracle {
+  background: linear-gradient(135deg, #8A2BE2, #4B0082);
+  color: #fff;
+  border: 1px solid #4B0082;
+}
+
+.badge-speed {
+  background: linear-gradient(135deg, #ffeb35, #FF4500);
+  color: #fff;
+  border: 1px solid #FF4500;
+}
+
+.badge-collab {
+  background: linear-gradient(135deg, #9cfdff, #008B8B);
+  color: #fff;
+  border: 1px solid #008B8B;
+}
+
+.badge-convincer {
+  background: linear-gradient(135deg, #208120, #228B22);
+  color: #fff;
+  border: 1px solid #228B22;
+}
+
+/* Efectos hover para las medallas */
+.user-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+/* Niveles actualizados */
+.level-1 {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+}
+
+.level-2 {
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  color: white;
+}
+
+.level-3 {
+  background: linear-gradient(135deg, #6f42c1, #5a32a3);
+  color: white;
+}
+
+.level-4 {
+  background: linear-gradient(135deg, #fd7e14, #e65c00);
+  color: white;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tooltip para medallas */
+.user-badge {
+  position: relative;
+  cursor: help;
+}
+
+.user-badge:hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Tooltips específicos */
+.badge-oracle:hover::before {
+  content: "🔮 ORÁCULO: 3 marcadores exactos seguidos";
+}
+
+.badge-speed:hover::before {
+  content: "⚡ VELOCISTA: Entregar pronósticos antes de 24h";
+}
+
+.badge-collab:hover::before {
+  content: "🤝 COLABORADOR: Más de 10 tareas completadas";
+}
+
+.badge-convincer:hover::before {
+  content: "💬 CONVENCEDOR: 50 mensajes en chats";
+}
+
+/* Asegurar que las medallas se muestren en línea */
+.ranking-table td:nth-child(2) {
+  white-space: normal;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .user-badge {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    margin-left: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .ranking-table td:nth-child(2) {
+    padding: 10px 8px;
+    line-height: 1.6;
+  }
+}

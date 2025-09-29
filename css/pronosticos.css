@@ -1,5 +1,4 @@
- 
-    * { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
      body, html { 
       font-family: 'Poppins', sans-serif; 
       
@@ -18,7 +17,7 @@
       justify-content: flex-start;
       align-items: center;
       padding-top: 20px;
-      font-family: "BananaBrickRegular", sans-serif; 
+      font-family: "technor", sans-serif; 
     }
     
     .logo {
@@ -95,131 +94,237 @@
     
     .matches-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
       margin-bottom: 30px;
     }
     
     .match-card {
-      background: rgba(26, 61, 124, 0.8);
-      border-radius: 10px;
-      padding: 20px;
+      background: rgba(26, 61, 124, 0.9);
+      border-radius: 15px;
+      padding: 25px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,170,255,0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .match-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
     }
     
     .match-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     
     .match-date {
       font-size: 0.9rem;
       color: #00aaff;
+      font-weight: 500;
     }
     
     .match-stage {
       font-size: 0.8rem;
-      background: rgba(0,170,255,0.2);
-      padding: 3px 8px;
-      border-radius: 10px;
+      background: linear-gradient(135deg, #00aaff, #0088cc);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: 500;
     }
     
     .teams {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 25px;
     }
     
     .team {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 40%;
+      width: 45%;
     }
     
     .team-flag {
-      width: 60px;
-      height: 40px;
-      background: #ddd;
-      margin-bottom: 8px;
-      border-radius: 4px;
+      width: 80px;
+      height: 60px;
+      margin-bottom: 12px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 2.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .team-flag img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
     .team-name {
-      font-size: 0.9rem;
+      font-size: 1rem;
       text-align: center;
+      font-weight: 600;
+      margin-top: 5px;
     }
     
     .vs {
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
+      color: #00aaff;
+      margin: 0 10px;
     }
     
     .prediction-form {
-      margin-top: 15px;
+      margin-top: 20px;
     }
     
     .score-input {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
     }
     
-    .score-input input {
-      width: 50px;
-      padding: 8px;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      font-size: 1.2rem;
+    .score-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-label {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.score-input input {
+  width: 80px;
+  height: 60px;
+  padding: 10px;
+  text-align: center;
+  border: 2px solid #00aaff;
+  border-radius: 12px;
+  font-size: 2rem;
+  font-weight: bold;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  transition: all 0.3s;
+}
+
+
+    
+    .score-input input:focus {
+      outline: none;
+      border-color: #00ffaa;
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 0 15px rgba(0,255,170,0.3);
+    }
+    
+    .score-separator {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00aaff;
+      margin: 0 5px;
+    }
+    
+    /* Ocultar flechas en inputs number */
+    .score-input input::-webkit-outer-spin-button,
+    .score-input input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    .score-input input[type=number] {
+      -moz-appearance: textfield;
     }
     
     .first-scorer {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
-    .first-scorer select {
+    .first-scorer label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #ccc;
+    }
+    
+    .first-scorer input {
       width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
-      background: white;
+      padding: 12px 15px;
+      border: 2px solid rgba(0,170,255,0.5);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .first-scorer input:focus {
+      outline: none;
+      border-color: #00aaff;
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 0 10px rgba(0,170,255,0.3);
+    }
+    
+    .first-scorer input::placeholder {
+      color: #aaa;
     }
     
     .submit-btn {
-      padding: 10px 20px;
-      background: #00aaff;
+      padding: 15px 25px;
+      background: linear-gradient(135deg, #00aaff, #0088cc);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
-      transition: background 0.3s;
+      font-size: 1.1rem;
+      transition: all 0.3s;
       width: 100%;
+      margin-bottom: 15px;
     }
     
     .submit-btn:hover {
-      background: #0088cc;
+      background: linear-gradient(135deg, #0088cc, #006699);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,170,255,0.4);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
     }
     
     .submit-btn:disabled {
       background: #666;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
     
     .countdown {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: #ffcc00;
-      margin-top: 10px;
+      margin-top: 15px;
+      padding: 8px;
+      background: rgba(255,204,0,0.1);
+      border-radius: 8px;
+      font-weight: 500;
     }
     
     footer {
@@ -244,3 +349,65 @@
     footer nav a:hover {
       color: #00aaff;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .matches-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .team-flag {
+        width: 70px;
+        height: 50px;
+        font-size: 2rem;
+      }
+      
+      .score-input input {
+        width: 70px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+    }
+
+    
+.submit-btn.saved {
+  background: linear-gradient(135deg, #00cc66, #00aa55) !important;
+  cursor: not-allowed;
+}
+
+.submit-btn.saved:hover {
+  background: linear-gradient(135deg, #00cc66, #00aa55) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.submit-btn.pending {
+  background: linear-gradient(135deg, #ffaa00, #ff8800) !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+
+.form-changed {
+  position: relative;
+}
+
+.form-changed::before {
+  content: "●";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  color: #ffaa00;
+  font-size: 1.2rem;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
