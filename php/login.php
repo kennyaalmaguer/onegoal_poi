@@ -1,59 +1,51 @@
 <?php
 session_start();
-include("conexion.php"); 
+
+$host = "localhost";
+$usuario = "root";
+$clave = "";
+$bd = "onegoal";
+
+$conn = new mysqli($host, $usuario, $clave, $bd);
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["email"];
     $password = $_POST["password"];
-    $recordar = isset($_POST["recordar"]);
 
-  
-    $stmt = $conn->prepare("CALL sp_obtener_usuario(?)");
-$stmt->bind_param("s", $correo);
-$stmt->execute();
-$result = $stmt->get_result();
+    $sql = "SELECT id_usuario, nombre, correo, contraseña, foto_perfil FROM Usuario WHERE correo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $correo);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($row = $result->fetch_assoc()) {
-   
-    $idUsuario = $row["id_usuario"];
-    $hash = $row["contraseña"];
+    if ($row = $result->fetch_assoc()) {
+      if (password_verify($password, $row['contraseña'])) {
+    $_SESSION['id_usuario'] = $row['id_usuario'];
+    $_SESSION['nombre'] = $row['nombre'];
+    $_SESSION['correo'] = $row['correo'];
+    $_SESSION['foto_perfil'] = base64_encode($row['foto_perfil']);
+    $_SESSION['estado_conexion'] = "en_linea";
 
+    // Actualizamos en BD
+    $update = $conn->prepare("UPDATE Usuario SET estado_conexion = 'en_linea' WHERE id_usuario = ?");
+    $update->bind_param("i", $row['id_usuario']);
+    $update->execute();
 
-    $result->free();
-    $stmt->close();
-    $conn->next_result(); 
+    header("Location: ../index.html");
+    exit();
 
-    
-    if (password_verify($password, $hash)) {
-        // Actualizar estado a en_linea
-        $update = $conn->prepare("UPDATE Usuario SET estado_conexion = 'en_linea' WHERE id_usuario = ?");
-        $update->bind_param("i", $idUsuario);
-        $update->execute();
-        $update->close();
-
-        //  Guardar sesión
-        $_SESSION["id_usuario"] = $idUsuario;
-        $_SESSION["nombre"] = $row["nombre"];
-        $_SESSION["correo"] = $row["correo"];
-        $_SESSION["estado_conexion"] = "en_linea";
-        $_SESSION["es_admin"] = $row["es_admin"];
-
-   
-        if ($recordar) {
-            setcookie("correo", $correo, time() + (86400 * 30), "/");
-            setcookie("password", $password, time() + (86400 * 30), "/");
+        } else {
+            echo "Contraseña incorrecta.";
         }
-
-        header("Location: ../index.html");
-        exit();
     } else {
-        echo "<script>alert('Contraseña incorrecta');window.location.href='login.html';</script>";
+        echo "Usuario no encontrado.";
     }
-} else {
-    echo "<script>alert('Usuario no encontrado');window.location.href='login.html';</script>";
-}
 
     $stmt->close();
 }
+
 $conn->close();
 ?>
