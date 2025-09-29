@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM cargado - Script unificado ejecutándose');
 
   // ===== DROPDOWN USUARIO =====
@@ -106,10 +106,37 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
+  async function bloquearAccesos() {
+    const sessionData = await checkSession();
+    const enlacesProtegidos = document.querySelectorAll(
+      'a[href="pronosticos.html"], a[href="grupos.html"], a[href="ranking.html"], a[href="tareas.html"], a[href="chat.html"], .cta-buttons a'
+    );
+
+    enlacesProtegidos.forEach(enlace => {
+      enlace.addEventListener("click", (e) => {
+        if (!sessionData.loggedIn) {
+          e.preventDefault(); // bloquea la navegación
+          mostrarMensaje("Inicia sesión por favor");
+        }
+      });
+    });
+  }
+
+  // Función para mostrar el mensajito
+  function mostrarMensaje(texto) {
+    const msg = document.getElementById("mensaje-alerta");
+    if (msg) {
+      msg.textContent = texto;
+      msg.style.display = "block";
+      setTimeout(() => {
+        msg.style.display = "none";
+      }, 3000);
+    }
+  }
 
   // ===== INICIALIZAR =====
   updateUserMenu();
   setupLogout();
-
+  bloquearAccesos();
   console.log('Script unificado cargado completamente');
 });

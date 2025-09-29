@@ -38,10 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 
         } else {
-            echo "Contraseña incorrecta.";
+      header("Location: ../login.html?error=contraseña");
+            exit();
         }
     } else {
-        echo "Usuario no encontrado.";
+    header("Location: ../login.html?error=usuario");
+        exit();
     }
 
     $stmt->close();
