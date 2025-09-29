@@ -26,24 +26,34 @@
     <li><a href="ranking.html">RANKING</a></li>
     <li><a href="tareas.html">TAREAS</a></li>
     <li><a href="chat.html">CHATS</a></li>
-   <li><a href="login.html" class="login-btn">LOG IN</a></li>
-
+   <li class="login-item">
+  <a href="login.html" class="login-btn">LOG IN</a>
+</li>
     <!-- Menú Usuario -->
    
- <li class="user-menu">
-      <div class="user-icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Usuario">
-      </div>
-      <ul class="dropdown">
-        <li><a href="login.html">Iniciar sesión</a></li>
-        <li><a href="register.html">Registrarse</a></li>
-      </ul>
+<li class="user-menu">
+  <div class="user-icon">
+    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Usuario">
+  </div>
+  <ul class="dropdown">
+    <!-- Estado cuando NO hay sesión -->
+    <li class="guest-options">
+      <a href="login.html">Iniciar sesión</a>
+      <a href="register.html">Registrarse</a>
     </li>
-
+    <!-- Estado cuando SÍ hay sesión -->
+    <li class="logged-options">
+      <div class="user-info">
+        <span class="user-name">Nombre del Usuario</span>
+        <span class="user-email">usuario@email.com</span>
+      </div>
+      <!--<a href="perfil.html">Mi Perfil</a>-->
+      <a href="grupos.html">Mis Grupos</a>
+      <a href="#" class="logout-btn">Cerrar Sesión</a>
+    </li>
   </ul>
-</nav>
-
-
+</li>
+</div>
       
       <!-- Logo y subtítulo debajo -->
       <div class="logo-container">

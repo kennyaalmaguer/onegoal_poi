@@ -113,7 +113,7 @@ nav ul {
 
     .logo {
       font-size: 80px;
-      color: white;
+      color: rgb(255, 255, 255);
       text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
       line-height: 1;
       margin-bottom: 10px;
@@ -697,6 +697,63 @@ nav ul {
   z-index: 999;
     overflow: visible;
 }
+
+/* Estilos para el menú de usuario logueado */
+.logged-options {
+  display: none;
+}
+
+.user-info {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
+}
+
+.user-name {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.user-email {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.logged-options a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.logged-options a:hover {
+  background-color: #f5f5f5;
+}
+
+.logout-btn {
+  color: #e74c3c !important;
+  border-top: 1px solid #eee;
+  margin-top: 5px;
+}
+
+.guest-options {
+  display: block;
+}
+
+/* Para cuando el usuario esté logueado */
+.user-logged .guest-options {
+  display: none;
+}
+
+.user-logged .logged-options {
+  display: block;
+}
+
 
 /* Responsive para móviles */
 @media (max-width: 768px) {
