@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ONEGOAL - Torneos</title>
-  
-  <!-- Google Fonts y Banana Brick -->
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
-  
-   
-<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
- 
-  
+  <title>ONEGOAL - Grupos</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/grupos.css">
-  
- 
 </head>
+
 <body>
   <header>
     <div class="logo">ONEGOAL</div>
@@ -33,138 +26,53 @@
     <a href="chat.html">Chat</a>
   </nav>
 
-  <div class="main-content">
+  <main class="main-content">
     <h2 class="section-title">GRUPOS</h2>
-    
-    <div class="tournaments-container">
-      <!-- Torneo 1 -->
-      <div class="tournament-card">
-        <div class="tournament-header">
-          <div class="tournament-name">Liga de Expertos</div>
-          <div class="tournament-creator">Creado por: JuanPerez</div>
-        </div>
-        
-        <div class="tournament-details">
-          <div class="tournament-detail">
-            <span>Participantes:</span>
-            <span>12/20</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Puntos:</span>
-            <span>3450</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Estado:</span>
-            <span>Activo</span>
-          </div>
-        </div>
-        
-        <div class="participants">
-          <div class="participants-title">Participantes:</div>
-          <div class="participants-list">
-            <span class="participant">JuanPerez</span>
-            <span class="participant">MariaG</span>
-            <span class="participant">CarlosR</span>
-            <span class="participant">AnaT</span>
-            <span class="participant">+7 más</span>
-          </div>
-        </div>
-        
-        <div class="tournament-actions">
-          <button class="view-btn">Ver Detalles</button>
-          <button class="join-btn">Agregar Participante</button>
-        </div>
-      </div>
-      
-      <!-- Torneo 2 -->
-      <div class="tournament-card">
-        <div class="tournament-header">
-          <div class="tournament-name">Amigos del Fútbol</div>
-          <div class="tournament-creator">Creado por: MariaG</div>
-        </div>
-        
-        <div class="tournament-details">
-          <div class="tournament-detail">
-            <span>Participantes:</span>
-            <span>8/15</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Puntos:</span>
-            <span>2100</span>
-          </div>
-          <div class="tournament-detail">
-            <span>Estado:</span>
-            <span>Activo</span>
-          </div>
-        </div>
-        
-        <div class="participants">
-          <div class="participants-title">Participantes:</div>
-          <div class="participants-list">
-            <span class="participant">MariaG</span>
-            <span class="participant">LuisM</span>
-            <span class="participant">SofiaC</span>
-            <span class="participant">PedroV</span>
-            <span class="participant">+4 más</span>
-          </div>
-        </div>
-        
-        <div class="tournament-actions">
-          <button class="view-btn">Ver Detalles</button>
-          <button class="join-btn">Agregar Participante</button>
-        </div>
-      </div>
-      
-      
+
+    <!-- Contenedor dinámico de grupos -->
+  <div id="groupsList" class="tournaments-container"></div>
+
+    <div class="create-tournament">
+      <button class="create-btn" id="openModalBtn">Crear Grupo</button>
     </div>
-    
-  
-<div class="tournaments-container" id="tournaments-container">
-    <!-- Aquí se insertan torneos -->
-  </div>
 
-  <div class="create-tournament">
-    <button class="create-btn" id="openModalBtn">Crear Grupo</button>
-  </div>
+    <!-- MODAL -->
+   <div class="modal" id="createGroupModal">
+  <div class="modal-content">
+    <h3>Crear Nuevo Grupo</h3>
+    <label for="groupName">Nombre del grupo:</label>
+    <input type="text" id="groupName" placeholder="Ej. Amigos del Mundial">
 
-  <!-- MODAL -->
-  <div class="modal" id="createModal">
-    <div class="modal-content">
-      <h3>Crear Nuevo Grupo</h3>
-      <label for="groupName">Nombre del grupo:</label>
-      <input type="text" id="groupName" placeholder="Ej. Amigos del Mundial">
+    <label for="maxParticipants">Número máximo de participantes:</label>
+    <select id="maxParticipants">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+    </select>
 
-      <label for="maxParticipants">Número máximo de participantes:</label>
-      <select id="maxParticipants">
-        <option value="5">5</option>
-        <option value="10" selected>10</option>
-        <option value="15">15</option>
-        <option value="20">20</option>
-      </select>
+    <label>Selecciona participantes:</label>
+    <div class="checkbox-list" id="participantsList"></div>
 
-      <label>Selecciona participantes:</label>
-      <div class="checkbox-list" id="participantsList">
-        <label><input type="checkbox" value="JuanPerez"> JuanPerez</label>
-        <label><input type="checkbox" value="MariaG"> MariaG</label>
-        <label><input type="checkbox" value="CarlosR"> CarlosR</label>
-        <label><input type="checkbox" value="AnaT"> AnaT</label>
-        <label><input type="checkbox" value="LuisM"> LuisM</label>
-        <label><input type="checkbox" value="SofiaC"> SofiaC</label>
-        <label><input type="checkbox" value="PedroV"> PedroV</label>
-      </div>
+    <div id="selectedCounter" class="selected-counter">0/10 seleccionados</div>
 
-      <div class="modal-actions">
-        <button class="cancel-btn" id="cancelBtn">Cancelar</button>
-        <button class="join-btn" id="createBtn">Crear</button>
-      </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" id="cancelBtn">Cancelar</button>
+      <button class="join-btn" id="createBtn">Crear</button>
     </div>
   </div>
+</div>
+  </main>
 
-
+  <div class="modal" id="participantsModal">
+  <div class="modal-content">
+    <h3 id="participantsModalTitle"></h3>
+    <div id="participantsModalList" class="participants-list"></div>
+    <div class="modal-actions">
+      <button class="cancel-btn" id="closeParticipantsBtn">Cerrar</button>
+    </div>
   </div>
-
-  
-
+</div>
   <footer>
     <p>ONEGOAL &copy; 2025 - Plataforma de Pronósticos para el Mundial 2026</p>
     <nav>
@@ -173,6 +81,7 @@
       <a href="#">Contacto</a>
     </nav>
   </footer>
+
   <script src="Js/grupos.js"></script>
 </body>
 </html>

@@ -1,256 +1,259 @@
-const openModalBtn = document.getElementById("openModalBtn");
-const modal = document.getElementById("createModal");
-const cancelBtn = document.getElementById("cancelBtn");
-const createBtn = document.getElementById("createBtn");
-const tournamentsContainer = document.getElementById("tournaments-container");
 
-// Tu nombre de usuario (cambia esto por tu usuario real)
-const myUsername = "TuUsuario"; // Puedes cambiar esto o obtenerlo de una variable global/sesión
+console.log(document.getElementById("groupsList"));
+document.addEventListener("DOMContentLoaded", () => {
 
-// Abrir modal
-openModalBtn.addEventListener("click", () => {
-  modal.style.display = "flex";
-});
+  const modal = document.getElementById("createGroupModal");
+  const openModalBtn = document.getElementById("openModalBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+  const createBtn = document.getElementById("createBtn");
+  const participantsList = document.getElementById("participantsList");
+  const maxSelect = document.getElementById("maxParticipants");
+  const selectedCounter = document.getElementById("selectedCounter");
 
-// Cerrar modal
-cancelBtn.addEventListener("click", () => {
-  modal.style.display = "none";
-});
+  let selectedParticipants = [];
 
-// Validar checkboxes en tiempo real
-document.getElementById('maxParticipants').addEventListener('change', updateCheckboxLimits);
-document.querySelectorAll('#participantsList input[type="checkbox"]').forEach(checkbox => {
-  checkbox.addEventListener('change', updateCheckboxLimits);
-});
+  // helper logs
+  console.log("[grupos.js] DOMContentLoaded. elementos detectados:", {
+    modal, openModalBtn, cancelBtn, createBtn, participantsList, maxSelect, selectedCounter
+  });
 
-function updateCheckboxLimits() {
-  const maxParticipants = parseInt(document.getElementById("maxParticipants").value);
-  const selected = [...document.querySelectorAll("#participantsList input:checked")];
-  const checkboxes = document.querySelectorAll('#participantsList input[type="checkbox"]');
-  
-  // Si se alcanzó el límite (restando 1 por el creador), deshabilitar los checkboxes no seleccionados
-  if (selected.length >= maxParticipants - 1) {
-    checkboxes.forEach(checkbox => {
-      if (!checkbox.checked) {
-        checkbox.disabled = true;
-        checkbox.parentElement.style.opacity = '0.6';
+  // Si faltan elementos importantes, avisar pero no romper la app
+  if (!createBtn || !participantsList || !maxSelect || !selectedCounter) {
+    console.warn("⚠️ Faltan algunos elementos del DOM (revisa los IDs).");
+  }
+
+  // Abrir modal
+  if (openModalBtn) openModalBtn.addEventListener("click", () => { if (modal) modal.style.display = "flex"; });
+
+  // Cerrar modal
+  if (cancelBtn) cancelBtn.addEventListener("click", resetModal);
+  window.addEventListener("click", e => { if (e.target === modal) resetModal(); });
+
+  function resetModal() {
+    if (modal) modal.style.display = "none";
+    participantsList?.querySelectorAll("input[type=checkbox]").forEach(cb => {
+      cb.checked = false;
+      cb.disabled = false;
+    });
+    selectedParticipants = [];
+    const gn = document.getElementById("groupName");
+    if (gn) gn.value = "";
+    selectedCounter && (selectedCounter.textContent = `0/${maxSelect?.value ?? 10} seleccionados`);
+  }
+
+  // 🔹 Cargar grupos (buscamos el contenedor justo al renderizar)
+  async function loadGroups() {
+    const groupsList = document.querySelector("#groupsList"); // <-- buscar aquí, en el momento
+    console.log("[loadGroups] buscando #groupsList:", groupsList, "readyState:", document.readyState);
+
+    if (!groupsList) {
+      console.error("❌ #groupsList NO existe en el DOM al ejecutar loadGroups().");
+      return;
+    }
+
+    try {
+      const res = await fetch("php/listar_grupos.php");
+      if (!res.ok) {
+        console.error("Network error al pedir listar_grupos.php:", res.status);
+        groupsList.innerHTML = "<p>Error cargando grupos (network).</p>";
+        return;
+      }
+
+      const data = await res.json();
+      console.log("[loadGroups] listar_grupos response:", data);
+
+      groupsList.innerHTML = ""; // seguro que existe (ver arriba)
+
+      if (data.status === "success" && Array.isArray(data.grupos)) {
+        if (data.grupos.length === 0) {
+          groupsList.innerHTML = "<p>No hay grupos aún.</p>";
+          return;
+        }
+
+        data.grupos.forEach(grupo => {
+          const nombresHTML = Array.isArray(grupo.participantes)
+            ? grupo.participantes.map(p => `<span class="participant-name">${p.nombre}</span>`).join("")
+            : "";
+          const card = document.createElement("div");
+          card.classList.add("tournament-card");
+
+          // defensivo: asegurarse que campos existan
+          const nombreGrupo = grupo.nombre ?? "Sin nombre";
+          const creador = grupo.nombre_creador ?? "Anónimo";
+          const participantesCount = Array.isArray(grupo.participantes) ? grupo.participantes.length : 0;
+          const maxP = grupo.max_participantes ?? 10;
+          const estado = grupo.estado ?? "Desconocido";
+          const Puntos = grupo.Puntos ?? 0;
+          const idGrupo = grupo.id_grupo ?? 0;
+          const maxMostrar = 4;
+          let participantesHTML = "";
+
+          if (Array.isArray(grupo.participantes)) {
+            const visibles = grupo.participantes.slice(0, maxMostrar);
+            const restantes = grupo.participantes.length - maxMostrar;
+
+            participantesHTML = visibles
+              .map(p => `<span class="participant-chip">${p.nombre}</span>`)
+              .join("");
+
+            if (restantes > 0) {
+              participantesHTML += `<span class="participant-chip more">+${restantes} más</span>`;
+            }
+          }
+          let accionesHTML = "";
+
+          if (grupo.soy_admin == 1 && grupo.soy_creador) {
+            // si soy creador y admin
+            accionesHTML = `
+    <button class="cancel-btn" onclick="desactivarGrupo(${idGrupo})">Desactivar grupo</button>
+    <button class="join-btn" onclick="abrirModalAgregar(${idGrupo})">Agregar participantes</button>
+  `;
+          } else {
+            // si no soy admin → botón Unirse
+            accionesHTML = `
+    <button class="join-btn" onclick="unirseGrupo(${idGrupo})">Unirse</button>
+  `;
+          }
+
+
+          card.innerHTML = `
+            <div class="tournament-header">
+              <div class="tournament-name">${nombreGrupo}</div>
+                 <div class="tournament-creator">Creado por: ${creador}</div>
+             </div>
+            <div class="tournament-details">
+                <div class="tournament-detail"><span>Participantes:</span> <span>${participantesCount}/${maxP}</span></div>
+                <div class="tournament-detail"><span>Estado:</span> <span>${estado}</span></div>
+            </div>
+             <div class="participants">
+             <div class="participants-title">Participantes:</div>
+             <div class="participants-list">${participantesHTML}</div>
+             </div>
+           <div class="tournament-actions">${accionesHTML}</div>
+           `;
+          groupsList.appendChild(card);
+        });
+      } else {
+        groupsList.innerHTML = `<p class="mensaje-alerta">❌ ${data.message ?? "Sin datos"}</p>`;
+      }
+    } catch (err) {
+      console.error("[loadGroups] Error:", err);
+      groupsList.innerHTML = "<p>Error cargando grupos.</p>";
+    }
+  }
+
+  // 🔹 Cargar participantes disponibles
+  async function loadParticipants() {
+    if (!participantsList) {
+      console.warn("[loadParticipants] no hay #participantsList en el DOM.");
+      return;
+    }
+    try {
+      const res = await fetch("php/listar_usuarios.php");
+      const usuarios = await res.json();
+      console.log("[loadParticipants] respuesta:", usuarios);
+      participantsList.innerHTML = "";
+
+      usuarios.forEach(usuario => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" value="${usuario.id_usuario}"> ${usuario.nombre}`;
+        participantsList.appendChild(label);
+      });
+
+      participantsList.querySelectorAll("input[type=checkbox]").forEach(cb => {
+        cb.addEventListener("change", () => {
+          selectedParticipants = [...participantsList.querySelectorAll("input[type=checkbox]:checked")].map(c => c.value);
+
+          if (selectedParticipants.length >= parseInt(maxSelect.value)) {
+            participantsList.querySelectorAll("input[type=checkbox]").forEach(cb => { if (!cb.checked) cb.disabled = true; });
+          } else {
+            participantsList.querySelectorAll("input[type=checkbox]").forEach(cb => cb.disabled = false);
+          }
+
+          selectedCounter && (selectedCounter.textContent = `${selectedParticipants.length}/${maxSelect.value} seleccionados`);
+        });
+      });
+
+      selectedCounter && (selectedCounter.textContent = `0/${maxSelect.value} seleccionados`);
+    } catch (err) {
+      console.error("Error cargando participantes:", err);
+    }
+  }
+
+  // 🔹 Crear grupo
+  if (createBtn) {
+    createBtn.addEventListener("click", async () => {
+      const nombre = document.getElementById("groupName").value;
+      const maxParticipantes = maxSelect.value;
+      if (!nombre) return alert("⚠️ Ingresa un nombre para el grupo");
+
+      const formData = new FormData();
+      formData.append("nombre", nombre);
+      formData.append("maxParticipantes", maxParticipantes);
+      selectedParticipants.forEach(p => formData.append("participantes[]", p));
+
+      try {
+        const res = await fetch("php/grupo.php", { method: "POST", body: formData });
+        const data = await res.json();
+        console.log("[CrearGrupo] response:", data);
+
+        if (data.status === "success") {
+          alert("✅ " + data.message);
+          resetModal();
+          loadGroups();
+        } else {
+          alert("❌ " + data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error creando el grupo");
       }
     });
-  } else {
-    // Habilitar todos los checkboxes
-    checkboxes.forEach(checkbox => {
-      checkbox.disabled = false;
-      checkbox.parentElement.style.opacity = '1';
+  }
+
+  maxSelect?.addEventListener("change", () => {
+    selectedCounter && (selectedCounter.textContent = `${selectedParticipants.length}/${maxSelect.value} seleccionados`);
+    participantsList?.querySelectorAll("input[type=checkbox]").forEach(cb => cb.disabled = false);
+  });
+
+  // inicializar
+  loadGroups();
+  loadParticipants();
+});
+
+async function unirseGrupo(grupoId) {
+  try {
+    const res = await fetch("php/unirse_grupo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "grupo_id=" + encodeURIComponent(grupoId)
     });
-  }
-  
-  // Actualizar contador (incluyéndote a ti)
-  const counter = document.getElementById('selectedCounter');
-  if (counter) {
-    counter.textContent = `${selected.length + 1}/${maxParticipants} seleccionados (incluyéndote)`;
+    const data = await res.json();
+    alert((data.status === "success" ? "✅ " : "❌ ") + data.message);
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    alert("Error al unirse al grupo");
   }
 }
 
-// Crear grupo
-createBtn.addEventListener("click", () => {
-  const name = document.getElementById("groupName").value;
-  const maxParticipants = parseInt(document.getElementById("maxParticipants").value);
-  const selected = [...document.querySelectorAll("#participantsList input:checked")].map(cb => cb.value);
-
-  if (!name) {
-    alert("Por favor ingresa un nombre para el grupo");
-    return;
-  }
-
-  // Agregarte automáticamente como participante
-  const allParticipants = [myUsername, ...selected];
-  
-  if (allParticipants.length > maxParticipants) {
-    alert(`No puedes exceder el límite de ${maxParticipants} participantes. Tú ya estás incluido automáticamente.`);
-    return;
-  }
-
-  const card = document.createElement("div");
-  card.classList.add("tournament-card");
-  card.innerHTML = `
-    <div class="tournament-header">
-      <div class="tournament-name">${name}</div>
-      <div class="tournament-creator">Creado por: ${myUsername}</div>
-    </div>
-    <div class="tournament-details">
-      <div class="tournament-detail"><span>Participantes:</span><span>${allParticipants.length}/${maxParticipants}</span></div>
-      <div class="tournament-detail"><span>Puntos:</span><span>0</span></div>
-      <div class="tournament-detail"><span>Estado:</span><span>${allParticipants.length >= maxParticipants ? 'Lleno' : 'Activo'}</span></div>
-    </div>
-    <div class="participants">
-      <div class="participants-title">Participantes:</div>
-      <div class="participants-list">
-        ${allParticipants.map(p => `<span class="participant">${p}</span>`).join("")}
-      </div>
-    </div>
-    <div class="tournament-actions">
-      <button class="view-btn">Ver Detalles</button>
-      <button class="join-btn" ${allParticipants.length >= maxParticipants ? 'disabled' : ''}>${allParticipants.length >= maxParticipants ? 'Lleno' : 'Agregar Participante'}</button>
-    </div>
-  `;
-  
-  // Agregar funcionalidad al botón "Agregar Participante"
-  const joinBtn = card.querySelector('.join-btn');
-  if (!joinBtn.disabled) {
-    joinBtn.addEventListener('click', function() {
-      openAddParticipantModal(card, allParticipants, maxParticipants);
+async function desactivarGrupo(grupoId) {
+  try {
+    const res = await fetch("php/desactivar_grupo.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "grupo_id=" + encodeURIComponent(grupoId)
     });
-  }
-
-  tournamentsContainer.appendChild(card);
-  modal.style.display = "none";
-  resetModal();
-});
-
-// Función para abrir modal de agregar participante
-function openAddParticipantModal(card, currentParticipants, maxParticipants) {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.style.display = 'flex';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <h3>Agregar Participante</h3>
-      <div class="selected-counter" id="addParticipantCounter">${currentParticipants.length}/${maxParticipants} participantes (incluyéndote)</div>
-      
-      <label>Selecciona participantes para agregar:</label>
-      <div class="checkbox-list" id="addParticipantsList">
-        ${getAvailableParticipants(currentParticipants).map(participant => `
-          <label><input type="checkbox" value="${participant}"> ${participant}</label>
-        `).join('')}
-      </div>
-
-      <div class="modal-actions">
-        <button class="cancel-btn" id="cancelAddBtn">Cancelar</button>
-        <button class="join-btn" id="confirmAddBtn">Agregar</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-
-  const cancelBtn = modal.querySelector('#cancelAddBtn');
-  const confirmBtn = modal.querySelector('#confirmAddBtn');
-  const checkboxes = modal.querySelectorAll('#addParticipantsList input[type="checkbox"]');
-
-  // Validaciones en tiempo real para el modal de agregar
-  function updateAddModalLimits() {
-    const selected = [...checkboxes].filter(cb => cb.checked);
-    const availableSlots = maxParticipants - currentParticipants.length;
-    
-    if (selected.length >= availableSlots) {
-      checkboxes.forEach(checkbox => {
-        if (!checkbox.checked) {
-          checkbox.disabled = true;
-          checkbox.parentElement.style.opacity = '0.6';
-        }
-      });
-    } else {
-      checkboxes.forEach(checkbox => {
-        checkbox.disabled = false;
-        checkbox.parentElement.style.opacity = '1';
-      });
-    }
-    
-    const counter = modal.querySelector('#addParticipantCounter');
-    counter.textContent = `${currentParticipants.length + selected.length}/${maxParticipants} participantes (incluyéndote)`;
-    
-    confirmBtn.disabled = selected.length === 0;
-  }
-
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', updateAddModalLimits);
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    document.body.removeChild(modal);
-  });
-
-  confirmBtn.addEventListener('click', () => {
-    const newParticipants = [...checkboxes].filter(cb => cb.checked).map(cb => cb.value);
-    const updatedParticipants = [...currentParticipants, ...newParticipants];
-    
-    // Actualizar la tarjeta del grupo
-    updateGroupCard(card, updatedParticipants, maxParticipants);
-    document.body.removeChild(modal);
-  });
-
-  // Cerrar modal al hacer click fuera
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      document.body.removeChild(modal);
-    }
-  });
-}
-
-// Función para actualizar la tarjeta del grupo
-function updateGroupCard(card, participants, maxParticipants) {
-  const participantsDetail = card.querySelector('.tournament-detail:first-child span:last-child');
-  const statusDetail = card.querySelector('.tournament-detail:last-child span:last-child');
-  const participantsList = card.querySelector('.participants-list');
-  const joinBtn = card.querySelector('.join-btn');
-  
-  // Actualizar contadores
-  participantsDetail.textContent = `${participants.length}/${maxParticipants}`;
-  statusDetail.textContent = participants.length >= maxParticipants ? 'Lleno' : 'Activo';
-  
-  // Actualizar lista de participantes
-  participantsList.innerHTML = participants.map(p => `<span class="participant">${p}</span>`).join('');
-  
-  // Actualizar botón
-  if (participants.length >= maxParticipants) {
-    joinBtn.textContent = 'Lleno';
-    joinBtn.disabled = true;
-    joinBtn.onclick = null;
-  } else {
-    joinBtn.textContent = 'Agregar Participante';
-    joinBtn.disabled = false;
-    joinBtn.onclick = function() {
-      openAddParticipantModal(card, participants, maxParticipants);
-    };
+    const data = await res.json();
+    alert((data.status === "success" ? "✅ " : "❌ ") + data.message);
+    location.reload();
+  } catch (err) {
+    console.error(err);
   }
 }
 
-// Función para obtener participantes disponibles
-function getAvailableParticipants(currentParticipants) {
-  const allParticipants = ['JuanPerez', 'MariaG', 'CarlosR', 'AnaT', 'LuisM', 'SofiaC', 'PedroV', 'LauraZ', 'RobertoF', 'ElenaM'];
-  return allParticipants.filter(p => !currentParticipants.includes(p));
+function abrirModalAgregar(grupoId) {
+  // aquí puedes abrir un modal parecido al de crear grupo
+  // pero solo mostrando usuarios que no están en ese grupo
+  alert("Aquí abrirías modal para agregar participantes al grupo " + grupoId);
 }
-
-// Función para resetear el modal
-function resetModal() {
-  document.getElementById("groupName").value = "";
-  document.getElementById("maxParticipants").value = "10";
-  document.querySelectorAll("#participantsList input").forEach(cb => {
-    cb.checked = false;
-    cb.disabled = false;
-    cb.parentElement.style.opacity = '1';
-  });
-  
-  const counter = document.getElementById('selectedCounter');
-  if (counter) {
-    counter.textContent = '1/10 seleccionados (incluyéndote)';
-  }
-}
-
-// Cerrar modal al hacer click fuera del contenido
-window.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.style.display = "none";
-  }
-});
-
-// Inicializar contador al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-  const counter = document.createElement('div');
-  counter.id = 'selectedCounter';
-  counter.className = 'selected-counter';
-  counter.textContent = '1/10 seleccionados (incluyéndote)';
-  
-  const participantsLabel = document.querySelector('label[for="participantsList"]');
-  participantsLabel.parentNode.insertBefore(counter, participantsLabel.nextSibling);
-});

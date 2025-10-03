@@ -329,6 +329,7 @@ nav a:hover, nav a.active {
   z-index: 1000;
 }
 
+
 .modal-content {
   background: #1a3d7c;
   padding: 25px;
@@ -337,7 +338,10 @@ nav a:hover, nav a.active {
   max-width: 90%;
   color: white;
   box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  position: relative;
 }
+
+
 
 .modal h3 { 
   margin-bottom: 20px; 
@@ -451,4 +455,75 @@ button:disabled {
 
 button:disabled:hover {
   background: #00aaff !important;
+}
+
+
+.participants-list {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.participant-chip {
+  background: #1a54ac8c;       /* azul oscuro */
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: background 0.3s;
+}
+
+.participant-chip:hover {
+  background: #1a325a;
+}
+
+.participant-chip.more {
+  background: rgba(45, 88, 231, 0.651);
+  color: #fff;
+  font-style: italic;
+}
+
+/* Modal base */
+.modal {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1a3d7c;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  color: #fff;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.cancel-btn {
+  background: #ff4444;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #cc0000;
 }
