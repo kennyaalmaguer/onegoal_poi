@@ -27,139 +27,10 @@
     <a href="chat.html">Chat</a>
   </nav>
 
-  <div class="main-content">
-    <h2 class="section-title">PRONÓSTICOS DEL MUNDIAL 2026</h2>
-    
-    <div class="matches-container">
-      <!-- Partido 1 -->
-      <div class="match-card">
-        <div class="match-header">
-          <div class="match-date">14 Jun 2026 - 16:00</div>
-          <div class="match-stage">Fase de Grupos</div>
-        </div>
-        
-        <div class="teams">
-          <div class="team">
-            <div class="team-flag">🇦🇷</div>
-            <div class="team-name">Argentina</div>
-          </div>
-          <div class="vs">VS</div>
-          <div class="team">
-            <div class="team-flag">🇧🇷</div>
-            <div class="team-name">Brasil</div>
-          </div>
-        </div>
-        
-        <form class="prediction-form">
-          <div class="score-input">
-            <div class="score-input-group">
-              <div class="score-label">Argentina</div>
-              <input type="number" min="0" max="10" value="2" class="score-input-field">
-            </div>
-            <div class="score-separator">:</div>
-            <div class="score-input-group">
-              <div class="score-label">Brasil</div>
-              <input type="number" min="0" max="10" value="1" class="score-input-field">
-            </div>
-          </div>
-          
-          <div class="first-scorer">
-            <label for="scorer1">Primer Goleador:</label>
-            <input type="text" id="scorer1" placeholder="¿Quién hará el primer gol?" maxlength="30">
-          </div>
-          
-          <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">⏰ Cierra en: 2d 5h 30m</div>
-        </form>
-      </div>
-      
-      <!-- Partido 2 -->
-      <div class="match-card">
-        <div class="match-header">
-          <div class="match-date">15 Jun 2026 - 13:00</div>
-          <div class="match-stage">Fase de Grupos</div>
-        </div>
-        
-        <div class="teams">
-          <div class="team">
-            <div class="team-flag">🇪🇸</div>
-            <div class="team-name">España</div>
-          </div>
-          <div class="vs">VS</div>
-          <div class="team">
-            <div class="team-flag">🇩🇪</div>
-            <div class="team-name">Alemania</div>
-          </div>
-        </div>
-        
-        <form class="prediction-form">
-          <div class="score-input">
-            <div class="score-input-group">
-              <div class="score-label">España</div>
-              <input type="number" min="0" max="10" value="1" class="score-input-field">
-            </div>
-            <div class="score-separator">:</div>
-            <div class="score-input-group">
-              <div class="score-label">Alemania</div>
-              <input type="number" min="0" max="10" value="1" class="score-input-field">
-            </div>
-          </div>
-          
-          <div class="first-scorer">
-            <label for="scorer2">Primer Goleador:</label>
-            <input type="text" id="scorer2" placeholder="¿Quién hará el primer gol?" maxlength="30">
-          </div>
-          
-          <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">⏰ Cierra en: 3d 2h 15m</div>
-        </form>
-      </div>
-      
-      <!-- Partido 3 -->
-      <div class="match-card">
-        <div class="match-header">
-          <div class="match-date">18 Jun 2026 - 19:00</div>
-          <div class="match-stage">Fase de Grupos</div>
-        </div>
-        
-        <div class="teams">
-          <div class="team">
-            <div class="team-flag">🇲🇽</div>
-            <div class="team-name">México</div>
-          </div>
-          <div class="vs">VS</div>
-          <div class="team">
-            <div class="team-flag">🇺🇸</div>
-            <div class="team-name">Estados Unidos</div>
-          </div>
-        </div>
-        
-        <form class="prediction-form">
-          <div class="score-input">
-            <div class="score-input-group">
-              <div class="score-label">México</div>
-              <input type="number" min="0" max="10" value="0" class="score-input-field">
-            </div>
-            <div class="score-separator">:</div>
-            <div class="score-input-group">
-              <div class="score-label">Estados Unidos</div>
-              <input type="number" min="0" max="10" value="0" class="score-input-field">
-            </div>
-          </div>
-          
-          <div class="first-scorer">
-            <label for="scorer3">Primer Goleador:</label>
-            <input type="text" id="scorer3" placeholder="¿Quién hará el primer gol?" maxlength="30">
-          </div>
-          
-          <button type="submit" class="submit-btn">Guardar Pronóstico</button>
-          <div class="countdown">⏰ Cierra en: 5d 22h 45m</div>
-        </form>
-      </div>
-
-    
-    </div>
-  </div>
+<div class="main-content">
+  <h2 class="section-title">PRONÓSTICOS DEL MUNDIAL 2026</h2>
+  <div id="matches-container" class="matches-container"></div>
+</div>
 
   <footer>
     <p>ONEGOAL &copy; 2025 - Plataforma de Pronósticos para el Mundial 2026</p>
@@ -170,6 +41,6 @@
     </nav>
   </footer>
 <script src="Js/pronosticos.js"></script>
-
+<script src="Js/partidos.js"></script>
 </body>
 </html>
