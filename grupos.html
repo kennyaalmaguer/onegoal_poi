@@ -30,58 +30,66 @@
     <h2 class="section-title">GRUPOS</h2>
 
     <!-- Contenedor dinámico de grupos -->
-  <div id="groupsList" class="tournaments-container"></div>
+    <div id="groupsList" class="tournaments-container"></div>
 
     <div class="create-tournament">
       <button class="create-btn" id="openModalBtn">Crear Grupo</button>
     </div>
 
-    <!-- MODAL -->
-   <div class="modal" id="createGroupModal">
-  <div class="modal-content">
-    <h3>Crear Nuevo Grupo</h3>
-    <label for="groupName">Nombre del grupo:</label>
-    <input type="text" id="groupName" placeholder="Ej. Amigos del Mundial">
+    <!-- MODAL Crear Grupo -->
+    <div class="modal" id="createGroupModal" style="display:none;">
+      <div class="modal-content">
+        <h3>Crear Nuevo Grupo</h3>
+        <label for="groupName">Nombre del grupo:</label>
+        <input type="text" id="groupName" placeholder="Ej. Amigos del Mundial">
 
-    <label for="maxParticipants">Número máximo de participantes:</label>
-    <select id="maxParticipants">
-      <option value="5">5</option>
-      <option value="10" selected>10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-    </select>
+        <label for="maxParticipants">Número máximo de participantes:</label>
+        <select id="maxParticipants">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
 
-    <label>Selecciona participantes:</label>
-    <div class="checkbox-list" id="participantsList"></div>
+        <label>Selecciona participantes:</label>
+        <div class="checkbox-list" id="participantsList"></div>
 
-    <div id="selectedCounter" class="selected-counter">0/10 seleccionados</div>
+        <div id="selectedCounter" class="selected-counter">0/10 seleccionados</div>
 
-    <div class="modal-actions">
-      <button class="cancel-btn" id="cancelBtn">Cancelar</button>
-      <button class="join-btn" id="createBtn">Crear</button>
+        <div class="modal-actions">
+          <button class="cancel-btn" id="cancelBtn">Cancelar</button>
+          <button class="join-btn" id="createBtn">Crear</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
+    <!-- MODAL Ver participantes (solo ver) -->
+    <div class="modal" id="participantsModal" style="display:none;">
+      <div class="modal-content">
+        <h3 id="participantsModalTitle"></h3>
+        <div id="participantsModalList" class="participants-list"></div>
+        <div class="modal-actions">
+          <button class="cancel-btn" id="closeParticipantsBtn">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL Agregar miembros a grupo existente -->
+    <div class="modal" id="addMembersModal" style="display:none;">
+      <div class="modal-content">
+        <h3 id="addMembersTitle">Agregar participantes</h3>
+        <div id="addMembersList" class="checkbox-list"></div>
+        <div id="addMembersCounter" class="selected-counter">0 seleccionados</div>
+        <div class="modal-actions">
+          <button class="cancel-btn" id="closeAddMembersBtn">Cancelar</button>
+          <button class="join-btn" id="confirmAddMembersBtn">Agregar</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
-  <div class="modal" id="participantsModal">
-  <div class="modal-content">
-    <h3 id="participantsModalTitle"></h3>
-    <div id="participantsModalList" class="participants-list"></div>
-    <div class="modal-actions">
-      <button class="cancel-btn" id="closeParticipantsBtn">Cerrar</button>
-    </div>
-  </div>
-</div>
-  <footer>
-    <p>ONEGOAL &copy; 2025 - Plataforma de Pronósticos para el Mundial 2026</p>
-    <nav>
-      <a href="#">Términos y Condiciones</a>
-      <a href="#">Política de Privacidad</a>
-      <a href="#">Contacto</a>
-    </nav>
-  </footer>
-
-  <script src="Js/grupos.js"></script>
+  <script src="js/grupos.js"></script>
 </body>
+
 </html>

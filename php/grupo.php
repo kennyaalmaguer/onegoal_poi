@@ -34,6 +34,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmtAdmin->bind_param("i", $idCreador);
         $stmtAdmin->execute();
 
+        // verificar cupo
+        $stmtCap = $conn->prepare("SELECT COUNT(*) AS total FROM usuario_grupo WHERE id_grupo = ?");
+        $stmtCap->bind_param("i", $idGrupo);
+        $stmtCap->execute();
+        $countRes = $stmtCap->get_result()->fetch_assoc();
+        $totalMembers = intval($countRes['total']); // hasta ahora solo creador está insertado -> 1
+
+        $toAdd = count($participantes);
+        if (($totalMembers + $toAdd) > intval($maxParticipantes)) {
+        echo json_encode(["status"=>"error","message"=>"No es posible agregar tantos participantes: excede el cupo del grupo"]);
+        exit;
+        } 
+
+
+
         // Insertar participantes
         if(!empty($participantes)){
             $sqlP = "INSERT INTO usuario_grupo (id_usuario, id_grupo, rol, puntos_totales) VALUES (?, ?, 'miembro', 0)";

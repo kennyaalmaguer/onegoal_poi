@@ -1,7 +1,7 @@
 <?php
 session_start();
 include "conexion.php";
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=utf-8");
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_SESSION["id_usuario"])) {
@@ -13,21 +13,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $idGrupo = intval($_POST["grupo_id"]);
 
     try {
-        // Verificar cupo
-        $stmt = $conn->prepare("SELECT COUNT(*) AS total, g.max_participantes 
-                                FROM usuario_grupo ug 
-                                JOIN grupo g ON g.id_grupo=ug.id_grupo
-                                WHERE ug.id_grupo=?");
-        $stmt->bind_param("i",$idGrupo);
-        $stmt->execute();
-        $res = $stmt->get_result()->fetch_assoc();
+        // verificar existencia grupo y estado + maxParticipantes
+        $stmtG = $conn->prepare("SELECT estado, max_participantes FROM grupo WHERE id_grupo=?");
+        $stmtG->bind_param("i", $idGrupo);
+        $stmtG->execute();
+        $g = $stmtG->get_result()->fetch_assoc();
+        if (!$g) {
+            echo json_encode(["status"=>"error","message"=>"Grupo no existe"]);
+            exit;
+        }
+        if ($g['estado'] !== 'Activo') {
+            echo json_encode(["status"=>"error","message"=>"No puedes unirte, el grupo está inactivo"]);
+            exit;
+        }
 
-        if ($res["total"] >= $res["max_participantes"]) {
+        // contar miembros actuales
+        $stmtCount = $conn->prepare("SELECT COUNT(*) AS total FROM usuario_grupo WHERE id_grupo=?");
+        $stmtCount->bind_param("i", $idGrupo);
+        $stmtCount->execute();
+        $resCount = $stmtCount->get_result()->fetch_assoc();
+        $total = intval($resCount['total']);
+        $maxP = intval($g['max_participantes']);
+        if ($total >= $maxP) {
             echo json_encode(["status"=>"error","message"=>"Grupo lleno"]);
             exit;
         }
 
-        // Validar que no esté ya dentro
+        // validar que no esté ya dentro
         $stmt2 = $conn->prepare("SELECT * FROM usuario_grupo WHERE id_usuario=? AND id_grupo=?");
         $stmt2->bind_param("ii",$idUsuario,$idGrupo);
         $stmt2->execute();
@@ -46,3 +58,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode(["status"=>"error","message"=>"Error: ".$e->getMessage()]);
     }
 }
+?>
