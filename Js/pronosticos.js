@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const golesLocal = form.querySelector('input[name="goles_local"]').value;
           const golesVisitante = form.querySelector('input[name="goles_visitante"]').value;
           const primerGoleador = form.querySelector('input[name="primer_goleador"]').value;
-          const idPartido = matchCard.dataset.partidoId; // ✅ asegurar que exista
+          const idPartido = matchCard.dataset.partidoId; 
 
           if (!idPartido) {
             alert("No se puede guardar: falta ID del partido");
