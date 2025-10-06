@@ -64,71 +64,33 @@ document.querySelectorAll('.round-button').forEach(button => {
 });
 
 // Función para actualizar la conversación según el chat seleccionado
-function updateChatConversation(chatType) {
-    messagesContainer.innerHTML = '';
+async function updateChatConversation(chatType) {
+    const chatId = getChatIdFromType(chatType); // función que mapee chatType → id_chat
+    messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
 
-    if (chatType === 'messi') {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
-                <div class="message-time">10:30</div>
-            </div>
-            
-            <div class="message sent">
-                <div class="message-text">¡Claro que sí! Será un torneo histórico con 48 selecciones.</div>
-                <div class="message-time">10:31</div>
-            </div>
-            
-            <div class="message received">
-                <div class="message-text">¿Qué opinas del formato con 12 grupos de 4 equipos?</div>
-                <div class="message-time">10:32</div>
-            </div>
-            
-            <div class="message sent">
-                <div class="message-text">Es interesante. Los 8 mejores terceros también avanzan, así que habrá más emoción.</div>
-                <div class="message-time">10:33</div>
-            </div>
-        `;
-    } else if (chatType === 'comite') {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">Hola, te escribimos para confirmar las sedes del Mundial 2026.</div>
-                <div class="message-time">09:15</div>
-            </div>
-            
-            <div class="message sent">
-                <div class="message-text">Perfecto, ¿ya tienen definidos los estadios?</div>
-                <div class="message-time">09:16</div>
-            </div>
-            
-            <div class="message received">
-                <div class="message-text">Sí, serán 16 ciudades: 11 en USA, 2 en Canadá y 3 en México.</div>
-                <div class="message-time">09:17</div>
-            </div>
-        `;
-    } else {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">Hola, ¿cómo estás?</div>
-                <div class="message-time">12:00</div>
-            </div>
-            
-            <div class="message sent">
-                <div class="message-text">¡Hola! ¿Qué tal? ¿Cómo va todo con el Mundial 2026?</div>
-                <div class="message-time">12:01</div>
-            </div>
-            
-            <div class="message received">
-                <div class="message-text">Todo marcha bien. Estamos emocionados con el torneo.</div>
-                <div class="message-time">12:02</div>
-            </div>
-        `;
+    try {
+        const response = await fetch(`get_messages.php?id_chat=${chatId}`);
+        const messages = await response.json();
+
+        messagesContainer.innerHTML = '';
+
+        messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', msg.id_usuario == currentUserId ? 'sent' : 'received');
+
+            messageDiv.innerHTML = `
+                <div class="message-text">${msg.contenido}</div>
+                <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+        });
+
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } catch (error) {
+        console.error("Error al cargar mensajes:", error);
     }
-
-    // Hacer scroll al final de los mensajes
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
-
 // --- Envío de mensajes ---
 sendBtn.addEventListener('click', sendMessage);
 
@@ -138,32 +100,29 @@ messageInput.addEventListener('keypress', function(e) {
     }
 });
 
-function sendMessage() {
+async function sendMessage() {
     const messageText = messageInput.value.trim();
-    if (messageText) {
-        const currentTime = new Date();
-        const timeString = currentTime.getHours() + ':' + 
-                          (currentTime.getMinutes() < 10 ? '0' : '') + 
-                          currentTime.getMinutes();
-        
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message sent';
-        messageElement.innerHTML = `
-            <div class="message-text">${messageText}</div>
-            <div class="message-time">${timeString}</div>
-        `;
-        
-        messagesContainer.appendChild(messageElement);
-        messageInput.value = '';
-        
-        // Hacer scroll al final
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Simular respuesta después de un tiempo
-        setTimeout(simulateReply, 1000 + Math.random() * 3000);
-    }
-}
+    if (!messageText) return;
 
+    const data = {
+        id_chat: currentChatId,
+        id_usuario: currentUserId,
+        contenido: messageText,
+        tipo: 'texto'
+    };
+
+    // Mostrarlo inmediatamente
+    renderMessage(messageText, 'sent');
+
+    // Guardarlo en la base
+    await fetch('send_message.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    messageInput.value = '';
+}
 function simulateReply() {
     const replies = [
         "¡Interesante!",
@@ -655,5 +614,16 @@ function updateGroupConversation(groupType) {
     }
 
     // Hacer scroll al final de los mensajes
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+function renderMessage(text, type) {
+    const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', type);
+    messageDiv.innerHTML = `
+        <div class="message-text">${text}</div>
+        <div class="message-time">${currentTime}</div>
+    `;
+    messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
