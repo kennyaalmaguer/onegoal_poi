@@ -330,16 +330,6 @@ nav a:hover, nav a.active {
 }
 
 
-.modal-content {
-  background: #1a3d7c;
-  padding: 25px;
-  border-radius: 10px;
-  width: 400px;
-  max-width: 90%;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  position: relative;
-}
 
 
 
@@ -507,6 +497,7 @@ margin-top: 10px;
   overflow-y: auto;
   box-shadow: 0 5px 15px rgba(0,0,0,0.4);
   color: #fff;
+
 }
 
 .modal-actions {
@@ -543,8 +534,51 @@ margin-top: 10px;
 /* Reforzar que el contenedor no haga salto de línea extraño */
 .checkbox-list { display:flex; flex-direction:column; gap:6px; max-height:260px; overflow:auto; padding-right:6px; }
 
-/* Botón ver usuarios azul (si quieres) */
+
 .view-btn { background:#1976d27e; color:white; border-radius:8px; padding:6px 8px; }
 
-/* Ajuste de los chips para separación */
+
 .participants { display:flex; gap:10px; flex-wrap:wrap; margin:8px 0; }
+
+/* ===== BARRA DE DESPLAZAMIENTO ===== */
+/* Chrome, Edge, Safari */
+.modal-content::-webkit-scrollbar {
+    width: 10px;  /* más visible */
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2); /* track más sutil */
+    border-radius: 5px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #00aaff; /* color del thumb */
+    border-radius: 5px;
+    border: 2px solid rgba(0,0,0,0.2);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #0088cc; /* color al pasar el mouse */
+}
+
+/* Firefox */
+.modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #00aaff rgba(0,0,0,0.2);
+}
+
+/* ===== PARTICIPANTES COMO LISTA ===== */
+.participants-list, .checkbox-list {
+    display: flex;
+    flex-direction: column; 
+    gap: 6px;               
+    padding-left: 2;    
+    margin: 0;              
+    list-style: none;      
+}
+
+.participants-list .participant-chip {
+    width: fit-content;
+    padding: 6px 12px;
+    margin-bottom: 4px; /* separación más clara */
+}
