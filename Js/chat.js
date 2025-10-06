@@ -20,29 +20,33 @@ let remoteStream = null;
 
 // Funcionalidad para cambiar entre chats
 document.querySelectorAll('.chat-item').forEach(item => {
-    item.addEventListener('click', function () {
-        // En pantallas pequeñas, mostrar el panel de chat
-        if (window.innerWidth <= 768) {
-            chatsPanel.style.display = 'none';
-            chatPanel.classList.add('active');
-        }
-        
-        document.querySelectorAll('.chat-item').forEach(chat => {
-            chat.classList.remove('active');
-        });
-        this.classList.add('active');
+  item.addEventListener('click', async function () {
+    if (window.innerWidth <= 768) {
+      chatsPanel.style.display = 'none';
+      chatPanel.classList.add('active');
+    }
 
-        // Aquí se cargaría el chat seleccionado
-        const contactName = this.querySelector('.chat-name').textContent;
-        const contactAvatar = this.querySelector('.chat-avatar').textContent;
-        const chatType = this.getAttribute('data-chat');
+    document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+    this.classList.add('active');
 
-        document.querySelector('.chat-header .chat-name').textContent = contactName;
-        document.querySelector('.chat-header .user-avatar').textContent = contactAvatar;
+    const idUsuario = this.getAttribute('data-chat');
+    const nombre = this.querySelector('.chat-name').textContent;
 
-        // Cambiar la conversación según el chat seleccionado
-        updateChatConversation(chatType);
-    });
+    // Tomar foto si existe
+    const avatarImg = this.querySelector('.chat-avatar img');
+    const avatarHtml = avatarImg
+      ? `<img src="${avatarImg.src}" alt="${nombre}" class="avatar-img">`
+      : this.querySelector('.chat-avatar').textContent.trim();
+
+    // Actualizar encabezado del chat
+    const chatAvatar = document.getElementById('chatAvatar');
+    const chatName = document.getElementById('chatName');
+    chatAvatar.innerHTML = avatarHtml;
+    chatName.textContent = nombre;
+
+    // Cargar mensajes desde el backend
+    await loadChatMessages(idUsuario);
+  });
 });
 
 // Botón de regreso
@@ -626,4 +630,91 @@ function renderMessage(text, type) {
     `;
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+const searchBox = document.querySelector('.search-box');
+let usuarios = [];
+
+// Traer usuarios al cargar la página
+async function loadUsers() {
+    try {
+        const resp = await fetch('php/get_users.php');
+        const data = await resp.json();
+        if (data.success) {
+            usuarios = data.usuarios;
+        }
+    } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+    }
+}
+
+// Función para filtrar usuarios según lo que escriba el usuario
+searchBox.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const filtered = usuarios.filter(u => u.nombre.toLowerCase().includes(query));
+
+    // Mostrar resultados en la lista de chats (temporalmente)
+    conversationsList.innerHTML = '';
+    filtered.forEach(user => {
+        const div = document.createElement('div');
+        div.classList.add('chat-item');
+        div.setAttribute('data-chat', user.id_usuario);
+      div.innerHTML = `
+  <div class="chat-avatar">
+    ${
+      user.foto_perfil
+        ? `<img src="${user.foto_perfil}" alt="${user.nombre}" class="avatar-img">`
+        : user.nombre[0]
+    }
+  </div>
+  <div class="chat-info">
+    <div class="chat-name">${user.nombre}</div>
+    <div class="chat-preview">Iniciar chat</div>
+  </div>
+  <div class="chat-time">Ahora</div>
+`;
+        // Click para abrir chat
+        div.addEventListener('click', () => {
+            startChatWith(user.id_usuario, user.nombre);
+        });
+
+        conversationsList.appendChild(div);
+    });
+});
+
+// Función para abrir el chat con un usuario
+function startChatWith(userId, userName) {
+    currentChatId = null; // si todavía no existe un chat, se creará al enviar mensaje
+    document.querySelector('.chat-header .chat-name').textContent = userName;
+    document.querySelector('.chat-header .user-avatar').textContent = userName[0];
+    messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
+}
+
+loadUsers();
+async function loadChatMessages(id_chat) {
+  messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
+
+  try {
+    const resp = await fetch(`php/get_messages.php?id_chat=${id_chat}`);
+    const data = await resp.json();
+
+    messagesContainer.innerHTML = "";
+
+    if (data.success && Array.isArray(data.messages)) {
+      data.messages.forEach(msg => {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', msg.id_usuario == currentUserId ? 'sent' : 'received');
+        messageDiv.innerHTML = `
+          <div class="message-text">${msg.contenido}</div>
+          <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+        `;
+        messagesContainer.appendChild(messageDiv);
+      });
+    } else {
+      messagesContainer.innerHTML = "<p>No hay mensajes todavía.</p>";
+    }
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  } catch (error) {
+    console.error("Error cargando mensajes:", error);
+  }
 }

@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap"
         rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link
         href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap"
         rel="stylesheet">
- 
-         
-<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
- 
+
+
+    <link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
+
 
     <title>ONE GOAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,51 +46,7 @@
 
         <!-- Lista de conversaciones -->
         <div class="chats-list" id="conversationsList">
-            <div class="chat-item active" data-chat="messi">
-                <div class="chat-avatar">M</div>
-                <div class="chat-info">
-                    <div class="chat-name">Messi <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">¿Preparado para el torneo?</div>
-                </div>
-                <div class="chat-time">15:20</div>
-            </div>
 
-            <div class="chat-item" data-chat="comite">
-                <div class="chat-avatar">C</div>
-                <div class="chat-info">
-                    <div class="chat-name">Comité Organizador <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Confirmación de sedes del torneo</div>
-                </div>
-                <div class="chat-time">14:35</div>
-            </div>
-
-            <div class="chat-item" data-chat="alejandro">
-                <div class="chat-avatar">A</div>
-                <div class="chat-info">
-                    <div class="chat-name">Alejandro (Aficionado) <span class="world-cup-theme">Mundial 2026</span>
-                    </div>
-                    <div class="chat-preview">¿Vas a ir a ver los partidos?</div>
-                </div>
-                <div class="chat-time">13:12</div>
-            </div>
-
-            <div class="chat-item" data-chat="argentina">
-                <div class="chat-avatar">S</div>
-                <div class="chat-info">
-                    <div class="chat-name">Selección Argentina <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Preparativos para el torneo</div>
-                </div>
-                <div class="chat-time">Ayer</div>
-            </div>
-
-            <div class="chat-item" data-chat="fifa">
-                <div class="chat-avatar">F</div>
-                <div class="chat-info">
-                    <div class="chat-name">FIFA <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">Nuevo formato del torneo</div>
-                </div>
-                <div class="chat-time">Ayer</div>
-            </div>
         </div>
 
         <!-- Lista de grupos (oculta por defecto) -->
@@ -203,10 +159,10 @@
                 <button class="back-button" id="backButton">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <div class="user-avatar">M</div>
+                <div class="user-avatar"></div>
                 <div>
-                    <div class="chat-name">Lionel Messi <span class="world-cup-theme">Mundial 2026</span></div>
-                    <div class="chat-preview">En línea</div>
+                    <div class="chat-name" id="chatName"></div>
+                    <div class="chat-status" id="chatStatus">En línea</div>
                 </div>
             </div>
             <div class="contact-actions">
@@ -389,4 +345,5 @@
 
     <script src="Js/chat.js"></script>
 </body>
+
 </html>
