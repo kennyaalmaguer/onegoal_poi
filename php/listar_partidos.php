@@ -1,12 +1,12 @@
 <?php
 session_start();
-require_once 'conexion.php'; // Asegúrate de que $conn exista aquí
+require_once 'conexion.php'; 
 
 header('Content-Type: application/json; charset=utf-8');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Usar la misma variable que tienes en conexion.php
+
 $conexion = $conn;
 
 if (!$conexion) {
