@@ -51,7 +51,7 @@
 
         <!-- Lista de grupos (oculta por defecto) -->
         <div class="chats-list" id="groupsList" style="display: none;">
-            <div class="chat-item" data-chat="grupo1">
+            <div class="chat-item" data-chat="grupo1" data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Fans Mundial 2026 <span class="world-cup-theme">48 miembros</span></div>
@@ -60,7 +60,7 @@
                 <div class="chat-time">10:15</div>
             </div>
 
-            <div class="chat-item" data-chat="grupo2">
+            <div class="chat-item" data-chat=grupo2 data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Amantes del Fútbol <span class="world-cup-theme">23 miembros</span></div>
@@ -69,7 +69,7 @@
                 <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item" data-chat="grupo3">
+            <div class="chat-item" data-chat="grupo3" >
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Viaje al Mundial <span class="world-cup-theme">15 miembros</span></div>
@@ -159,10 +159,10 @@
                 <button class="back-button" id="backButton">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <div class="user-avatar"></div>
+                <div class="user-avatar" id="userAvatar"></div>
                 <div>
-                    <div class="chat-name" id="chatName"></div>
-                    <div class="chat-status" id="chatStatus">En línea</div>
+                    <div class="chat-name" id="userName"></div>
+                    <div class="chat-status" id="userStatus"></div>
                 </div>
             </div>
             <div class="contact-actions">
@@ -173,63 +173,62 @@
         </div>
 
         <div class="messages-container" id="messagesContainer">
-            <!-- Mensajes del chat sobre el Mundial 2026 -->
+          
             <div class="message received">
-                <div class="message-text">¡Hola! ¿Estás listo para el Mundial 2026?</div>
-                <div class="message-time">10:30</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message sent">
-                <div class="message-text">¡Claro que sí! Será un torneo histórico con 48 selecciones.</div>
-                <div class="message-time">10:31</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message received">
-                <div class="message-text">¿Qué opinas del formato con 12 grupos de 4 equipos?</div>
-                <div class="message-time">10:32</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message sent">
-                <div class="message-text">Es interesante. Los 8 mejores terceros también avanzan, así que habrá más
-                    emoción.</div>
-                <div class="message-time">10:33</div>
+                <div class="message-text">
+                    </div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message received">
-                <div class="message-text">¿Crees que Argentina puede repetir el título?</div>
-                <div class="message-time">10:35</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message sent">
-                <div class="message-text">Siempre vamos a competir, pero con 48 equipos habrá más sorpresas.</div>
-                <div class="message-time">10:36</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message received">
-                <div class="message-text">¿Ya conoces las sedes donde jugaremos?</div>
-                <div class="message-time">10:37</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message sent">
-                <div class="message-text">Sí, principalmente en la zona este de Estados Unidos. El MetLife Stadium en
-                    Nueva Jersey es espectacular.</div>
-                <div class="message-time">10:38</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message received">
-                <div class="message-text">¿Y qué tal la preparación con el equipo?</div>
-                <div class="message-time">10:40</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message sent">
-                <div class="message-text">Muy bien. Los jóvenes tienen mucha hambre y los veteranos estamos motivados.
+                <div class="message-text">
                 </div>
-                <div class="message-time">10:41</div>
+                <div class="message-time"></div>
             </div>
 
             <div class="message received">
-                <div class="message-text">¡Genial! Espero que sea un torneo inolvidable. ¡Mucha suerte!</div>
-                <div class="message-time">10:42</div>
+                <div class="message-text"></div>
+                <div class="message-time"></div>
             </div>
         </div>
 

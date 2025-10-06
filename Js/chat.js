@@ -20,37 +20,37 @@ let remoteStream = null;
 
 // Funcionalidad para cambiar entre chats
 document.querySelectorAll('.chat-item').forEach(item => {
-  item.addEventListener('click', async function () {
-    if (window.innerWidth <= 768) {
-      chatsPanel.style.display = 'none';
-      chatPanel.classList.add('active');
-    }
+    item.addEventListener('click', async function () {
+        if (window.innerWidth <= 768) {
+            chatsPanel.style.display = 'none';
+            chatPanel.classList.add('active');
+        }
 
-    document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-    this.classList.add('active');
+        document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+        this.classList.add('active');
 
-    const idUsuario = this.getAttribute('data-chat');
-    const nombre = this.querySelector('.chat-name').textContent;
+        const idUsuario = this.getAttribute('data-chat');
+        const nombre = this.querySelector('.chat-name').textContent;
 
-    // Tomar foto si existe
-    const avatarImg = this.querySelector('.chat-avatar img');
-    const avatarHtml = avatarImg
-      ? `<img src="${avatarImg.src}" alt="${nombre}" class="avatar-img">`
-      : this.querySelector('.chat-avatar').textContent.trim();
+        // Tomar foto si existe
+        const avatarImg = this.querySelector('.chat-avatar img');
+        const avatarHtml = avatarImg
+            ? `<img src="${avatarImg.src}" alt="${nombre}" class="avatar-img">`
+            : this.querySelector('.chat-avatar').textContent.trim();
 
-    // Actualizar encabezado del chat
-    const chatAvatar = document.getElementById('chatAvatar');
-    const chatName = document.getElementById('chatName');
-    chatAvatar.innerHTML = avatarHtml;
-    chatName.textContent = nombre;
+        // Actualizar encabezado del chat
+        const chatAvatar = document.getElementById('chatAvatar');
+        const chatName = document.getElementById('chatName');
+        chatAvatar.innerHTML = avatarHtml;
+        chatName.textContent = nombre;
 
-    // Cargar mensajes desde el backend
-    await loadChatMessages(idUsuario);
-  });
+        // Cargar mensajes desde el backend
+        await loadChatMessages(idUsuario);
+    });
 });
 
 // Botón de regreso
-backButton.addEventListener('click', function() {
+backButton.addEventListener('click', function () {
     if (window.innerWidth <= 768) {
         chatsPanel.style.display = 'flex';
         chatPanel.classList.remove('active');
@@ -84,7 +84,7 @@ async function updateChatConversation(chatType) {
 
             messageDiv.innerHTML = `
                 <div class="message-text">${msg.contenido}</div>
-                <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+                <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             `;
 
             messagesContainer.appendChild(messageDiv);
@@ -98,7 +98,7 @@ async function updateChatConversation(chatType) {
 // --- Envío de mensajes ---
 sendBtn.addEventListener('click', sendMessage);
 
-messageInput.addEventListener('keypress', function(e) {
+messageInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         sendMessage();
     }
@@ -121,7 +121,7 @@ async function sendMessage() {
     // Guardarlo en la base
     await fetch('send_message.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     });
 
@@ -136,22 +136,22 @@ function simulateReply() {
         "¿Qué opinas del Mundial 2026?",
         "Eso suena genial"
     ];
-    
+
     const randomReply = replies[Math.floor(Math.random() * replies.length)];
     const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' + 
-                      (currentTime.getMinutes() < 10 ? '0' : '') + 
-                      currentTime.getMinutes();
-    
+    const timeString = currentTime.getHours() + ':' +
+        (currentTime.getMinutes() < 10 ? '0' : '') +
+        currentTime.getMinutes();
+
     const messageElement = document.createElement('div');
     messageElement.className = 'message received';
     messageElement.innerHTML = `
         <div class="message-text">${randomReply}</div>
         <div class="message-time">${timeString}</div>
     `;
-    
+
     messagesContainer.appendChild(messageElement);
-    
+
     // Hacer scroll al final
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -167,16 +167,16 @@ async function toggleRecording() {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             audioChunks = [];
-            
+
             mediaRecorder.ondataavailable = event => {
                 audioChunks.push(event.data);
             };
-            
+
             mediaRecorder.onstop = () => {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                 sendAudioMessage(audioBlob);
             };
-            
+
             mediaRecorder.start();
             isRecording = true;
             recordBtn.classList.add('recording');
@@ -199,14 +199,14 @@ async function toggleRecording() {
 
 function sendAudioMessage(audioBlob) {
     const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' + 
-                      (currentTime.getMinutes() < 10 ? '0' : '') + 
-                      currentTime.getMinutes();
-    
+    const timeString = currentTime.getHours() + ':' +
+        (currentTime.getMinutes() < 10 ? '0' : '') +
+        currentTime.getMinutes();
+
     // Crear URL para el audio
     const audioUrl = URL.createObjectURL(audioBlob);
     let audioElement = null;
-    
+
     const messageElement = document.createElement('div');
     messageElement.className = 'message sent audio-message';
     messageElement.innerHTML = `
@@ -217,21 +217,21 @@ function sendAudioMessage(audioBlob) {
         </div>
         <div class="message-time">${timeString}</div>
     `;
-    
+
     messagesContainer.appendChild(messageElement);
-    
+
     // Añadir evento para reproducir el audio
     const playButton = messageElement.querySelector('.play-audio');
-    
-    playButton.addEventListener('click', function() {
+
+    playButton.addEventListener('click', function () {
         if (!audioElement) {
             audioElement = new Audio(audioUrl);
         }
-        
+
         if (audioElement.paused) {
             audioElement.play();
             this.className = 'fas fa-pause play-audio';
-            
+
             audioElement.onended = () => {
                 this.className = 'fas fa-play play-audio';
             };
@@ -241,10 +241,10 @@ function sendAudioMessage(audioBlob) {
             this.className = 'fas fa-play play-audio';
         }
     });
-    
+
     // Hacer scroll al final
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     // Simular respuesta después de un tiempo
     setTimeout(simulateReply, 1000 + Math.random() * 3000);
 }
@@ -254,7 +254,7 @@ attachBtn.addEventListener('click', () => {
     fileInput.click();
 });
 
-fileInput.addEventListener('change', function() {
+fileInput.addEventListener('change', function () {
     if (this.files && this.files[0]) {
         sendFileMessage(this.files[0]);
         this.value = ''; // Resetear el input
@@ -263,13 +263,13 @@ fileInput.addEventListener('change', function() {
 
 function sendFileMessage(file) {
     const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' + 
-                      (currentTime.getMinutes() < 10 ? '0' : '') + 
-                      currentTime.getMinutes();
-    
+    const timeString = currentTime.getHours() + ':' +
+        (currentTime.getMinutes() < 10 ? '0' : '') +
+        currentTime.getMinutes();
+
     const fileExtension = file.name.split('.').pop().toLowerCase();
     let fileIcon = 'fa-file';
-    
+
     // Determinar el icono según el tipo de archivo
     if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
         fileIcon = 'fa-file-image';
@@ -284,7 +284,7 @@ function sendFileMessage(file) {
     } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
         fileIcon = 'fa-file-video';
     }
-    
+
     const messageElement = document.createElement('div');
     messageElement.className = 'message sent file-message';
     messageElement.innerHTML = `
@@ -297,12 +297,12 @@ function sendFileMessage(file) {
         </div>
         <div class="message-time">${timeString}</div>
     `;
-    
+
     messagesContainer.appendChild(messageElement);
-    
+
     // Hacer scroll al final
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     // Simular respuesta después de un tiempo
     setTimeout(simulateReply, 1000 + Math.random() * 3000);
 }
@@ -337,24 +337,24 @@ videoCallBtn.addEventListener('click', async () => {
 async function startVideoCall() {
     try {
         // Obtener acceso a cámara y micrófono
-        localStream = await navigator.mediaDevices.getUserMedia({ 
+        localStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 width: { ideal: 1280 },
                 height: { ideal: 720 }
-            }, 
-            audio: true 
+            },
+            audio: true
         });
-        
+
         // Mostrar video local
         const localVideo = document.getElementById('localVideo');
         const localPlaceholder = document.getElementById('localPlaceholder');
         localVideo.srcObject = localStream;
         localVideo.style.display = 'block';
         localPlaceholder.style.display = 'none';
-        
+
         // Simular video remoto (en una app real esto vendría del otro usuario)
         simulateRemoteVideo();
-        
+
     } catch (error) {
         console.error('Error al acceder a la cámara:', error);
         alert('No se pudo acceder a la cámara. Usando vista previa.');
@@ -366,7 +366,7 @@ async function startVideoCall() {
 function simulateRemoteVideo() {
     const remoteVideo = document.getElementById('remoteVideo');
     const remotePlaceholder = document.getElementById('remotePlaceholder');
-    
+
     // En una aplicación real, aquí conectarías con el stream del otro usuario
     // Por ahora mostramos el placeholder
     remoteVideo.style.display = 'none';
@@ -390,7 +390,7 @@ function stopVideoCall() {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
     }
-    
+
     // Ocultar videos y mostrar placeholders
     document.getElementById('localVideo').style.display = 'none';
     document.getElementById('localPlaceholder').style.display = 'flex';
@@ -415,7 +415,7 @@ document.getElementById('declineCall').addEventListener('click', () => {
 });
 
 // Control de mute en llamada de voz
-document.getElementById('muteBtn').addEventListener('click', function() {
+document.getElementById('muteBtn').addEventListener('click', function () {
     this.classList.toggle('active');
     const icon = this.querySelector('i');
     if (this.classList.contains('active')) {
@@ -426,12 +426,12 @@ document.getElementById('muteBtn').addEventListener('click', function() {
 });
 
 // Control de speaker en llamada de voz
-document.getElementById('speakerBtn').addEventListener('click', function() {
+document.getElementById('speakerBtn').addEventListener('click', function () {
     this.classList.toggle('active');
 });
 
 // Control de video en videollamada
-document.getElementById('videoMuteBtn').addEventListener('click', function() {
+document.getElementById('videoMuteBtn').addEventListener('click', function () {
     if (localStream) {
         const videoTrack = localStream.getVideoTracks()[0];
         if (videoTrack) {
@@ -439,11 +439,11 @@ document.getElementById('videoMuteBtn').addEventListener('click', function() {
             this.classList.toggle('active');
             const icon = this.querySelector('i');
             icon.className = videoTrack.enabled ? 'fas fa-video' : 'fas fa-video-slash';
-            
+
             // Mostrar u ocultar el placeholder según el estado de la cámara
             const localVideo = document.getElementById('localVideo');
             const localPlaceholder = document.getElementById('localPlaceholder');
-            
+
             if (videoTrack.enabled) {
                 // Mostrar video
                 localVideo.style.display = 'block';
@@ -458,7 +458,7 @@ document.getElementById('videoMuteBtn').addEventListener('click', function() {
 });
 
 // Control de audio en videollamada
-document.getElementById('videoAudioMuteBtn').addEventListener('click', function() {
+document.getElementById('videoAudioMuteBtn').addEventListener('click', function () {
     if (localStream) {
         const audioTrack = localStream.getAudioTracks()[0];
         if (audioTrack) {
@@ -471,7 +471,7 @@ document.getElementById('videoAudioMuteBtn').addEventListener('click', function(
 });
 
 // Control de speaker en videollamada
-document.getElementById('videoSpeakerBtn').addEventListener('click', function() {
+document.getElementById('videoSpeakerBtn').addEventListener('click', function () {
     this.classList.toggle('active');
 });
 
@@ -490,7 +490,7 @@ confirmCreateGroup.addEventListener('click', () => {
 });
 
 // Manejar cambios de tamaño de ventana
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     if (window.innerWidth > 768) {
         // En pantallas grandes, mostrar ambos paneles
         chatsPanel.style.display = 'flex';
@@ -538,32 +538,46 @@ document.querySelectorAll('.round-button').forEach(button => {
 // Añadir event listeners para los grupos
 document.querySelectorAll('#groupsList .chat-item').forEach(item => {
     item.addEventListener('click', function () {
-        // En pantallas pequeñas, mostrar el panel de chat
+        // Ocultar panel de chats en móvil
         if (window.innerWidth <= 768) {
-            chatsPanel.style.display = 'none';
-            chatPanel.classList.add('active');
+            document.getElementById('chatsPanel').style.display = 'none';
+            document.getElementById('chatPanel').classList.add('active');
         }
-        
-        document.querySelectorAll('.chat-item').forEach(chat => {
-            chat.classList.remove('active');
-        });
+
+        // Resaltar chat activo
+        document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
         this.classList.add('active');
 
-        const groupName = this.querySelector('.chat-name').textContent;
-        document.querySelector('.chat-header .chat-name').textContent = groupName;
-        document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
+        // Obtener nombre y estado del grupo
+        const groupName = this.querySelector('.chat-name').childNodes[0].textContent.trim();
+        const groupEstado = this.getAttribute('data-estado'); // debe venir del atributo en el HTML dinámico
 
-        // Cambiar la conversación al grupo seleccionado
+        // Actualizar encabezado del chat
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const userStatus = document.getElementById('userStatus');
+
+        userName.textContent = groupName;
+        userAvatar.innerHTML = '<i class="fas fa-users"></i>';
+
+        if (groupEstado === 'Activo') {
+            userStatus.textContent = '🟢 Activo';
+            userStatus.style.color = '#28a745';
+        } else {
+            userStatus.textContent = '🔴 Inactivo';
+            userStatus.style.color = '#dc3545';
+        }
+
+        // Cargar conversación
         updateGroupConversation(this.getAttribute('data-chat'));
     });
 });
-
 // Añadir event listeners para las llamadas (para redial)
 document.querySelectorAll('#callsList .call-item').forEach(item => {
     item.addEventListener('click', function () {
         const contactName = this.querySelector('.call-name').textContent;
         const contactAvatar = this.querySelector('.call-avatar').textContent;
-        
+
         // Actualizar información del contacto
         document.querySelector('.chat-header .chat-name').textContent = contactName;
         document.querySelector('.chat-header .user-avatar').textContent = contactAvatar;
@@ -621,7 +635,7 @@ function updateGroupConversation(groupType) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 function renderMessage(text, type) {
-    const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', type);
     messageDiv.innerHTML = `
@@ -633,46 +647,74 @@ function renderMessage(text, type) {
 }
 const searchBox = document.querySelector('.search-box');
 let usuarios = [];
+let userAvatarMap = {};
+let currentUserId = null;
 
-// Traer usuarios al cargar la página
 async function loadUsers() {
     try {
         const resp = await fetch('php/get_users.php');
         const data = await resp.json();
-        if (data.success) {
-            usuarios = data.usuarios;
+
+        if (!data.success) {
+            console.error("Error al cargar usuarios:", data.message);
+            return;
         }
+
+        const user = data.current_user;
+        currentUserId = user.id_usuario;
+
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userStatus = document.getElementById('userStatus');
+
+        if (user.foto_perfil) {
+            userAvatar.innerHTML = `<img src="${user.foto_perfil}" alt="Perfil" class="avatar-img">`;
+        } else {
+            userAvatar.textContent = user.nombre.charAt(0).toUpperCase();
+        }
+
+        userName.textContent = user.nombre;
+        userStatus.textContent = user.estado_conexion === 'online' ? ' En línea' : ' Desconectado';
+
+        usuarios = data.usuarios;
+        userAvatarMap = {};
+
+        usuarios.forEach(u => {
+            userAvatarMap[u.id_usuario] = u.foto_perfil
+                ? `<img src="${u.foto_perfil}" alt="${u.nombre}" class="avatar-img">`
+                : u.nombre[0];
+        });
+
     } catch (error) {
-        console.error('Error al cargar usuarios:', error);
+        console.error("Error al cargar usuarios:", error);
     }
 }
 
-// Función para filtrar usuarios según lo que escriba el usuario
-searchBox.addEventListener('input', function() {
+// Filtrar usuarios al escribir
+searchBox.addEventListener('input', function () {
     const query = this.value.toLowerCase();
     const filtered = usuarios.filter(u => u.nombre.toLowerCase().includes(query));
 
-    // Mostrar resultados en la lista de chats (temporalmente)
     conversationsList.innerHTML = '';
     filtered.forEach(user => {
         const div = document.createElement('div');
         div.classList.add('chat-item');
         div.setAttribute('data-chat', user.id_usuario);
-      div.innerHTML = `
-  <div class="chat-avatar">
-    ${
-      user.foto_perfil
-        ? `<img src="${user.foto_perfil}" alt="${user.nombre}" class="avatar-img">`
-        : user.nombre[0]
-    }
-  </div>
-  <div class="chat-info">
-    <div class="chat-name">${user.nombre}</div>
-    <div class="chat-preview">Iniciar chat</div>
-  </div>
-  <div class="chat-time">Ahora</div>
-`;
-        // Click para abrir chat
+
+        div.innerHTML = `
+      <div class="chat-avatar">
+        ${user.foto_perfil
+                ? `<img src="${user.foto_perfil}" alt="${user.nombre}" class="avatar-img">`
+                : user.nombre[0]
+            }
+      </div>
+      <div class="chat-info">
+        <div class="chat-name">${user.nombre}</div>
+        <div class="chat-preview">Iniciar chat</div>
+      </div>
+      <div class="chat-time">Ahora</div>
+    `;
+
         div.addEventListener('click', () => {
             startChatWith(user.id_usuario, user.nombre);
         });
@@ -681,40 +723,130 @@ searchBox.addEventListener('input', function() {
     });
 });
 
-// Función para abrir el chat con un usuario
 function startChatWith(userId, userName) {
-    currentChatId = null; // si todavía no existe un chat, se creará al enviar mensaje
+    currentChatId = null;
     document.querySelector('.chat-header .chat-name').textContent = userName;
     document.querySelector('.chat-header .user-avatar').textContent = userName[0];
     messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
 }
 
-loadUsers();
-async function loadChatMessages(id_chat) {
-  messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
 
-  try {
-    const resp = await fetch(`php/get_messages.php?id_chat=${id_chat}`);
-    const data = await resp.json();
+//-----------ESTO ES PARA LO DE LOS GRUPOOS--------------//
+document.addEventListener('DOMContentLoaded', loadUsers);
 
-    messagesContainer.innerHTML = "";
-
-    if (data.success && Array.isArray(data.messages)) {
-      data.messages.forEach(msg => {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', msg.id_usuario == currentUserId ? 'sent' : 'received');
-        messageDiv.innerHTML = `
-          <div class="message-text">${msg.contenido}</div>
-          <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
-        `;
-        messagesContainer.appendChild(messageDiv);
-      });
-    } else {
-      messagesContainer.innerHTML = "<p>No hay mensajes todavía.</p>";
+function startChatWith(userId, userName) {
+    // Evitar chatear contigo mismo
+    if (userId == currentUserId) {
+        console.warn("No puedes iniciar un chat contigo mismo");
+        return;
     }
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  } catch (error) {
-    console.error("Error cargando mensajes:", error);
-  }
+    currentChatId = null;
+    document.querySelector('.chat-header .chat-name').textContent = userName;
+
+    const avatarEl = document.querySelector('.chat-header .user-avatar');
+    avatarEl.innerHTML = userAvatarMap[userId] || userName[0]; // ver solución 2
+
+    messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarGruposUsuario();
+});
+
+
+function cargarGruposUsuario() {
+    fetch('php/grupo_chat.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const groupsList = document.getElementById('groupsList');
+                groupsList.innerHTML = '';
+
+                data.grupos.forEach(g => {
+                    // Estado visual (emoji y color)
+                    const estadoGrupo = g.estado === 'Activo'
+                        ? '<span class="estado-grupo activo">🟢 Activo</span>'
+                        : '<span class="estado-grupo inactivo">🔴 Inactivo</span>';
+
+                    // Crear el item del grupo
+                    const div = document.createElement('div');
+                    div.classList.add('chat-item');
+                    div.setAttribute('data-chat', 'grupo' + g.id_grupo);
+                    div.setAttribute('data-estado', g.estado); // 👈 aquí guardamos el estado real
+
+                    div.innerHTML = `
+            <div class="chat-avatar"><i class="fas fa-users"></i></div>
+            <div class="chat-info">
+              <div class="chat-name">${g.nombre}</div>
+              <div class="chat-last">${estadoGrupo} — Creador: ${g.nombre_creador}</div>
+            </div>
+          `;
+
+                    groupsList.appendChild(div);
+                });
+
+                // Activar listeners una vez generados los grupos
+                activarListenersGrupos();
+            }
+        })
+        .catch(err => console.error('Error cargando grupos:', err));
+}
+
+function attachGroupListeners() {
+    document.querySelectorAll('#groupsList .chat-item').forEach(item => {
+        item.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                chatsPanel.style.display = 'none';
+                chatPanel.classList.add('active');
+            }
+            document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+            this.classList.add('active');
+
+            const groupName = this.querySelector('.chat-name').textContent;
+            document.querySelector('.chat-header .chat-name').textContent = groupName;
+            document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
+
+            updateGroupConversation(this.getAttribute('data-chat'));
+        });
+    });
+}
+
+function activarListenersGrupos() {
+  document.querySelectorAll('#groupsList .chat-item').forEach(item => {
+    item.addEventListener('click', function () {
+      // Ocultar lista en móviles
+      if (window.innerWidth <= 768) {
+        document.getElementById('chatsPanel').style.display = 'none';
+        document.getElementById('chatPanel').classList.add('active');
+      }
+
+      // Quitar "active" de todos y agregarlo al actual
+      document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+      this.classList.add('active');
+
+      // Obtener datos del grupo
+      const groupName = this.querySelector('.chat-name').textContent.trim();
+      const estadoGrupo = this.getAttribute('data-estado');
+
+      // Actualizar encabezado del chat
+      const userName = document.getElementById('userName');
+      const userAvatar = document.getElementById('userAvatar');
+      const userStatus = document.getElementById('userStatus');
+
+      userName.textContent = groupName;
+      userAvatar.innerHTML = '<i class="fas fa-users"></i>';
+
+      if (estadoGrupo === 'Activo') {
+        userStatus.textContent = 'Activo';
+        userStatus.style.color = '#28a745';
+      } else {
+        userStatus.textContent = 'Inactivo';
+        userStatus.style.color = '#dc3545';
+      }
+
+      // Mostrar conversación del grupo
+      updateGroupConversation(this.getAttribute('data-chat'));
+    });
+  });
 }

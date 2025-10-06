@@ -742,3 +742,15 @@ body {
   border: none;
   outline: none;
 }
+
+.estado-grupo {
+  font-weight: 500;
+}
+
+.estado-grupo.activo {
+  color: #28a745;
+}
+
+.estado-grupo.inactivo {
+  color: #dc3545;
+}
