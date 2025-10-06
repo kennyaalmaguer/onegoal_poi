@@ -1,7 +1,7 @@
 
 <?php
 session_start();
-require_once 'conexion.php'; // Asegúrate de que aquí defines $conn
+require_once 'conexion.php';
 header('Content-Type: application/json; charset=utf-8');
 
 error_reporting(E_ALL);
@@ -38,7 +38,23 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
     $existe = $result->fetch_assoc();
-    $stmt->close();
+    $stmt->close();   
+
+$stmt = $conn->prepare("SELECT fecha, hora FROM partido WHERE id_partido = ?");
+$stmt->bind_param("i", $id_partido);
+$stmt->execute();
+$result = $stmt->get_result();
+$partido = $result->fetch_assoc();
+$stmt->close();
+
+$fecha_hora_partido = new DateTime($partido['fecha']); // Sin concatenar $partido['hora']
+$ahora = new DateTime();
+
+if ($ahora >= $fecha_hora_partido) {
+    echo json_encode(['success' => false, 'mensaje' => 'No se puede hacer pronóstico: el partido ya comenzó o terminó.']);
+    exit;
+}
+
 
     if ($existe) {
         // UPDATE
