@@ -1,53 +1,218 @@
-// Elementos principales
-const chatsPanel = document.getElementById('chatsPanel');
-const chatPanel = document.getElementById('chatPanel');
-const backButton = document.getElementById('backButton');
-const messagesContainer = document.getElementById('messagesContainer');
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const recordBtn = document.getElementById('recordBtn');
-const attachBtn = document.getElementById('attachBtn');
-const fileInput = document.getElementById('fileInput');
+let currentChatId = null;
+let currentUserId = null;
 
-// Variables para grabación de audio
-let mediaRecorder;
-let audioChunks = [];
-let isRecording = false;
 
-// Variables para la videollamada
-let localStream = null;
-let remoteStream = null;
+window.addEventListener('DOMContentLoaded', () => {
+    const emptyChat = document.getElementById('emptyChat');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const inputContainer = document.querySelector('.input-container');
+    const chatPanel = document.getElementById('chatPanel');
+    const chatsPanel = document.getElementById('chatsPanel');
+    document.getElementById('messagesContainer');
 
-// Funcionalidad para cambiar entre chats
-document.querySelectorAll('.chat-item').forEach(item => {
-    item.addEventListener('click', async function () {
-        if (window.innerWidth <= 768) {
-            chatsPanel.style.display = 'none';
-            chatPanel.classList.add('active');
+    // Estado inicial
+    if (emptyChat) emptyChat.style.display = 'flex';
+    if (messagesContainer) messagesContainer.style.display = 'none';
+    if (inputContainer) inputContainer.style.display = 'none';
+
+    // Detectar clics en chats
+    document.addEventListener('click', async (e) => {
+        const item = e.target.closest('.chat-item');
+        if (!item) return;
+
+
+        const tipo = item.dataset.tipo; // puede ser "privado" o "grupo"
+        const userId = item.dataset.chat; // id del usuario o grupo
+
+        const chatPanel = document.getElementById('chatPanel');
+        const messagesContainer = chatPanel.querySelector('.messages');
+        messagesContainer.innerHTML = "";
+
+        if (tipo === "grupo") {
+            console.log("Abrir chat grupal:", userId);
+
+            // Mostrar chat
+            if (emptyChat) emptyChat.style.display = 'none';
+            if (messagesContainer) messagesContainer.style.display = 'block';
+            if (inputContainer) inputContainer.style.display = 'flex';
+
+            // Actualizar encabezado
+            const chatAvatar = document.getElementById('userAvatar');
+            const chatName = document.getElementById('userName');
+            const userStatus = document.getElementById('userStatus');
+
+            const nombre = item.querySelector('.chat-name')?.textContent || 'Grupo';
+            const estado = item.dataset.estado || 'Activo';
+
+            chatName.textContent = nombre;
+            chatAvatar.innerHTML = '<i class="fas fa-users"></i>';
+
+            if (userStatus) {
+                if (estado === 'Activo') {
+                    userStatus.textContent = ' Activo';
+                    userStatus.style.color = '#28a745';
+                } else {
+                    userStatus.textContent = 'Inactivo';
+                    userStatus.style.color = '#dc3545';
+                }
+            }
+
+            // Guardar ID actual del chat
+            currentChatId = userId;
+
+            await loadMessages(userId, messagesContainer);
+            return;
         }
 
-        document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-        this.classList.add('active');
 
-        const idUsuario = this.getAttribute('data-chat');
-        const nombre = this.querySelector('.chat-name').textContent;
 
-        // Tomar foto si existe
-        const avatarImg = this.querySelector('.chat-avatar img');
-        const avatarHtml = avatarImg
-            ? `<img src="${avatarImg.src}" alt="${nombre}" class="avatar-img">`
-            : this.querySelector('.chat-avatar').textContent.trim();
+        // Obtener o crear el chat entre ambos usuarios
+        const response = await fetch('php/create_chat.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_usuario1: currentUserId, id_usuario2: userId })
+        });
 
-        // Actualizar encabezado del chat
-        const chatAvatar = document.getElementById('chatAvatar');
-        const chatName = document.getElementById('chatName');
-        chatAvatar.innerHTML = avatarHtml;
+        const data = await response.json();
+        if (!data.success) {
+            console.error("Error al crear/obtener chat:", data.error);
+            return;
+        }
+        // Mostrar los elementos del chat
+        if (emptyChat) emptyChat.style.display = 'none';
+        if (messagesContainer) messagesContainer.style.display = 'block';
+        if (inputContainer) inputContainer.style.display = 'flex';
+
+        const chatAvatar = document.getElementById('userAvatar');
+        const chatName = document.getElementById('userName');
+        const userStatus = document.getElementById('userStatus');
+        const nombre = item.querySelector('.chat-name')?.textContent || 'Chat';
+        const estado = item.dataset.estado || item.dataset.estado_conexion; // Actualizar encabezado 
         chatName.textContent = nombre;
+        chatAvatar.innerHTML = item.querySelector('.chat-avatar')?.innerHTML || nombre[0].toUpperCase();
+        // Estado visual 
+        if (userStatus) {
+            if (tipo === 'usuario') {
+                if (estado === 'online' || estado === 'Conectado') { userStatus.textContent = 'En línea'; userStatus.style.color = '#28a745'; }
+                else { userStatus.textContent = 'Desconectado'; userStatus.style.color = '#dc3545'; }
+            }
+            else if (tipo === 'grupo') {
+                if (estado === 'Activo') { userStatus.textContent = 'Activo'; userStatus.style.color = '#28a745'; }
+                else { userStatus.textContent = 'Inactivo'; userStatus.style.color = '#dc3545'; }
+            }
+            else { userStatus.textContent = ''; }
+        }
 
-        // Cargar mensajes desde el backend
-        await loadChatMessages(idUsuario);
+
+        // Guardamos el id_chat globalmente
+        currentChatId = data.id_chat;
+
+
+        await loadMessages(currentChatId, messagesContainer);
     });
+
+    // Botón atrás (modo móvil)
+    const backButton = document.getElementById('backButton');
+    backButton?.addEventListener('click', function () {
+        if (window.innerWidth <= 768) {
+            chatsPanel.style.display = 'flex';
+            chatPanel.classList.remove('active');
+        }
+    });
+
+    // Inicializar usuarios y grupos
+    loadUsers();
+    cargarGruposUsuario();
 });
+async function loadMessages(chatId, container) {
+    try {
+        const resp = await fetch(`php/get_message.php?id_chat=${chatId}`);
+        const mensajes = await resp.json();
+
+        container.innerHTML = "";
+
+        mensajes.forEach(msg => {
+            const div = document.createElement("div");
+            div.classList.add("message", msg.id_usuario === currentUserId ? "sent" : "received");
+
+            // ✅ Construir URL absoluta si no la trae completa
+            let content = msg.contenido;
+            if (msg.tipo !== "texto" && content && !content.startsWith("http")) {
+                content = `${window.location.origin}/onegoal_poi/${content}`;
+            }
+
+            // 🕒 Formatear hora
+            const hora = new Date(msg.fecha_envio).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            // ✅ Renderizar según tipo de mensaje
+            let messageContent = "";
+
+            switch (msg.tipo) {
+                case "texto":
+                    messageContent = `<div class="message-text">${sanitizeHTML(content)}</div>`;
+                    break;
+
+                case "imagen":
+                    messageContent = `
+                        <div class="message-image">
+                            <img src="${content}" alt="imagen"
+                                 onclick="window.open('${content}', '_blank')" />
+                        </div>`;
+                    break;
+
+                case "video":
+                    messageContent = `
+                        <div class="message-video">
+                            <video controls>
+                                <source src="${content}" type="video/mp4">
+                                Tu navegador no soporta video.
+                            </video>
+                        </div>`;
+                    break;
+
+                case "archivo":
+                    const fileName = decodeURIComponent(content.split('/').pop());
+                    messageContent = `
+                        <div class="message-file">
+                            <a href="${content}" target="_blank" download>
+                                📎 ${fileName}
+                            </a>
+                        </div>`;
+                    break;
+
+                default:
+                    messageContent = `<div class="message-text">[Tipo desconocido]</div>`;
+                    break;
+            }
+
+            // 🧩 Ensamblar mensaje
+            div.innerHTML = `
+                ${messageContent}
+                <div class="message-time">${hora}</div>
+            `;
+
+            container.appendChild(div);
+        });
+
+        // 📜 Mantener scroll abajo
+        container.scrollTop = container.scrollHeight;
+
+    } catch (error) {
+        console.error("Error al cargar mensajes:", error);
+    }
+}
+
+// Reutilizamos el sanitizador de texto
+function sanitizeHTML(str) {
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
+
 
 // Botón de regreso
 backButton.addEventListener('click', function () {
@@ -68,12 +233,11 @@ document.querySelectorAll('.round-button').forEach(button => {
 });
 
 // Función para actualizar la conversación según el chat seleccionado
-async function updateChatConversation(chatType) {
-    const chatId = getChatIdFromType(chatType); // función que mapee chatType → id_chat
+async function updateChatConversation(chatId) {
     messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
 
     try {
-        const response = await fetch(`get_messages.php?id_chat=${chatId}`);
+        const response = await fetch(`php/get_message.php?id_chat=${chatId}`);
         const messages = await response.json();
 
         messagesContainer.innerHTML = '';
@@ -95,8 +259,11 @@ async function updateChatConversation(chatType) {
         console.error("Error al cargar mensajes:", error);
     }
 }
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
 // --- Envío de mensajes ---
 sendBtn.addEventListener('click', sendMessage);
+
 
 messageInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
@@ -104,208 +271,85 @@ messageInput.addEventListener('keypress', function (e) {
     }
 });
 
+//-------MANDAR MENSAJES---------//
+
+
 async function sendMessage() {
-    const messageText = messageInput.value.trim();
-    if (!messageText) return;
+    const input = document.getElementById("messageInput");
+    const contenido = input.value.trim();
+    if (!contenido || !currentChatId) return;
+    console.log("currentChatId:", currentChatId, "currentUserId:", currentUserId);
+    console.log("contenido:", contenido);
 
-    const data = {
-        id_chat: currentChatId,
-        id_usuario: currentUserId,
-        contenido: messageText,
-        tipo: 'texto'
-    };
-
-    // Mostrarlo inmediatamente
-    renderMessage(messageText, 'sent');
-
-    // Guardarlo en la base
-    await fetch('send_message.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-
-    messageInput.value = '';
-}
-function simulateReply() {
-    const replies = [
-        "¡Interesante!",
-        "No lo había pensado así",
-        "¿Podrías explicarme más?",
-        "Estoy de acuerdo contigo",
-        "¿Qué opinas del Mundial 2026?",
-        "Eso suena genial"
-    ];
-
-    const randomReply = replies[Math.floor(Math.random() * replies.length)];
-    const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' +
-        (currentTime.getMinutes() < 10 ? '0' : '') +
-        currentTime.getMinutes();
-
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message received';
-    messageElement.innerHTML = `
-        <div class="message-text">${randomReply}</div>
-        <div class="message-time">${timeString}</div>
-    `;
-
-    messagesContainer.appendChild(messageElement);
-
-    // Hacer scroll al final
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// --- Grabación de audio ---
-recordBtn.replaceWith(recordBtn.cloneNode(true));
-document.getElementById('recordBtn').addEventListener('click', toggleRecording);
-
-async function toggleRecording() {
-    if (!isRecording) {
-        // Iniciar grabación
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                sendAudioMessage(audioBlob);
-            };
-
-            mediaRecorder.start();
-            isRecording = true;
-            recordBtn.classList.add('recording');
-            recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
-        } catch (error) {
-            console.error('Error al acceder al micrófono:', error);
-            alert('No se pudo acceder al micrófono. Por favor, verifica los permisos.');
+    try {
+        const resp = await fetch("php/send_message.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id_chat: currentChatId,
+                id_usuario: currentUserId,
+                contenido,
+                tipo: "texto"
+            })
+        });
+        const data = await resp.json();
+        if (data?.success) {
+            input.value = "";
+            const messagesContainer = document.getElementById("messagesContainer");
+            await loadMessages(currentChatId, messagesContainer);
+        } else {
+            console.error("Error al enviar mensaje:", data?.error);
         }
-    } else {
-        // Detener grabación
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
-            isRecording = false;
-            recordBtn.classList.remove('recording');
-            recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        }
+    } catch (err) {
+        console.error("Error en envío:", err);
     }
 }
+async function sendFileMessage(id_chat, id_usuario, file, tipo) {
+    const formData = new FormData();
+    formData.append("id_chat", id_chat);
+    formData.append("id_usuario", id_usuario);
+    formData.append("tipo", tipo);
+    formData.append("archivo", file);
 
-function sendAudioMessage(audioBlob) {
-    const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' +
-        (currentTime.getMinutes() < 10 ? '0' : '') +
-        currentTime.getMinutes();
+    try {
+        const resp = await fetch("php/send_message.php", {
+            method: "POST",
+            body: formData
+        });
 
-    // Crear URL para el audio
-    const audioUrl = URL.createObjectURL(audioBlob);
-    let audioElement = null;
+        const result = await resp.json();
+        console.log("📦 Respuesta servidor:", result);
 
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message sent audio-message';
-    messageElement.innerHTML = `
-        <div class="audio-player">
-            <i class="fas fa-play play-audio"></i>
-            <span>Audio</span>
-            <span class="audio-duration">0:05</span>
-        </div>
-        <div class="message-time">${timeString}</div>
-    `;
-
-    messagesContainer.appendChild(messageElement);
-
-    // Añadir evento para reproducir el audio
-    const playButton = messageElement.querySelector('.play-audio');
-
-    playButton.addEventListener('click', function () {
-        if (!audioElement) {
-            audioElement = new Audio(audioUrl);
-        }
-
-        if (audioElement.paused) {
-            audioElement.play();
-            this.className = 'fas fa-pause play-audio';
-
-            audioElement.onended = () => {
-                this.className = 'fas fa-play play-audio';
-            };
+        if (result.success) {
+            renderMessage(result.url || result.contenido, result.tipo);
         } else {
-            audioElement.pause();
-            audioElement.currentTime = 0;
-            this.className = 'fas fa-play play-audio';
+            alert("❌ Error al enviar archivo: " + (result.error || "Desconocido"));
         }
-    });
-
-    // Hacer scroll al final
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Simular respuesta después de un tiempo
-    setTimeout(simulateReply, 1000 + Math.random() * 3000);
+    } catch (error) {
+        console.error("Error al enviar archivo:", error);
+    }
 }
-
-// --- Adjuntar archivos ---
 attachBtn.addEventListener('click', () => {
     fileInput.click();
 });
 
-fileInput.addEventListener('change', function () {
-    if (this.files && this.files[0]) {
-        sendFileMessage(this.files[0]);
-        this.value = ''; // Resetear el input
-    }
+
+fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Detectar tipo
+    let tipo = "archivo";
+    const mime = file.type;
+    if (mime.startsWith("image/")) tipo = "imagen";
+    else if (mime.startsWith("video/")) tipo = "video";
+    else if (mime.startsWith("audio/")) tipo = "audio";
+    else tipo = "archivo";
+
+    console.log("📎 Tipo detectado:", tipo);
+
+    await sendFileMessage(currentChatId, currentUserId, file, tipo);
 });
-
-function sendFileMessage(file) {
-    const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' +
-        (currentTime.getMinutes() < 10 ? '0' : '') +
-        currentTime.getMinutes();
-
-    const fileExtension = file.name.split('.').pop().toLowerCase();
-    let fileIcon = 'fa-file';
-
-    // Determinar el icono según el tipo de archivo
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
-        fileIcon = 'fa-file-image';
-    } else if (['pdf'].includes(fileExtension)) {
-        fileIcon = 'fa-file-pdf';
-    } else if (['doc', 'docx'].includes(fileExtension)) {
-        fileIcon = 'fa-file-word';
-    } else if (['xls', 'xlsx'].includes(fileExtension)) {
-        fileIcon = 'fa-file-excel';
-    } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
-        fileIcon = 'fa-file-audio';
-    } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
-        fileIcon = 'fa-file-video';
-    }
-
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message sent file-message';
-    messageElement.innerHTML = `
-        <div class="file-attachment">
-            <i class="fas ${fileIcon}"></i>
-            <div class="file-info">
-                <span class="file-name">${file.name}</span>
-                <span class="file-size">${formatFileSize(file.size)}</span>
-            </div>
-        </div>
-        <div class="message-time">${timeString}</div>
-    `;
-
-    messagesContainer.appendChild(messageElement);
-
-    // Hacer scroll al final
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Simular respuesta después de un tiempo
-    setTimeout(simulateReply, 1000 + Math.random() * 3000);
-}
 
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
@@ -315,196 +359,7 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// --- Funcionalidad de llamadas ---
-const voiceCallBtn = document.getElementById('voiceCallBtn');
-const videoCallBtn = document.getElementById('videoCallBtn');
-const voiceCallModal = document.getElementById('voiceCallModal');
-const videoCallModal = document.getElementById('videoCallModal');
-const incomingCallModal = document.getElementById('incomingCallModal');
 
-// Llamada de voz
-voiceCallBtn.addEventListener('click', () => {
-    voiceCallModal.style.display = 'flex';
-});
-
-// Videollamada
-videoCallBtn.addEventListener('click', async () => {
-    videoCallModal.style.display = 'flex';
-    await startVideoCall();
-});
-
-// Función para iniciar videollamada
-async function startVideoCall() {
-    try {
-        // Obtener acceso a cámara y micrófono
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            },
-            audio: true
-        });
-
-        // Mostrar video local
-        const localVideo = document.getElementById('localVideo');
-        const localPlaceholder = document.getElementById('localPlaceholder');
-        localVideo.srcObject = localStream;
-        localVideo.style.display = 'block';
-        localPlaceholder.style.display = 'none';
-
-        // Simular video remoto (en una app real esto vendría del otro usuario)
-        simulateRemoteVideo();
-
-    } catch (error) {
-        console.error('Error al acceder a la cámara:', error);
-        alert('No se pudo acceder a la cámara. Usando vista previa.');
-        // Mantener placeholders si falla
-    }
-}
-
-// Función para simular video remoto (en una app real esto sería una conexión real)
-function simulateRemoteVideo() {
-    const remoteVideo = document.getElementById('remoteVideo');
-    const remotePlaceholder = document.getElementById('remotePlaceholder');
-
-    // En una aplicación real, aquí conectarías con el stream del otro usuario
-    // Por ahora mostramos el placeholder
-    remoteVideo.style.display = 'none';
-    remotePlaceholder.style.display = 'flex';
-}
-
-// Colgar llamada de voz
-document.getElementById('hangupVoiceCall').addEventListener('click', () => {
-    voiceCallModal.style.display = 'none';
-});
-
-// Colgar videollamada
-document.getElementById('hangupVideoCall').addEventListener('click', () => {
-    stopVideoCall();
-    videoCallModal.style.display = 'none';
-});
-
-// Función para detener la videollamada
-function stopVideoCall() {
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-    }
-
-    // Ocultar videos y mostrar placeholders
-    document.getElementById('localVideo').style.display = 'none';
-    document.getElementById('localPlaceholder').style.display = 'flex';
-    document.getElementById('remoteVideo').style.display = 'none';
-    document.getElementById('remotePlaceholder').style.display = 'flex';
-}
-
-// Simular llamada entrante después de 5 segundos (para demostración)
-setTimeout(() => {
-    // incomingCallModal.style.display = 'flex';
-}, 5000);
-
-// Aceptar llamada entrante
-document.getElementById('acceptCall').addEventListener('click', () => {
-    incomingCallModal.style.display = 'none';
-    voiceCallModal.style.display = 'flex';
-});
-
-// Rechazar llamada entrante
-document.getElementById('declineCall').addEventListener('click', () => {
-    incomingCallModal.style.display = 'none';
-});
-
-// Control de mute en llamada de voz
-document.getElementById('muteBtn').addEventListener('click', function () {
-    this.classList.toggle('active');
-    const icon = this.querySelector('i');
-    if (this.classList.contains('active')) {
-        icon.className = 'fas fa-microphone-slash';
-    } else {
-        icon.className = 'fas fa-microphone';
-    }
-});
-
-// Control de speaker en llamada de voz
-document.getElementById('speakerBtn').addEventListener('click', function () {
-    this.classList.toggle('active');
-});
-
-// Control de video en videollamada
-document.getElementById('videoMuteBtn').addEventListener('click', function () {
-    if (localStream) {
-        const videoTrack = localStream.getVideoTracks()[0];
-        if (videoTrack) {
-            videoTrack.enabled = !videoTrack.enabled;
-            this.classList.toggle('active');
-            const icon = this.querySelector('i');
-            icon.className = videoTrack.enabled ? 'fas fa-video' : 'fas fa-video-slash';
-
-            // Mostrar u ocultar el placeholder según el estado de la cámara
-            const localVideo = document.getElementById('localVideo');
-            const localPlaceholder = document.getElementById('localPlaceholder');
-
-            if (videoTrack.enabled) {
-                // Mostrar video
-                localVideo.style.display = 'block';
-                localPlaceholder.style.display = 'none';
-            } else {
-                // Mostrar placeholder con perfil
-                localVideo.style.display = 'none';
-                localPlaceholder.style.display = 'flex';
-            }
-        }
-    }
-});
-
-// Control de audio en videollamada
-document.getElementById('videoAudioMuteBtn').addEventListener('click', function () {
-    if (localStream) {
-        const audioTrack = localStream.getAudioTracks()[0];
-        if (audioTrack) {
-            audioTrack.enabled = !audioTrack.enabled;
-            this.classList.toggle('active');
-            const icon = this.querySelector('i');
-            icon.className = audioTrack.enabled ? 'fas fa-microphone' : 'fas fa-microphone-slash';
-        }
-    }
-});
-
-// Control de speaker en videollamada
-document.getElementById('videoSpeakerBtn').addEventListener('click', function () {
-    this.classList.toggle('active');
-});
-
-// --- Funcionalidad para crear grupos ---
-const createGroupBtn = document.getElementById('createGroupBtn');
-const createGroupModal = document.getElementById('createGroupModal');
-const confirmCreateGroup = document.getElementById('confirmCreateGroup');
-
-createGroupBtn.addEventListener('click', () => {
-    createGroupModal.style.display = 'flex';
-});
-
-confirmCreateGroup.addEventListener('click', () => {
-    // Redirigir a la página de creación de grupos
-    window.location.href = 'grupos.html';
-});
-
-// Manejar cambios de tamaño de ventana
-window.addEventListener('resize', function () {
-    if (window.innerWidth > 768) {
-        // En pantallas grandes, mostrar ambos paneles
-        chatsPanel.style.display = 'flex';
-        chatsPanel.style.width = '35%';
-        chatPanel.style.display = 'flex';
-        chatPanel.style.width = '65%';
-        chatPanel.style.position = 'relative';
-    } else {
-        // En pantallas pequeñas, ajustar para vista móvil
-        chatsPanel.style.width = '100%';
-        chatPanel.style.width = '100%';
-        chatPanel.style.position = 'absolute';
-    }
-});
 
 // Elementos para las listas
 const conversationsList = document.getElementById('conversationsList');
@@ -538,21 +393,28 @@ document.querySelectorAll('.round-button').forEach(button => {
 // Añadir event listeners para los grupos
 document.querySelectorAll('#groupsList .chat-item').forEach(item => {
     item.addEventListener('click', function () {
-        // Ocultar panel de chats en móvil
+        // Ocultar panel izquierdo en móvil
         if (window.innerWidth <= 768) {
             document.getElementById('chatsPanel').style.display = 'none';
             document.getElementById('chatPanel').classList.add('active');
         }
 
-        // Resaltar chat activo
-        document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+        // Resaltar grupo activo
+        document.querySelectorAll('.chat-item').forEach(c => c.classList.remove('active'));
         this.classList.add('active');
 
-        // Obtener nombre y estado del grupo
-        const groupName = this.querySelector('.chat-name').childNodes[0].textContent.trim();
-        const groupEstado = this.getAttribute('data-estado'); // debe venir del atributo en el HTML dinámico
+        // Mostrar secciones del chat
+        const emptyChat = document.getElementById('emptyChat');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const inputContainer = document.querySelector('.input-container');
+        if (emptyChat) emptyChat.style.display = 'none';
+        if (messagesContainer) messagesContainer.style.display = 'flex';
+        if (inputContainer) inputContainer.style.display = 'flex';
 
-        // Actualizar encabezado del chat
+        // Actualizar encabezado
+        const groupName = this.querySelector('.chat-name').childNodes[0].textContent.trim();
+        const groupEstado = this.getAttribute('data-estado');
+
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const userStatus = document.getElementById('userStatus');
@@ -561,94 +423,133 @@ document.querySelectorAll('#groupsList .chat-item').forEach(item => {
         userAvatar.innerHTML = '<i class="fas fa-users"></i>';
 
         if (groupEstado === 'Activo') {
-            userStatus.textContent = '🟢 Activo';
+            userStatus.textContent = 'Activo';
             userStatus.style.color = '#28a745';
         } else {
-            userStatus.textContent = '🔴 Inactivo';
+            userStatus.textContent = 'Inactivo';
             userStatus.style.color = '#dc3545';
         }
 
-        // Cargar conversación
-        updateGroupConversation(this.getAttribute('data-chat'));
-    });
-});
-// Añadir event listeners para las llamadas (para redial)
-document.querySelectorAll('#callsList .call-item').forEach(item => {
-    item.addEventListener('click', function () {
-        const contactName = this.querySelector('.call-name').textContent;
-        const contactAvatar = this.querySelector('.call-avatar').textContent;
 
-        // Actualizar información del contacto
-        document.querySelector('.chat-header .chat-name').textContent = contactName;
-        document.querySelector('.chat-header .user-avatar').textContent = contactAvatar;
-
-        // Mostrar modal de llamada
-        voiceCallModal.style.display = 'flex';
+        updateGroupConversation(this.dataset.chat);
     });
 });
 
 // Función para actualizar conversación de grupo
-function updateGroupConversation(groupType) {
-    const messagesContainer = document.querySelector('.messages-container');
+function updateGroupConversation(groupId) {
+    const messagesContainer = document.getElementById('messagesContainer');
     messagesContainer.innerHTML = '';
 
-    if (groupType === 'grupo1') {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">¡Hola a todos! ¿Listos para el Mundial?</div>
-                <div class="message-time">10:30</div>
-            </div>
-            <div class="message sent">
-                <div class="message-text">¡Claro! Ya tengo mis boletos</div>
-                <div class="message-time">10:31</div>
-            </div>
-            <div class="message received">
-                <div class="message-text">Yo también, nos vemos en el estadio</div>
-                <div class="message-time">10:32</div>
-            </div>
-        `;
-    } else if (groupType === 'grupo2') {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">¿Qué opinan del nuevo formato?</div>
-                <div class="message-time">09:15</div>
-            </div>
-            <div class="message sent">
-                <div class="message-text">Me gusta, más equipos participan</div>
-                <div class="message-time">09:16</div>
-            </div>
-        `;
-    } else {
-        messagesContainer.innerHTML = `
-            <div class="message received">
-                <div class="message-text">Bienvenidos al grupo</div>
-                <div class="message-time">12:00</div>
-            </div>
-            <div class="message sent">
-                <div class="message-text">¡Gracias por la invitación!</div>
-                <div class="message-time">12:01</div>
-            </div>
-        `;
-    }
+    const conversaciones = {
+        grupo1: [
+            { type: 'received', text: '¡Hola a todos! ¿Listos para el Mundial?', time: '10:30' },
+            { type: 'sent', text: '¡Claro! Ya tengo mis boletos!', time: '10:31' }
+        ],
+        grupo2: [
+            { type: 'received', text: '¿Qué opinan del nuevo formato?', time: '09:15' },
+            { type: 'sent', text: 'Me gusta, más equipos participan', time: '09:16' }
+        ],
+        default: [
+            { type: 'received', text: 'Bienvenidos al grupo', time: '12:00' },
+            { type: 'sent', text: '¡Gracias por la invitación!', time: '12:01' }
+        ]
+    };
 
-    // Hacer scroll al final de los mensajes
+    const mensajes = conversaciones[groupId] || conversaciones.default;
+
+    mensajes.forEach(msg => {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', msg.type);
+        msgDiv.innerHTML = `
+            <div class="message-text">${msg.text}</div>
+            <div class="message-time">${msg.time}</div>
+        `;
+        messagesContainer.appendChild(msgDiv);
+    });
+
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
-function renderMessage(text, type) {
+
+function renderMessage(content, type, sent = true) {
+    const messagesContainer = document.querySelector('#messagesContainer');
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', type);
+
+    // 📌 Asignar clases base
+
+    messageDiv.classList.add(sent ? 'sent' : 'received');
+
+   
+    if (type !== "texto" && content && !content.startsWith('http') && !content.startsWith('blob:')) {
+        content = `uploads/${content}`;
+    }
+
+    let messageContent = "";
+
+    switch (type) {
+        case "texto":
+            messageContent = `
+                <div class="message-text">${sanitizeHTML(content)}</div>
+            `;
+            break;
+
+        case "imagen":
+            messageContent = `
+                <div class="message-image">
+                    <img src="${content}" alt="imagen" 
+                         onclick="window.open('${content}', '_blank')" />
+                </div>
+            `;
+            break;
+
+        case "video":
+            messageContent = `
+                <div class="message-video">
+                    <video controls>
+                        <source src="${content}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+                </div>
+            `;
+            break;
+
+        case "archivo":
+            const fileName = decodeURIComponent(content.split('/').pop());
+            messageContent = `
+                <div class="message-file">
+                    <a href="${content}" target="_blank" download>
+                         ${fileName}
+                    </a>
+                </div>
+            `;
+            break;
+
+        default:
+            messageContent = `
+                <div class="message-text">[Tipo de mensaje desconocido]</div>
+            `;
+            break;
+    }
+
+    // 📦 Estructura final del mensaje
     messageDiv.innerHTML = `
-        <div class="message-text">${text}</div>
+        ${messageContent}
         <div class="message-time">${currentTime}</div>
     `;
+
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+/* 🔒 Evita inyecciones HTML en texto */
+function sanitizeHTML(str) {
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerHTML;
 }
 const searchBox = document.querySelector('.search-box');
 let usuarios = [];
 let userAvatarMap = {};
-let currentUserId = null;
 
 async function loadUsers() {
     try {
@@ -667,11 +568,9 @@ async function loadUsers() {
         const userName = document.getElementById('userName');
         const userStatus = document.getElementById('userStatus');
 
-        if (user.foto_perfil) {
-            userAvatar.innerHTML = `<img src="${user.foto_perfil}" alt="Perfil" class="avatar-img">`;
-        } else {
-            userAvatar.textContent = user.nombre.charAt(0).toUpperCase();
-        }
+        userAvatar.innerHTML = user.foto_perfil
+            ? `<img src="${user.foto_perfil}" alt="Perfil" class="avatar-img">`
+            : user.nombre.charAt(0).toUpperCase();
 
         userName.textContent = user.nombre;
         userStatus.textContent = user.estado_conexion === 'online' ? ' En línea' : ' Desconectado';
@@ -685,11 +584,12 @@ async function loadUsers() {
                 : u.nombre[0];
         });
 
+        currentUserId = data.current_user.id_usuario;
+
     } catch (error) {
         console.error("Error al cargar usuarios:", error);
     }
 }
-
 // Filtrar usuarios al escribir
 searchBox.addEventListener('input', function () {
     const query = this.value.toLowerCase();
@@ -699,36 +599,39 @@ searchBox.addEventListener('input', function () {
     filtered.forEach(user => {
         const div = document.createElement('div');
         div.classList.add('chat-item');
-        div.setAttribute('data-chat', user.id_usuario);
+        div.dataset.chat = user.id_usuario;
+        div.dataset.tipo = 'usuario';
+        div.dataset.estado_conexion = user.estado_conexion;
 
         div.innerHTML = `
-      <div class="chat-avatar">
-        ${user.foto_perfil
+            <div class="chat-avatar">
+                ${user.foto_perfil
                 ? `<img src="${user.foto_perfil}" alt="${user.nombre}" class="avatar-img">`
-                : user.nombre[0]
-            }
-      </div>
-      <div class="chat-info">
-        <div class="chat-name">${user.nombre}</div>
-        <div class="chat-preview">Iniciar chat</div>
-      </div>
-      <div class="chat-time">Ahora</div>
-    `;
-
-        div.addEventListener('click', () => {
-            startChatWith(user.id_usuario, user.nombre);
-        });
+                : user.nombre[0]}
+            </div>
+            <div class="chat-info">
+                <div class="chat-name">${user.nombre}</div>
+                <div class="chat-preview">Iniciar chat</div>
+            </div>
+            <div class="chat-time">Ahora</div>
+        `;
 
         conversationsList.appendChild(div);
     });
 });
-
 function startChatWith(userId, userName) {
-    currentChatId = null;
+
+    if (userId == currentUserId) {
+        console.warn("No puedes iniciar un chat contigo mismo");
+        return;
+    }
+
+    const messagesContainer = document.querySelector('messagesContainer');
     document.querySelector('.chat-header .chat-name').textContent = userName;
-    document.querySelector('.chat-header .user-avatar').textContent = userName[0];
+    document.querySelector('.chat-header .user-avatar').innerHTML = userAvatarMap[userId] || userName[0];
     messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
 }
+
 
 
 //-----------ESTO ES PARA LO DE LOS GRUPOOS--------------//
@@ -754,7 +657,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarGruposUsuario();
 });
 
-
 function cargarGruposUsuario() {
     fetch('php/grupo_chat.php')
         .then(res => res.json())
@@ -764,35 +666,28 @@ function cargarGruposUsuario() {
                 groupsList.innerHTML = '';
 
                 data.grupos.forEach(g => {
-                    // Estado visual (emoji y color)
-                    const estadoGrupo = g.estado === 'Activo'
-                        ? '<span class="estado-grupo activo">🟢 Activo</span>'
-                        : '<span class="estado-grupo inactivo">🔴 Inactivo</span>';
-
-                    // Crear el item del grupo
                     const div = document.createElement('div');
                     div.classList.add('chat-item');
-                    div.setAttribute('data-chat', 'grupo' + g.id_grupo);
-                    div.setAttribute('data-estado', g.estado); // 👈 aquí guardamos el estado real
+                    div.dataset.chat = g.id_chat; // ahora sí es real
+                    div.dataset.tipo = 'grupo';
+                    div.dataset.estado = g.estado;
 
                     div.innerHTML = `
-            <div class="chat-avatar"><i class="fas fa-users"></i></div>
-            <div class="chat-info">
-              <div class="chat-name">${g.nombre}</div>
-              <div class="chat-last">${estadoGrupo} — Creador: ${g.nombre_creador}</div>
-            </div>
-          `;
+        <div class="chat-avatar"><i class="fas fa-users"></i></div>
+        <div class="chat-info">
+            <div class="chat-name">${g.nombre}</div>
+            <div class="chat-last">${g.estado === 'Activo' ? ' Activo' : ' Inactivo'} — Creador: ${g.nombre_creador}</div>
+        </div>
+    `;
 
                     groupsList.appendChild(div);
                 });
 
-                // Activar listeners una vez generados los grupos
-                activarListenersGrupos();
+                attachGroupListeners(); // agregar event listeners dinámicamente
             }
         })
         .catch(err => console.error('Error cargando grupos:', err));
 }
-
 function attachGroupListeners() {
     document.querySelectorAll('#groupsList .chat-item').forEach(item => {
         item.addEventListener('click', function () {
@@ -804,8 +699,12 @@ function attachGroupListeners() {
             this.classList.add('active');
 
             const groupName = this.querySelector('.chat-name').textContent;
-            document.querySelector('.chat-header .chat-name').textContent = groupName;
+            currentChatId = parseInt(this.dataset.chat); // ✅ número real
+            document.querySelector('.chat-header .chat-name').textContent = this.querySelector('.chat-name').textContent;
             document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
+
+            updateChatConversation('currentChatId'); // carga mensajes
+
 
             updateGroupConversation(this.getAttribute('data-chat'));
         });
@@ -813,40 +712,40 @@ function attachGroupListeners() {
 }
 
 function activarListenersGrupos() {
-  document.querySelectorAll('#groupsList .chat-item').forEach(item => {
-    item.addEventListener('click', function () {
-      // Ocultar lista en móviles
-      if (window.innerWidth <= 768) {
-        document.getElementById('chatsPanel').style.display = 'none';
-        document.getElementById('chatPanel').classList.add('active');
-      }
+    document.querySelectorAll('#groupsList .chat-item').forEach(item => {
+        item.addEventListener('click', function () {
+            // Ocultar lista en móviles
+            if (window.innerWidth <= 768) {
+                document.getElementById('chatsPanel').style.display = 'none';
+                document.getElementById('chatPanel').classList.add('active');
+            }
 
-      // Quitar "active" de todos y agregarlo al actual
-      document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-      this.classList.add('active');
+            // Quitar "active" de todos y agregarlo al actual
+            document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
+            this.classList.add('active');
 
-      // Obtener datos del grupo
-      const groupName = this.querySelector('.chat-name').textContent.trim();
-      const estadoGrupo = this.getAttribute('data-estado');
+            // Obtener datos del grupo
+            const groupName = this.querySelector('.chat-name').textContent.trim();
+            const estadoGrupo = this.getAttribute('data-estado');
 
-      // Actualizar encabezado del chat
-      const userName = document.getElementById('userName');
-      const userAvatar = document.getElementById('userAvatar');
-      const userStatus = document.getElementById('userStatus');
+            // Actualizar encabezado del chat
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            const userStatus = document.getElementById('userStatus');
 
-      userName.textContent = groupName;
-      userAvatar.innerHTML = '<i class="fas fa-users"></i>';
+            userName.textContent = groupName;
+            userAvatar.innerHTML = '<i class="fas fa-users"></i>';
 
-      if (estadoGrupo === 'Activo') {
-        userStatus.textContent = 'Activo';
-        userStatus.style.color = '#28a745';
-      } else {
-        userStatus.textContent = 'Inactivo';
-        userStatus.style.color = '#dc3545';
-      }
+            if (estadoGrupo === 'Activo') {
+                userStatus.textContent = 'Activo';
+                userStatus.style.color = '#28a745';
+            } else {
+                userStatus.textContent = 'Inactivo';
+                userStatus.style.color = '#dc3545';
+            }
 
-      // Mostrar conversación del grupo
-      updateGroupConversation(this.getAttribute('data-chat'));
+            // Mostrar conversación del grupo
+            updateGroupConversation(this.getAttribute('data-chat'));
+        });
     });
-  });
 }

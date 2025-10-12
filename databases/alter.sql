@@ -1,0 +1,1 @@
+ALTER TABLE mensaje MODIFY tipo ENUM('texto','imagen','video','audio','archivo') NOT NULL; 

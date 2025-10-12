@@ -34,6 +34,7 @@
             </button>
         </div>
 
+
         <div class="buttons-container">
             <button class="round-button active" data-tab="conversations">Conversaciones</button>
             <button class="round-button" data-tab="groups">Grupos</button>
@@ -51,7 +52,7 @@
 
         <!-- Lista de grupos (oculta por defecto) -->
         <div class="chats-list" id="groupsList" style="display: none;">
-            <div class="chat-item" data-chat="grupo1" data-estado="">
+            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Fans Mundial 2026 <span class="world-cup-theme">48 miembros</span></div>
@@ -60,7 +61,7 @@
                 <div class="chat-time">10:15</div>
             </div>
 
-            <div class="chat-item" data-chat=grupo2 data-estado="">
+            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Amantes del Fútbol <span class="world-cup-theme">23 miembros</span></div>
@@ -69,7 +70,7 @@
                 <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item" data-chat="grupo3" >
+            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Viaje al Mundial <span class="world-cup-theme">15 miembros</span></div>
@@ -78,7 +79,7 @@
                 <div class="chat-time">Ayer</div>
             </div>
 
-            <div class="chat-item" data-chat="grupo4">
+            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
                 <div class="chat-avatar"><i class="fas fa-users"></i></div>
                 <div class="chat-info">
                     <div class="chat-name">Fantasy League <span class="world-cup-theme">32 miembros</span></div>
@@ -171,65 +172,14 @@
                 <i class="fas fa-ellipsis-v"></i>
             </div>
         </div>
+        <div class="empty-chat" id="emptyChat">
+            <p>Busca un usuario para empezar a chatear </p>
+        </div>
 
-        <div class="messages-container" id="messagesContainer">
-          
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
+        <div class="messages" id="messagesContainer">
 
-            <div class="message sent">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
 
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
 
-            <div class="message sent">
-                <div class="message-text">
-                    </div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message sent">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message sent">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message sent">
-                <div class="message-text">
-                </div>
-                <div class="message-time"></div>
-            </div>
-
-            <div class="message received">
-                <div class="message-text"></div>
-                <div class="message-time"></div>
-            </div>
         </div>
 
         <div class="input-container">
@@ -243,6 +193,7 @@
             </button>
         </div>
     </div>
+
 
     <!-- Modal para crear grupos -->
     <div id="createGroupModal" class="call-modal">
@@ -341,8 +292,14 @@
             </div>
         </div>
     </div>
+    <!-------->
+    <div id="imageModal" class="image-modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
 
     <script src="Js/chat.js"></script>
+    <script src="Js/chat_funciones.js"></script>
 </body>
 
 </html>

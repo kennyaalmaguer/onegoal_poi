@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We are 2026</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/modal_CrearPub.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+</head>
+
+<body>
+
+  <header class="d-flex justify-content-between align-items-center p-3 bg-transparent shadow-sm">
+
+    <div class="logo">
+      <img src="img/2.png" alt="Logo Mundial" style="height:50px;">
+    </div>
+    <div class="flex-grow-1 mx-4">
+      <input type="text" class="form-control" placeholder="Buscar mundial, jugador, país...">
+    </div>
+    <div class="perfil">
+     <a href="perfil.html"><i class="bi bi-person-circle"></i></a>
+    </div>
+  </header>
+
+
+  <main class="text-center my-5">
+    <h1 class="display-3 fw-bold">We are 2026</h1>
+    <p class="lead"> El mundial es un torneo internacional de fútbol que se celebra cada cuatro años y en el que participan selecciones 
+      nacionales de diferentes países. Es organizado por la FIFA y reúne a las mejores 
+      selecciones de fútbol de todo el mundo, quienes compiten por el título de campeón mundial.Te invitamos a ser parte de este foro en dónde entre todos compartiremos datos interesantes sobre este evento.  </p>
+    <a href="Login.html" class="btn btn-outline-primary btn-sm">Iniciar sesión</a>
+    <a href="registro.html" class="btn btn-primary btn-sm ms-2">Registrarse</a>
+  </main>
+
+
+  <section class="container mb-5">
+    <h4 class="mb-4">Historia de los Mundiales</h4>
+    <div class="row g-4">
+
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <img src=https://www.laizquierdadiario.mx/IMG/jpg/seleccion_argentina_1930.jpg alt="Mundial 1930">
+            <div class="caption">
+              <h5>1930 - Uruguay</h5>
+              <p>Primer mundial de la historia; Uruguay campeón en casa.</p>
+            </div>
+          </div>
+
+          
+        </div>
+ <!-- Controles -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <section class="container mb-5">
+    <h4>Filtrar Mundiales</h4>
+    <div class="row g-2">
+      <div class="col-md-4">
+        <select class="form-select">
+          <option selected>Selecciona país sede...</option>
+          <option>Uruguay</option>
+          <option>Brasil</option>
+          <option>Suiza</option>
+          <option>Suecia</option>
+          <option>México</option>
+          <option>Estados Unidos</option>
+          <option>Sudáfrica</option>
+          <option>Catar</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select">
+          <option selected>Ordenar por...</option>
+          <option>Cronológico</option>
+          <option>País</option>
+          <option>Más Likes</option>
+          <option>Más Comentarios</option>
+        </select>
+      </div>
+    </div>
+  </section>
+  <div id="dashboard" class="grid">
+    <div class="grid-sizer"></div>
+
+    <div class="publicacion">
+      <div class="pub-header">
+        <div class="usuario">
+          <div class="avatar"
+            style="background-image: url('https://i.pinimg.com/736x/79/9e/10/799e104095a372e5dfef0f0bb4b37b97.jpg');">
+          </div>
+          <span class="nombre">Juan Pérez</span>
+        </div>
+        <div class="detalle">
+          <span><strong>Mundial:</strong> Brasil 2014</span>
+          <span><strong>Categoría:</strong> Polémicas</span>
+          <span><strong>Selección:</strong> Mexicana</span>
+        </div>
+      </div>
+
+      <h3 class="titulo">⚽ Penal que no era penal</h3>
+
+      <div class="media">
+        <img src="https://a.espncdn.com/photo/2020/0331/r684914_1296x729_16-9.jpg" alt="Imagen publicación">
+      </div>
+
+      <div class="fechas">
+        <span> Elaboración: 2022-11-21 18:00</span>
+        <span> Aprobación: 2022-11-22 10:30</span>
+      </div>
+
+      <div class="interacciones">
+        <span><i class="bi bi-hand-thumbs-up"></i> 120 likes</span>
+        <span><i class="bi bi-chat-dots"></i> 45 comentarios</span>
+        <span><i class="bi bi-eye"></i> 800 vistas</span>
+      </div>
+
+      <div class="comentar">
+        <input type="text" id="nuevoComentario" placeholder="Escribe un comentario...">
+        <button onclick="agregarComentario()">Comentar</button>
+      </div>
+
+      <div class="comentarios" id="listaComentarios">
+        <p><strong>Pedro:</strong> Ese penal nunca debió marcarse.</p>
+        <p><strong>María:</strong> Totalmente de acuerdo.</p>
+      </div>
+
+    </div>
+    <div class="publicacion">
+      <div class="pub-header">
+        <div class="usuario">
+          <div class="avatar"
+            style="background-image: url('https://ih1.redbubble.net/image.4700178100.5784/flat,750x,075,f-pad,750x1000,f8f8f8.jpg');">
+          </div>
+          <span class="nombre">Yapura Meri</span>
+        </div>
+        <div class="detalle">
+          <span><strong>Mundial:</strong> Qatar 2022</span>
+          <span><strong>Categoría:</strong> Copas</span>
+          <span><strong>Selección:</strong>Argentina</span>
+        </div>
+      </div>
+
+      <h3 class="titulo"> Después de 18 años, grande Argentina vuelve a ser campeón, te extrañaré Messi :c</h3>
+
+      <div class="media">
+        <img
+          src="https://phantom-elmundo.uecdn.es/2f9339261cdcb9a44080f4abb94aa98b/crop/1x20/604x422/resize/828/f/jpg/assets/multimedia/imagenes/2022/12/21/16716186079591.jpg"
+          alt="Imagen publicación">
+      </div>
+
+      <div class="fechas">
+        <span> Elaboración: 2025-04-21 15:00</span>
+        <span> Aprobación: 2025-04-23 2:30</span>
+      </div>
+
+      <div class="interacciones">
+        <span><i class="bi bi-hand-thumbs-up"></i> 50 likes</span>
+        <span><i class="bi bi-chat-dots"></i> 16 comentarios</span>
+        <span><i class="bi bi-eye"></i> 80 vistas</span>
+      </div>
+
+      <div class="comentar">
+        <input type="text" id="nuevoComentario" placeholder="Escribe un comentario...">
+        <button onclick="agregarComentario()">Comentar</button>
+      </div>
+
+      <div class="comentarios" id="listaComentarios">
+        <p><strong>Jesús Escalante</strong> qué dices, pero si Messi aun sigue jugando</p>
+        <p><strong>Alejandro Juárez</strong> ya se venía venir, Argentina campeón</p>
+      </div>
+    </div>
+    <div class="publicacion">
+      <div class="pub-header">
+        <div class="usuario">
+          <div class="avatar"
+            style="background-image: url('https://i.redd.it/cool-pfp-type-fanart-i-made-v0-000ob270kp7e1.png?width=1100&format=png&auto=webp&s=5e3d2fb3bbafdf48c95f6516071db050b24c6aec');">
+          </div>
+          <span class="nombre">Samuel Gonzalez</span>
+        </div>
+        <div class="detalle">
+          <span><strong>Mundial:</strong> Sudafrica 2010</span>
+          <span><strong>Categoría:</strong> Copas</span>
+          <span><strong>Selección:</strong>Corea del norte</span>
+        </div>
+      </div>
+
+      <h3 class="titulo">¿Se han preguntado que sucede con Corea del Norte? bueno, yo sí me parece impresionante
+        que hasta el 2010 aparecieran en algún mundial
+      </h3>
+
+      <div class="media">
+        <img src=https://e00-elmundo.uecdn.es/mundial/2010/imagenes/2010/06/18/1276861689_0.jpg
+          alt="Imagen publicación">
+      </div>
+
+      <div class="fechas">
+        <span> Elaboración: 2024-03-24 15:00</span>
+        <span> Aprobación: 2024-03-24 20:30</span>
+      </div>
+
+      <div class="interacciones">
+        <span><i class="bi bi-hand-thumbs-up"></i> 40 likes</span>
+        <span><i class="bi bi-chat-dots"></i> 50 comentarios</span>
+        <span><i class="bi bi-eye"></i> 164 vistas</span>
+      </div>
+
+      <div class="comentar">
+        <input type="text" id="nuevoComentario" placeholder="Escribe un comentario...">
+        <button onclick="agregarComentario()">Comentar</button>
+      </div>
+
+      <div class="comentarios" id="listaComentarios">
+        <div class="card-comentario">
+          <div class="usuario">
+            <div class="avatar"
+              style="background-image:url('https://i.pinimg.com/236x/94/8f/91/948f912fa3cb07527c3dfa38ae449cfc.jpg');">
+            </div>
+            <span class="nombre">Pedro</span>
+          </div>
+          <p>Apoco sí pa</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="publicacion">
+      <div class="pub-header">
+        <div class="usuario">
+          <div class="avatar"
+            style="background-image: url('https://i.pinimg.com/474x/eb/58/a5/eb58a582536b62fddf63c53614550d55.jpg');">
+          </div>
+          <span class="nombre">Letica Álvarez</span>
+        </div>
+        <div class="detalle">
+          <span><strong>Mundial:</strong> México 1970</span>
+          <span><strong>Categoría:</strong> Jugadores </span>
+          <span><strong>Selección:</strong> Brasil</span>
+        </div>
+      </div>
+
+      <h3 class="titulo">Pelé pudo culminar el mejor gol de la final del Mundial con un pase sin mirar a un compañero
+      </h3>
+
+      <div class="media">
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/EXnwcc15Vtk" title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+
+
+      </div>
+
+      <div class="fechas">
+        <span> Elaboración: 2024-03-24 15:00</span>
+        <span> Aprobación: 2024-03-24 20:30</span>
+      </div>
+
+      <div class="interacciones">
+        <span><i class="bi bi-hand-thumbs-up"></i> 40 likes</span>
+        <span><i class="bi bi-chat-dots"></i> 50 comentarios</span>
+        <span><i class="bi bi-eye"></i> 164 vistas</span>
+      </div>
+
+      <div class="comentar">
+        <input type="text" id="nuevoComentario" placeholder="Escribe un comentario...">
+        <button onclick="agregarComentario()">Comentar</button>
+      </div>
+
+    </div>
+
+
+
+
+  </div>
+    <!--CUANDO AUN NO SE A LOGEADO-->
+ <div id="modalAuth" class="custom-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('#modalAuth')">&times;</span>
+    <h2>¡Ups!</h2>
+    <p> Registrate o iniciar sesión para poder publicar.</p>
+    <div class="modal-actions">
+      <a href="Login.html" class="btn btn-outline-primary">Iniciar sesión</a>
+      <a href="registro.html" class="btn btn-primary">Registrarse</a>
+    </div>
+  </div>
+</div>
+
+
+      
+  <footer class="bg-dark text-white text-center p-3">
+    Facultad de Ciencias Físico Matemáticas 2025 <br>
+    Licenciatura de Multimedia y Animación Digital
+  </footer>
+
+  <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/crearpubli.js"></script>
+  <script src="js/mosaico.js"></script>
+</body>
+
+</html>

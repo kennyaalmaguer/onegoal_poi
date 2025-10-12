@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include "conexion.php";
 header("Content-Type: application/json; charset=utf-8");
@@ -30,6 +32,23 @@ try {
     $grupos = [];
     while ($row = $res->fetch_assoc()) {
         $idGrupo = $row["id_grupo"];
+
+      
+    // Verificar si ya existe un chat para el grupo
+    $stmtChat = $conn->prepare("SELECT id_chat FROM chat WHERE id_grupo = ?");
+    $stmtChat->bind_param("i", $idGrupo);
+    $stmtChat->execute();
+    $resChat = $stmtChat->get_result()->fetch_assoc();
+
+    if ($resChat) {
+        $row["id_chat"] = $resChat["id_chat"];
+    } else {
+        // Insertar chat grupal
+        $stmtInsert = $conn->prepare("INSERT INTO chat (id_grupo, tipo) VALUES (?, 'grupo')");
+        $stmtInsert->bind_param("i", $idGrupo);
+        $stmtInsert->execute();
+        $row["id_chat"] = $conn->insert_id;
+    }
 
         // Obtener participantes
         $stmtP = $conn->prepare("

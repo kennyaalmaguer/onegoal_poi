@@ -1,0 +1,7 @@
+Array
+(
+    [id_chat] => 7
+    [id_usuario] => 11
+    [contenido] => bieeen
+    [tipo] => texto
+)
