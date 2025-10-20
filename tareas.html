@@ -5,16 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ONEGOAL - Tareas</title>
   
- 
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=clash-display@200,300,500,600,700&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
+ 
   <link rel="stylesheet" href="css/tareas.css">
   
-   
-<link href="https://api.fontshare.com/v2/css?f[]=panchang@700,800&f[]=technor@900&display=swap" rel="stylesheet">
  
-  
 </head>
 <body>
   <header>
@@ -32,118 +30,103 @@
   </nav>
 
   <div class="main-content">
-    <h2 class="section-title">TAREAS DEL GRUPO</h2>
+    <h2 class="section-title">TAREAS</h2>
+    
+    <div class="daily-tasks-info">
+      <strong>🎯 Tareas Individuales</strong>
+      <p>Completa las tareas del sistema para ganar puntos base</p>
+    </div>
     
     <div class="tasks-filters">
-      <button class="filter-btn active">Todas</button>
-      <button class="filter-btn">Individuales</button>
-      <button class="filter-btn">En Grupo</button>
-      
+      <button class="filter-btn active" data-filter="all">Todas</button>
+      <button class="filter-btn" data-filter="individual">Individuales</button>
+      <button class="filter-btn" data-filter="group">En Grupo</button>
     </div>
     
-    <div class="tasks-container">
-      <!-- Tarea 1 -->
-      <div class="task-card">
-        <div class="task-header">
-          <div class="task-title">Pronóstico Argentina vs Brasil</div>
-          <div class="task-points">+5 puntos</div>
-        </div>
-        
-        <div class="task-description">
-          Realiza tu pronóstico del marcador exacto y el primer goleador para el partido Argentina vs Brasil.
-        </div>
-        
-        <div class="task-details">
-          <div class="task-detail">
-            <span class="task-detail-label">Tipo:</span>
-            <span>Pre-Partido</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Fecha límite:</span>
-            <span>14 Jun 2026 - 15:55</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Asignada por:</span>
-            <span>Admin</span>
-          </div>
-        </div>
-        
-        <div class="task-status status-pending">Pendiente</div>
-        
-        <div class="task-actions">
-          <button class="complete-btn">Completar</button>
-        </div>
-      </div>
-      
-      <!-- Tarea 2 -->
-      <div class="task-card">
-        <div class="task-header">
-          <div class="task-title">Resumen del partido</div>
-          <div class="task-points">+3 puntos</div>
-        </div>
-        
-        <div class="task-description">
-          Redacta un resumen del partido España vs Alemania para compartir con el grupo.
-        </div>
-        
-        <div class="task-details">
-          <div class="task-detail">
-            <span class="task-detail-label">Tipo:</span>
-            <span>Post-Partido</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Fecha límite:</span>
-            <span>16 Jun 2026 - 23:59</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Asignada por:</span>
-            <span>MariaG</span>
-          </div>
-        </div>
-        
-        <div class="task-status status-completed">Completada</div>
-        
-        <div class="task-actions">
-          <button class="view-btn">Ver Detalles</button>
-        </div>
-      </div>
-      
-      <!-- Tarea 3 -->
-      <div class="task-card">
-        <div class="task-header">
-          <div class="task-title">Jugador clave</div>
-          <div class="task-points">+2 puntos</div>
-        </div>
-        
-        <div class="task-description">
-          Investiga y elige al jugador clave para el próximo partido de México contra Estados Unidos.
-        </div>
-        
-        <div class="task-details">
-          <div class="task-detail">
-            <span class="task-detail-label">Tipo:</span>
-            <span>Pre-Partido</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Fecha límite:</span>
-            <span>18 Jun 2026 - 18:00</span>
-          </div>
-          <div class="task-detail">
-            <span class="task-detail-label">Asignada por:</span>
-            <span>JuanPerez</span>
-          </div>
-        </div>
-        
-        <div class="task-status status-pending">Pendiente</div>
-        
-        <div class="task-actions">
-          <button class="complete-btn">Completar</button>
-        </div>
-      </div>
+    <div class="tasks-container" id="tasksContainer">
+      <!-- Las tareas se cargarán dinámicamente aquí -->
     </div>
     
-<div class="create-task">
-      <button class="create-btn">Crear Nueva Tarea</button>
+    <div class="create-task">
+      <button class="create-btn" id="createTaskBtn">Crear Tarea Grupal</button>
+    </div>
+  </div>
+
+  <!-- Modal para crear tarea GRUPAL -->
+  <div class="modal" id="createTaskModal">
+    <div class="modal-content">
+      <h3>Crear Tarea Grupal</h3>
+      
+      <div class="points-info">
+        <strong>🎪 Crea una tarea divertida para tu grupo</strong>
+        <p>Elige un tipo de actividad para interactuar con tu grupo</p>
+      </div>
+      
+      <label for="taskGroup">Seleccionar grupo:</label>
+      <select id="taskGroup">
+        <!-- Se cargarán dinámicamente los grupos del usuario -->
+      </select>
+      
+      <label for="taskType">Tipo de actividad:</label>
+      <select id="taskType">
+        <option value="debate">🔥 Debate</option>
+        <option value="trivia">❓ Trivia</option>
+        <option value="encuesta">📊 Encuesta</option>
+        <option value="analisis">🧠 Análisis Táctico</option>
+        <option value="meme">😂 Meme del Partido</option>
+        <option value="prediccion">🎯 Predicción Loca</option>
+      </select>
+      
+      <div class="points-info" id="pointsInfo">
+        Esta actividad otorgará <strong>3 puntos</strong> a cada participante
+      </div>
+      
+      <div id="matchSelection" class="match-selection">
+        <label>Selecciona un partido:</label>
+        <!-- Los partidos se cargarán dinámicamente -->
+      </div>
+      
+      <div id="customDescription">
+        <label for="taskDescription">Pregunta o consigna:</label>
+        <textarea id="taskDescription" placeholder="Escribe la pregunta o consigna para tu grupo..."></textarea>
+      </div>
+      
+      <label for="taskDeadline">Fecha límite:</label>
+      <input type="datetime-local" id="taskDeadline">
+      
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelTaskBtn">Cancelar</button>
+        <button class="create-btn" id="confirmTaskBtn">Crear Actividad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para completar tarea -->
+  <div class="modal" id="completeTaskModal">
+    <div class="modal-content">
+      <h3 id="completeTaskTitle">Participar en Actividad</h3>
+      
+      <div id="taskInstructions"></div>
+      
+      <div id="writingTaskContent">
+        <label for="taskResponse">Tu respuesta:</label>
+        <textarea id="taskResponse" placeholder="Escribe tu respuesta aquí..."></textarea>
+      </div>
+
+      <div id="triviaOptions" class="hidden">
+        <label>Selecciona tu respuesta:</label>
+        <div id="triviaButtons"></div>
+      </div>
+
+      <div id="encuestaOptions" class="hidden">
+        <label>Vota por tu opción:</label>
+        <div id="encuestaButtons"></div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelCompleteBtn">Cancelar</button>
+        <button class="create-btn" id="confirmCompleteBtn">Participar</button>
+      </div>
     </div>
   </div>
 
@@ -155,5 +138,7 @@
       <a href="#">Contacto</a>
     </nav>
   </footer>
+
+  <script src="Js/tareas.js"></script>
 </body>
 </html>

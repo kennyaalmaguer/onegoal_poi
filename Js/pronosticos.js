@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   fetch("php/get_pronostico.php")
     .then(resp => resp.json())
     .then(data => {
@@ -51,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const golesLocal = form.querySelector('input[name="goles_local"]').value;
           const golesVisitante = form.querySelector('input[name="goles_visitante"]').value;
           const primerGoleador = form.querySelector('input[name="primer_goleador"]').value;
-          const idPartido = matchCard.dataset.partidoId; 
+          const idPartido = card.dataset.partidoId; // CORRECCIÓN: usar card en lugar de matchCard
 
           if (!idPartido) {
             alert("No se puede guardar: falta ID del partido");
@@ -77,6 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.textContent = '✓ Pronóstico Guardado';
                 btn.disabled = true;
                 btn.classList.add('saved');
+                form.classList.remove("form-changed");
+                
+                // Mostrar mensaje de éxito
+                showNotification('¡Pronóstico guardado y tarea completada!', 'success');
+                
               } else {
                 alert(data.mensaje || "Error guardando pronóstico");
               }
@@ -86,13 +90,80 @@ document.addEventListener("DOMContentLoaded", () => {
               alert("Error guardando pronóstico (ver consola).");
             });
         });
-
-
-
       });
-
-
-
     })
-
+    .catch(err => {
+      console.error("Error cargando pronósticos:", err);
+    });
 });
+
+// Función para mostrar notificaciones
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Añadir estilos CSS para las animaciones
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  .submit-btn.saved {
+    background-color: #4CAF50 !important;
+    cursor: not-allowed;
+  }
+  
+  .form-changed {
+    border-left: 4px solid #FFA000 !important;
+  }
+`;
+
+
+document.head.appendChild(style);
