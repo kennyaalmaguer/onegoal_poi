@@ -311,3 +311,308 @@ nav a:hover, nav a.active {
       color: #00aaff;
     }
  
+ 
+    /* Estilos adicionales para los nuevos elementos */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #1a3d7c;
+      padding: 25px;
+      border-radius: 10px;
+      width: 500px;
+      max-width: 90%;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 { 
+      margin-bottom: 20px; 
+      text-align: center;
+      font-family: 'Chillax', sans-serif;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .match-selection {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 1px solid rgba(0, 170, 255, 0.3);
+    }
+
+    .match-option {
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .match-option:hover {
+      background: rgba(0, 170, 255, 0.2);
+      border-color: rgba(0, 170, 255, 0.5);
+      transform: translateX(5px);
+    }
+
+    .match-option.selected {
+      background: #00aaff;
+      color: white;
+      border-color: #0088cc;
+      box-shadow: 0 2px 8px rgba(0, 170, 255, 0.4);
+    }
+
+    .points-info {
+      background: linear-gradient(135deg, rgba(0, 170, 255, 0.2), rgba(108, 108, 229, 0.2));
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #00aaff;
+      font-size: 0.9rem;
+    }
+
+    .points-info strong {
+      color: #00aaff;
+      font-size: 1rem;
+    }
+
+    .system-task-badge {
+      background: #6c6ce5;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .daily-tasks-info {
+      background: rgba(0,170,255,0.1);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .group-task-badge {
+      background: #00aaff;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ESTILOS PARA SELECTS Y FORMULARIOS */
+    .modal select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 2px solid #00aaff;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a3d7c;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231a3d7c' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px;
+    }
+
+    .modal select:hover {
+      border-color: #0088cc;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.2);
+    }
+
+    .modal select:focus {
+      outline: none;
+      border-color: #00aaff;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.3);
+    }
+
+    .modal select option {
+      background: white;
+      color: #1a3d7c;
+      padding: 10px;
+      font-weight: 500;
+    }
+
+    .modal select option:checked {
+      background: #00aaff;
+      color: white;
+    }
+
+    .modal label {
+      display: block;
+      margin: 20px 0 8px 0;
+      font-weight: 600;
+      color: #00aaff;
+      font-size: 0.95rem;
+    }
+
+    .modal textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 2px solid #00aaff;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a3d7c;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .modal textarea:hover {
+      border-color: #0088cc;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.2);
+    }
+
+    .modal textarea:focus {
+      outline: none;
+      border-color: #00aaff;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.3);
+    }
+
+    .modal input[type="datetime-local"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 2px solid #00aaff;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a3d7c;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .modal input[type="datetime-local"]:hover {
+      border-color: #0088cc;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.2);
+    }
+
+    .modal input[type="datetime-local"]:focus {
+      outline: none;
+      border-color: #00aaff;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.3);
+    }
+
+    #triviaButtons button,
+    #encuestaButtons button {
+      background: rgba(26, 61, 124, 0.8);
+      color: white;
+      border: 2px solid transparent;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      margin: 5px;
+    }
+
+    #triviaButtons button:hover,
+    #encuestaButtons button:hover {
+      background: rgba(26, 61, 124, 1);
+      transform: translateY(-2px);
+    }
+
+    #triviaButtons button.active,
+    #encuestaButtons button.active {
+      background: #00aaff;
+      border-color: #0088cc;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 170, 255, 0.4);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      gap: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .cancel-btn, .create-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cancel-btn { 
+      background: #ff6b6b; 
+      color: white; 
+    }
+    .cancel-btn:hover { 
+      background: #ff4444; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    }
+
+    .create-btn { 
+      background: linear-gradient(135deg, #00aaff, #0095e0); 
+      color: white; 
+    }
+    .create-btn:hover { 
+      background: linear-gradient(135deg, #0088cc, #0077b3); 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 170, 255, 0.4);
+    }
+
+    /* QUITAR EL BOTÓN DE DETALLES CUANDO LA TAREA ESTÉ COMPLETADA */
+    .task-status.status-completed {
+      background: #6c6ce5;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .task-card .task-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .task-card .task-actions:empty {
+      display: none;
+    }
+  

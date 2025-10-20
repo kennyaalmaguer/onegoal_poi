@@ -1,5 +1,5 @@
 <?php
-$host = "localhost";  // o 127.0.0.1
+$host = "127.0.0.1:3307";// o 127.0.0.1
 $usuario = "root";    // usuario por defecto en XAMPP
 $clave = "";          // contraseña (vacía en XAMPP por default)
 $bd = "onegoal";
