@@ -33,11 +33,7 @@ try {
                 t.id_grupo,
                 t.id_partido,
                 u.nombre as assignedBy,
-                COALESCE(ut.estado, 
-                    CASE 
-                        WHEN t.scope = 'grupal' THEN 'Pendiente' 
-                        ELSE 'No asignada' 
-                    END) as user_status,
+                COALESCE(ut.estado, 'Pendiente') as user_status,
                 ut.respuesta,
                 ut.puntos_obtenidos,
                 p.equipo_local,
@@ -62,16 +58,8 @@ try {
     $tasks = [];
     
     while ($row = $result->fetch_assoc()) {
-        // Determinar el estado para mostrar
-        $display_status = 'pending';
-        if ($row['user_status'] === 'Completada') {
-            $display_status = 'completed';
-        } else if ($row['scope'] === 'grupal') {
-            // Para tareas grupales pendientes, verificar si ya participó
-            if ($row['respuesta'] !== null) {
-                $display_status = 'completed';
-            }
-        }
+        // Determinar estado para mostrar
+        $display_status = ($row['user_status'] === 'Completada' || $row['respuesta'] !== null) ? 'completed' : 'pending';
         
         $task = [
             'id' => $row['id_tarea'],
@@ -89,8 +77,7 @@ try {
             'partido_info' => $row['equipo_local'] && $row['equipo_visitante'] ? 
                 $row['equipo_local'] . ' vs ' . $row['equipo_visitante'] : null,
             'isDaily' => $row['scope'] === 'individual',
-            'hasResponse' => $row['respuesta'] !== null,
-            'pointsObtained' => $row['puntos_obtenidos']
+            'hasResponse' => $row['respuesta'] !== null
         ];
         $tasks[] = $task;
     }

@@ -79,7 +79,7 @@ try {
     if ($stmt->execute()) {
         $id_tarea_nueva = $conn->insert_id;
         
-        // CREAR ENTRADAS EN usuario_tarea PARA TODOS LOS MIEMBROS DEL GRUPO
+        // 🔥 CREAR ENTRADAS EN usuario_tarea PARA TODOS LOS MIEMBROS DEL GRUPO
         $sql_miembros = "SELECT id_usuario FROM usuario_grupo WHERE id_grupo = ?";
         $stmt_miembros = $conn->prepare($sql_miembros);
         $stmt_miembros->bind_param("i", $id_grupo);
