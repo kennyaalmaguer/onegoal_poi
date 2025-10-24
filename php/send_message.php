@@ -26,6 +26,7 @@ if (strpos($contentType, 'application/json') !== false) {
     $id_usuario = intval($data['id_usuario'] ?? 0);
     $contenido = trim($data['contenido'] ?? "");
     $tipo = $data['tipo'] ?? 'texto';
+    $cifrado = intval($data['cifrado'] ?? 0);
 
     if (!$id_chat || !$id_usuario || $contenido === "") {
         echo json_encode(["success" => false, "error" => "Datos incompletos (JSON)"]);
@@ -40,6 +41,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
 
     $id_chat = intval($_POST['id_chat']);
     $id_usuario = intval($_POST['id_usuario']);
+    $cifrado = intval($_POST['cifrado'] ?? 0); 
 
     // Valor inicial por defecto
     $tipo = 'archivo';
@@ -58,6 +60,10 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
     }
 
     $contenido = "uploads/" . $fileName;
+        // 🔒 Encripta si se solicitó cifrado
+    if ($cifrado === 1) {
+        $contenido = base64_encode($contenido);
+    }
     $rutaDestino = $filePath;
 
     //  Detectar MIME (con fallback)
@@ -85,13 +91,17 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
     }
 
     $contenidoURL = $baseURL . $contenido;
+    //cifrado 
+    $cifrado = intval($data['cifrado'] ?? 0);
+
+
 
     //  Guardar en la base de datos
     $stmt = $conn->prepare("
-        INSERT INTO mensaje (id_chat, id_usuario, contenido, tipo, cifrado, fecha_envio)
-        VALUES (?, ?, ?, ?, 0, NOW())
+    INSERT INTO mensaje (id_chat, id_usuario, contenido, tipo, cifrado, fecha_envio)
+    VALUES (?, ?, ?, ?, ?, NOW())
     ");
-    $stmt->bind_param("iiss", $id_chat, $id_usuario, $contenido, $tipo);
+    $stmt->bind_param("iissi", $id_chat, $id_usuario, $contenido, $tipo, $cifrado);
     $success = $stmt->execute();
 
     echo json_encode([
@@ -107,12 +117,13 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
 
 
 if (empty($tipo)) $tipo = 'texto';
+$cifrado = intval($cifrado ?? 0); // Asegurar valor
 
 $stmt = $conn->prepare("
     INSERT INTO mensaje (id_chat, id_usuario, contenido, tipo, cifrado, fecha_envio)
-    VALUES (?, ?, ?, ?, 0, NOW())
+    VALUES (?, ?, ?, ?, ?, NOW())
 ");
-$stmt->bind_param("iiss", $id_chat, $id_usuario, $contenido, $tipo);
+$stmt->bind_param("iissi", $id_chat, $id_usuario, $contenido, $tipo, $cifrado);
 $success = $stmt->execute();
 
 echo json_encode([
@@ -120,6 +131,7 @@ echo json_encode([
     "error" => $success ? null : $stmt->error,
     "contenido" => isset($contenidoURL) ? $contenidoURL : $contenido,
     "tipo" => $tipo,
-    "url" => isset($contenidoURL) ? $contenidoURL : null
+    "url" => isset($contenidoURL) ? $contenidoURL : null,
+    "cifrado" => $cifrado
 ]);
 ?>

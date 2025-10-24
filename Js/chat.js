@@ -131,12 +131,20 @@ async function loadMessages(chatId, container) {
         const resp = await fetch(`php/get_message.php?id_chat=${chatId}`);
         const mensajes = await resp.json();
 
+
         container.innerHTML = "";
 
         mensajes.forEach(msg => {
+            if (msg.cifrado == 1 && msg.tipo === "texto") {
+                try {
+                    msg.contenido = decodeURIComponent(escape(atob(msg.contenido)));
+                } catch (e) {
+                    console.error("Error al decodificar mensaje cifrado:", e);
+                }
+            }
+
             const div = document.createElement("div");
             div.classList.add("message", msg.id_usuario === currentUserId ? "sent" : "received");
-
             //  Construir URL absoluta si no la trae completa
             let content = msg.contenido;
             if (msg.tipo !== "texto" && content && !content.startsWith("http")) {
@@ -299,13 +307,22 @@ messageInput.addEventListener('keypress', function (e) {
 
 //-------MANDAR MENSAJES---------//
 
+let cifradoActivo = false;
 
+const lockBtn = document.getElementById("lockBtn");
+lockBtn.addEventListener("click", () => {
+    cifradoActivo = !cifradoActivo;
+    lockBtn.style.color = cifradoActivo ? "fuchsia" : "";
+});
 async function sendMessage() {
     const input = document.getElementById("messageInput");
     const contenido = input.value.trim();
     if (!contenido || !currentChatId) return;
-    console.log("currentChatId:", currentChatId, "currentUserId:", currentUserId);
-    console.log("contenido:", contenido);
+
+    // 🔒 Si el cifrado está activo, convertir a Base64
+    const contenidoFinal = cifradoActivo
+        ? btoa(unescape(encodeURIComponent(contenido))) // codifica texto UTF-8 en base64
+        : contenido;
 
     try {
         const resp = await fetch("php/send_message.php", {
@@ -314,10 +331,12 @@ async function sendMessage() {
             body: JSON.stringify({
                 id_chat: currentChatId,
                 id_usuario: currentUserId,
-                contenido,
-                tipo: "texto"
+                contenido: contenidoFinal,
+                tipo: "texto",
+                cifrado: cifradoActivo ? 1 : 0
             })
         });
+
         const data = await resp.json();
         if (data?.success) {
             input.value = "";
@@ -336,6 +355,7 @@ async function sendFileMessage(id_chat, id_usuario, file, tipo) {
     formData.append("id_usuario", id_usuario);
     formData.append("tipo", tipo);
     formData.append("archivo", file);
+    formData.append("cifrado", cifradoActivo ? 1 : 0);
 
     try {
         const resp = await fetch("php/send_message.php", {

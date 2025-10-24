@@ -11,7 +11,7 @@ $projectPath = str_replace('/php', '', dirname($_SERVER['SCRIPT_NAME']));
 $baseURL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")
          . "://" . $_SERVER['HTTP_HOST'] . $projectPath . "/";
 
-$sql = "SELECT m.id_mensaje, m.id_usuario, m.contenido, m.tipo, m.fecha_envio, u.nombre
+$sql = "SELECT m.id_mensaje, m.id_usuario, m.contenido, m.tipo, m.fecha_envio, m.cifrado, u.nombre
         FROM mensaje m
         JOIN usuario u ON m.id_usuario = u.id_usuario
         WHERE m.id_chat = ?

@@ -1,6 +1,6 @@
 // --- Grabación de audio ---
-recordBtn.replaceWith(recordBtn.cloneNode(true));
-document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+//recordBtn.replaceWith(recordBtn.cloneNode(true));
+//document.getElementById('recordBtn').addEventListener('click', toggleRecording);
 
 async function toggleRecording() {
     if (!isRecording) {
@@ -94,16 +94,16 @@ function sendAudioMessage(audioBlob) {
 
 
 // --- Funcionalidad de llamadas ---
-const voiceCallBtn = document.getElementById('voiceCallBtn');
+//const voiceCallBtn = document.getElementById('voiceCallBtn');
 const videoCallBtn = document.getElementById('videoCallBtn');
-const voiceCallModal = document.getElementById('voiceCallModal');
+//const voiceCallModal = document.getElementById('voiceCallModal');
 const videoCallModal = document.getElementById('videoCallModal');
 const incomingCallModal = document.getElementById('incomingCallModal');
 
 // Llamada de voz
-voiceCallBtn.addEventListener('click', () => {
+//voiceCallBtn.addEventListener('click', () => {
     voiceCallModal.style.display = 'flex';
-});
+//});
 
 // Videollamada
 videoCallBtn.addEventListener('click', async () => {
@@ -152,9 +152,9 @@ function simulateRemoteVideo() {
 }
 
 // Colgar llamada de voz
-document.getElementById('hangupVoiceCall').addEventListener('click', () => {
+//document.getElementById('hangupVoiceCall').addEventListener('click', () => {
     voiceCallModal.style.display = 'none';
-});
+//});
 
 // Colgar videollamada
 document.getElementById('hangupVideoCall').addEventListener('click', () => {
