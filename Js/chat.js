@@ -8,7 +8,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const inputContainer = document.querySelector('.input-container');
     const chatPanel = document.getElementById('chatPanel');
     const chatsPanel = document.getElementById('chatsPanel');
-    document.getElementById('messagesContainer');
 
     // Estado inicial
     if (emptyChat) emptyChat.style.display = 'flex';
@@ -20,23 +19,20 @@ window.addEventListener('DOMContentLoaded', () => {
         const item = e.target.closest('.chat-item');
         if (!item) return;
 
+        const tipo = item.dataset.tipo; // "privado" o "grupo"
+        const userId = item.dataset.chat;
 
-        const tipo = item.dataset.tipo; // puede ser "privado" o "grupo"
-        const userId = item.dataset.chat; // id del usuario o grupo
-
-        const chatPanel = document.getElementById('chatPanel');
         const messagesContainer = chatPanel.querySelector('.messages');
         messagesContainer.innerHTML = "";
 
+        // === CHAT GRUPAL ===
         if (tipo === "grupo") {
             console.log("Abrir chat grupal:", userId);
 
-            // Mostrar chat
             if (emptyChat) emptyChat.style.display = 'none';
             if (messagesContainer) messagesContainer.style.display = 'block';
             if (inputContainer) inputContainer.style.display = 'flex';
 
-            // Actualizar encabezado
             const chatAvatar = document.getElementById('userAvatar');
             const chatName = document.getElementById('userName');
             const userStatus = document.getElementById('userStatus');
@@ -48,8 +44,8 @@ window.addEventListener('DOMContentLoaded', () => {
             chatAvatar.innerHTML = '<i class="fas fa-users"></i>';
 
             if (userStatus) {
-                if (estado === 'Activo') {
-                    userStatus.textContent = ' Activo';
+                if (estado.toLowerCase() === 'activo') {
+                    userStatus.textContent = 'Activo';
                     userStatus.style.color = '#28a745';
                 } else {
                     userStatus.textContent = 'Inactivo';
@@ -57,16 +53,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Guardar ID actual del chat
             currentChatId = userId;
-
             await loadMessages(userId, messagesContainer);
             return;
         }
 
-
-
-        // Obtener o crear el chat entre ambos usuarios
+        // === CHAT PRIVADO ===
         const response = await fetch('php/create_chat.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -78,7 +70,7 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Error al crear/obtener chat:", data.error);
             return;
         }
-        // Mostrar los elementos del chat
+
         if (emptyChat) emptyChat.style.display = 'none';
         if (messagesContainer) messagesContainer.style.display = 'block';
         if (inputContainer) inputContainer.style.display = 'flex';
@@ -86,28 +78,38 @@ window.addEventListener('DOMContentLoaded', () => {
         const chatAvatar = document.getElementById('userAvatar');
         const chatName = document.getElementById('userName');
         const userStatus = document.getElementById('userStatus');
+
         const nombre = item.querySelector('.chat-name')?.textContent || 'Chat';
-        const estado = item.dataset.estado || item.dataset.estado_conexion; // Actualizar encabezado 
+        // Aseguramos que el estado venga correctamente del dataset
+        const estado = item.dataset.estado_conexion || item.dataset.estado || 'desconectado';
+
         chatName.textContent = nombre;
         chatAvatar.innerHTML = item.querySelector('.chat-avatar')?.innerHTML || nombre[0].toUpperCase();
-        // Estado visual 
+
+        // === Estado visual coherente con tu BD ===
         if (userStatus) {
             if (tipo === 'usuario') {
-                if (estado === 'online' || estado === 'Conectado') { userStatus.textContent = 'En línea'; userStatus.style.color = '#28a745'; }
-                else { userStatus.textContent = 'Desconectado'; userStatus.style.color = '#dc3545'; }
+                if (estado === 'en_linea') {
+                    userStatus.textContent = 'En línea';
+                    userStatus.style.color = '#28a745';
+                } else {
+                    userStatus.textContent = 'Desconectado';
+                    userStatus.style.color = '#dc3545';
+                }
+            } else if (tipo === 'grupo') {
+                if (estado.toLowerCase() === 'activo') {
+                    userStatus.textContent = 'Activo';
+                    userStatus.style.color = '#28a745';
+                } else {
+                    userStatus.textContent = 'Inactivo';
+                    userStatus.style.color = '#dc3545';
+                }
+            } else {
+                userStatus.textContent = '';
             }
-            else if (tipo === 'grupo') {
-                if (estado === 'Activo') { userStatus.textContent = 'Activo'; userStatus.style.color = '#28a745'; }
-                else { userStatus.textContent = 'Inactivo'; userStatus.style.color = '#dc3545'; }
-            }
-            else { userStatus.textContent = ''; }
         }
 
-
-        // Guardamos el id_chat globalmente
         currentChatId = data.id_chat;
-
-
         await loadMessages(currentChatId, messagesContainer);
     });
 
@@ -135,19 +137,19 @@ async function loadMessages(chatId, container) {
             const div = document.createElement("div");
             div.classList.add("message", msg.id_usuario === currentUserId ? "sent" : "received");
 
-            // ✅ Construir URL absoluta si no la trae completa
+            //  Construir URL absoluta si no la trae completa
             let content = msg.contenido;
             if (msg.tipo !== "texto" && content && !content.startsWith("http")) {
                 content = `${window.location.origin}/onegoal_poi/${content}`;
             }
 
-            // 🕒 Formatear hora
+            //  Formatear hora
             const hora = new Date(msg.fecha_envio).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
             });
 
-            // ✅ Renderizar según tipo de mensaje
+
             let messageContent = "";
 
             switch (msg.tipo) {
@@ -183,8 +185,32 @@ async function loadMessages(chatId, container) {
                         </div>`;
                     break;
 
-                default:
-                    messageContent = `<div class="message-text">[Tipo desconocido]</div>`;
+                case "ubicacion":
+
+                    let cleanContent = content;
+                    if (cleanContent.startsWith("http")) {
+                        const jsonStart = cleanContent.indexOf("{");
+                        if (jsonStart !== -1) cleanContent = cleanContent.slice(jsonStart);
+                    }
+
+                    let obj;
+                    try {
+                        obj = JSON.parse(cleanContent);
+                        if (obj.lat && obj.lng) {
+                            const mapsURL = `https://www.google.com/maps?q=${obj.lat},${obj.lng}`;
+                            messageContent = `
+        <div class="message-location">
+          <a href="${mapsURL}" target="_blank">📍 Ver ubicación en Google Maps</a>
+          <div class="coords">Lat: ${obj.lat.toFixed(5)}, Lng: ${obj.lng.toFixed(5)}</div>
+        </div>
+      `;
+                        } else {
+                            messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
+                        }
+                    } catch (e) {
+                        console.error("JSON ubicación inválido:", e, content);
+                        messageContent = `<div class="message-text">[Error al mostrar ubicación]</div>`;
+                    }
                     break;
             }
 
@@ -318,12 +344,12 @@ async function sendFileMessage(id_chat, id_usuario, file, tipo) {
         });
 
         const result = await resp.json();
-        console.log("📦 Respuesta servidor:", result);
+        console.log(" Respuesta servidor:", result);
 
         if (result.success) {
             renderMessage(result.url || result.contenido, result.tipo);
         } else {
-            alert("❌ Error al enviar archivo: " + (result.error || "Desconocido"));
+            alert(" Error al enviar archivo: " + (result.error || "Desconocido"));
         }
     } catch (error) {
         console.error("Error al enviar archivo:", error);
@@ -479,8 +505,11 @@ function renderMessage(content, type, sent = true) {
 
     messageDiv.classList.add(sent ? 'sent' : 'received');
 
-   
-    if (type !== "texto" && content && !content.startsWith('http') && !content.startsWith('blob:')) {
+
+    // Sólo para media que guardas como ruta relativa en uploads/
+    const mediaTypes = ['imagen', 'video', 'archivo', 'audio'];
+
+    if (mediaTypes.includes(type) && content && !content.startsWith('http') && !content.startsWith('blob:')) {
         content = `uploads/${content}`;
     }
 
@@ -523,6 +552,35 @@ function renderMessage(content, type, sent = true) {
                 </div>
             `;
             break;
+        case "ubicacion":
+            console.log("🗺️ Renderizando ubicación con contenido:", content);
+            let obj;
+            try {
+                obj = (typeof content === 'string') ? JSON.parse(content) : content;
+            } catch (e) {
+                console.error("JSON ubicación inválido:", e, content);
+                messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
+                break;
+            }
+            try {
+                const obj = JSON.parse(content);
+                if (obj.lat && obj.lng) {
+                    const mapsURL = `https://www.google.com/maps?q=${obj.lat},${obj.lng}`;
+                    messageContent = `
+                        <div class="message-location">
+                            <a href="${mapsURL}" target="_blank">📍 Ver ubicación en Google Maps</a>
+                            <div class="coords">Lat: ${obj.lat.toFixed(5)}, Lng: ${obj.lng.toFixed(5)}</div>
+                        </div>
+                    `;
+                } else {
+                    messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
+                }
+            } catch (e) {
+                console.error("Error parseando ubicación:", e);
+                messageContent = `<div class="message-text">[Error al mostrar ubicación]</div>`;
+            }
+            break;
+
 
         default:
             messageContent = `
@@ -541,7 +599,7 @@ function renderMessage(content, type, sent = true) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-/* 🔒 Evita inyecciones HTML en texto */
+/* Evita inyecciones HTML en texto */
 function sanitizeHTML(str) {
     const temp = document.createElement("div");
     temp.textContent = str;
@@ -749,3 +807,54 @@ function activarListenersGrupos() {
         });
     });
 }
+
+//Coso par alo de la ubicación
+const ubicacionBtn = document.getElementById("Ubicacion");
+
+ubicacionBtn.addEventListener("click", () => {
+    // pedir permiso y obtener posición
+    if (!navigator.geolocation) {
+        return alert("Geolocalización no soportada por este navegador.");
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy; // metros
+
+        // construimos un contenido claro para la base de datos:
+        const contenido = JSON.stringify({ lat, lng, accuracy });
+
+        try {
+            const resp = await fetch("php/send_message.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id_chat: currentChatId,
+                    id_usuario: currentUserId,
+                    contenido,
+                    tipo: "ubicacion"
+                })
+            });
+            const data = await resp.json();
+            if (data?.success) {
+                // refresca mensajes 
+                document.getElementById("messageInput").value = "";
+                const messagesContainer = document.getElementById("messagesContainer");
+                await loadMessages(currentChatId, messagesContainer);
+            } else {
+                console.error("Error al enviar ubicación:", data?.error);
+            }
+        } catch (err) {
+            console.error("Error en envío de ubicación:", err);
+        }
+
+    }, (err) => {
+        console.error(err);
+        alert("No se pudo obtener la ubicación. Verifica permisos.");
+    }, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 15000
+    });
+});

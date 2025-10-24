@@ -17,7 +17,7 @@ $contenido = "";
 $tipo = "texto";
 
 // ------------------------------------------------
-// 📨 Si es mensaje de texto (JSON)
+//  Si es mensaje de texto (JSON)
 // ------------------------------------------------
 if (strpos($contentType, 'application/json') !== false) {
     $data = json_decode(file_get_contents("php://input"), true);
@@ -34,7 +34,7 @@ if (strpos($contentType, 'application/json') !== false) {
 }
 
 // ------------------------------------------------
-// 📎 Si es mensaje con archivo (FormData)
+//  Si es mensaje con archivo (FormData)
 // ------------------------------------------------
 elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['id_usuario'])) {
 
@@ -60,7 +60,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
     $contenido = "uploads/" . $fileName;
     $rutaDestino = $filePath;
 
-    // 🧩 Detectar MIME (con fallback)
+    //  Detectar MIME (con fallback)
     $mime = @mime_content_type($rutaDestino);
     $ext = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
 
@@ -77,7 +77,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
             $tipo = 'archivo';
         }
     } else {
-        // 🧩 Fallback por extensión si no se detectó MIME
+        //  Fallback por extensión si no se detectó MIME
         if (in_array($ext, ['jpg','jpeg','png','gif','webp'])) $tipo = 'imagen';
         elseif (in_array($ext, ['mp4','mov','avi','mkv'])) $tipo = 'video';
         elseif (in_array($ext, ['mp3','wav','ogg'])) $tipo = 'audio';
@@ -86,7 +86,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
 
     $contenidoURL = $baseURL . $contenido;
 
-    // 💾 Guardar en la base de datos
+    //  Guardar en la base de datos
     $stmt = $conn->prepare("
         INSERT INTO mensaje (id_chat, id_usuario, contenido, tipo, cifrado, fecha_envio)
         VALUES (?, ?, ?, ?, 0, NOW())
@@ -105,9 +105,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
     exit;
 }
 
-// ------------------------------------------------
-// 🔄 Fallback general para texto
-// ------------------------------------------------
+
 if (empty($tipo)) $tipo = 'texto';
 
 $stmt = $conn->prepare("
@@ -117,9 +115,6 @@ $stmt = $conn->prepare("
 $stmt->bind_param("iiss", $id_chat, $id_usuario, $contenido, $tipo);
 $success = $stmt->execute();
 
-// ------------------------------------------------
-// 🚀 Respuesta al frontend
-// ------------------------------------------------
 echo json_encode([
     "success" => $success,
     "error" => $success ? null : $stmt->error,

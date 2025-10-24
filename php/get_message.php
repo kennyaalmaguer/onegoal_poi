@@ -24,11 +24,13 @@ $result = $stmt->get_result();
 
 $mensajes = [];
 while ($row = $result->fetch_assoc()) {
-    if ($row['tipo'] !== 'texto' && !empty($row['contenido'])) {
-        if (!preg_match('/^https?:\/\//', $row['contenido'])) {
-            $row['contenido'] = $baseURL . $row['contenido'];
-        }
+ $mediaTypes = ['imagen', 'video', 'audio', 'archivo'];
+
+if (in_array($row['tipo'], $mediaTypes) && !empty($row['contenido'])) {
+    if (!preg_match('/^https?:\/\//', $row['contenido'])) {
+        $row['contenido'] = $baseURL . $row['contenido'];
     }
+}
     $mensajes[] = $row;
 
 }
