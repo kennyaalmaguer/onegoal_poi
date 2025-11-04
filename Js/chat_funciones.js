@@ -1,6 +1,9 @@
+let isRecording = false;
+let mediaRecorder;
+let audioChunks = [];
 // --- Grabación de audio ---
-//recordBtn.replaceWith(recordBtn.cloneNode(true));
-//document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+recordBtn.replaceWith(recordBtn.cloneNode(true));
+document.getElementById('recordBtn').addEventListener('click', toggleRecording);
 
 async function toggleRecording() {
     if (!isRecording) {
@@ -39,58 +42,36 @@ async function toggleRecording() {
     }
 }
 
-function sendAudioMessage(audioBlob) {
-    const currentTime = new Date();
-    const timeString = currentTime.getHours() + ':' +
-        (currentTime.getMinutes() < 10 ? '0' : '') +
-        currentTime.getMinutes();
+async function sendAudioMessage(audioBlob) {
+    // Crea un archivo temporal en memoria
+    const audioFile = new File([audioBlob], `audio_${Date.now()}.wav`, { type: 'audio/wav' });
 
-    // Crear URL para el audio
-    const audioUrl = URL.createObjectURL(audioBlob);
-    let audioElement = null;
+    const formData = new FormData();
+    formData.append("id_chat", currentChatId);
+    formData.append("id_usuario", currentUserId);
+    formData.append("archivo", audioFile);
+    formData.append("tipo", "audio");
+    formData.append("cifrado", cifradoActivo ? 1 : 0);
 
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message sent audio-message';
-    messageElement.innerHTML = `
-        <div class="audio-player">
-            <i class="fas fa-play play-audio"></i>
-            <span>Audio</span>
-            <span class="audio-duration">0:05</span>
-        </div>
-        <div class="message-time">${timeString}</div>
-    `;
+    try {
+        const resp = await fetch("php/send_message.php", {
+            method: "POST",
+            body: formData
+        });
 
-    messagesContainer.appendChild(messageElement);
+        const result = await resp.json();
+        console.log("Respuesta del servidor:", result);
 
-    // Añadir evento para reproducir el audio
-    const playButton = messageElement.querySelector('.play-audio');
-
-    playButton.addEventListener('click', function () {
-        if (!audioElement) {
-            audioElement = new Audio(audioUrl);
-        }
-
-        if (audioElement.paused) {
-            audioElement.play();
-            this.className = 'fas fa-pause play-audio';
-
-            audioElement.onended = () => {
-                this.className = 'fas fa-play play-audio';
-            };
+        if (result.success) {
+            // Renderiza el audio recién enviado
+            renderMessage(result.url || result.contenido, "audio");
         } else {
-            audioElement.pause();
-            audioElement.currentTime = 0;
-            this.className = 'fas fa-play play-audio';
+            alert(" Error al enviar audio: " + (result.error || "Desconocido"));
         }
-    });
-
-    // Hacer scroll al final
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Simular respuesta después de un tiempo
-    setTimeout(simulateReply, 1000 + Math.random() * 3000);
+    } catch (error) {
+        console.error("Error al enviar audio:", error);
+    }
 }
-
 
 
 // --- Funcionalidad de llamadas ---
@@ -101,9 +82,9 @@ const videoCallModal = document.getElementById('videoCallModal');
 const incomingCallModal = document.getElementById('incomingCallModal');
 
 // Llamada de voz
-//voiceCallBtn.addEventListener('click', () => {
+voiceCallBtn.addEventListener('click', () => {
     voiceCallModal.style.display = 'flex';
-//});
+});
 
 // Videollamada
 videoCallBtn.addEventListener('click', async () => {
@@ -152,9 +133,9 @@ function simulateRemoteVideo() {
 }
 
 // Colgar llamada de voz
-//document.getElementById('hangupVoiceCall').addEventListener('click', () => {
+document.getElementById('hangupVoiceCall').addEventListener('click', () => {
     voiceCallModal.style.display = 'none';
-//});
+});
 
 // Colgar videollamada
 document.getElementById('hangupVideoCall').addEventListener('click', () => {

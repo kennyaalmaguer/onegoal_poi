@@ -6,7 +6,7 @@ include "conexion.php";
 
 $id_chat = intval($_GET['id_chat'] ?? 0);
 
-// ✅ Detectar URL base automáticamente
+//  Detectar URL base automáticamente
 $projectPath = str_replace('/php', '', dirname($_SERVER['SCRIPT_NAME']));
 $baseURL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")
          . "://" . $_SERVER['HTTP_HOST'] . $projectPath . "/";

@@ -899,9 +899,22 @@ body {
 }
 
 
+
 .message-image img {
-    max-width: 100%;
-    border-radius: 10px;
+    max-width: 250px;
+    max-height: 250px;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
     display: block;
-    margin-top: 6px;
+}
+
+.message-video video {
+    width: 250px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.message-audio audio {
+    width: 200px;
 }

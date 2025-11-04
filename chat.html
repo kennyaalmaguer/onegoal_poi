@@ -52,41 +52,7 @@
 
         <!-- Lista de grupos (oculta por defecto) -->
         <div class="chats-list" id="groupsList" style="display: none;">
-            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
-                <div class="chat-avatar"><i class="fas fa-users"></i></div>
-                <div class="chat-info">
-                    <div class="chat-name">Fans Mundial 2026 <span class="world-cup-theme">48 miembros</span></div>
-                    <div class="chat-preview">Último partido: Argentina vs Brasil</div>
-                </div>
-                <div class="chat-time">10:15</div>
-            </div>
-
-            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
-                <div class="chat-avatar"><i class="fas fa-users"></i></div>
-                <div class="chat-info">
-                    <div class="chat-name">Amantes del Fútbol <span class="world-cup-theme">23 miembros</span></div>
-                    <div class="chat-preview">Discusión sobre las nuevas reglas</div>
-                </div>
-                <div class="chat-time">Ayer</div>
-            </div>
-
-            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
-                <div class="chat-avatar"><i class="fas fa-users"></i></div>
-                <div class="chat-info">
-                    <div class="chat-name">Viaje al Mundial <span class="world-cup-theme">15 miembros</span></div>
-                    <div class="chat-preview">Organizando viaje a USA</div>
-                </div>
-                <div class="chat-time">Ayer</div>
-            </div>
-
-            <div class="chat-item" data-tipo="grupo" data-chat="" data-estado="">
-                <div class="chat-avatar"><i class="fas fa-users"></i></div>
-                <div class="chat-info">
-                    <div class="chat-name">Fantasy League <span class="world-cup-theme">32 miembros</span></div>
-                    <div class="chat-preview">Nuevos jugadores disponibles</div>
-                </div>
-                <div class="chat-time">15 mar</div>
-            </div>
+     
         </div>
 
         <!-- Lista de llamadas (oculta por defecto) -->
@@ -169,7 +135,7 @@
             <div class="contact-actions">
                 <i class="fas fa-video" id="videoCallBtn"></i>
                 <i class="fas fa-phone" id="voiceCallBtn"></i>
-                <i class="fas fa-ellipsis-v"></i>
+                <i class="fas fa-lock" id="lockBtn"></i>
             </div>
         </div>
         <div class="empty-chat" id="emptyChat">
@@ -187,7 +153,8 @@
             <input type="file" id="fileInput" style="display:none" accept="*/*">
             <i class="fas fa-paperclip" id="attachBtn"></i>
             <input type="text" class="message-input" id="messageInput" placeholder="Escribe un mensaje">
-            <i class="fas fa-lock" id="lockBtn"></i>
+            <i class="	fas fa-microphone" id="recordBtn"></i>
+        
             <button class="send-button" id="sendBtn">
                 <i class="fas fa-paper-plane"></i>
             </button>

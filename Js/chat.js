@@ -207,11 +207,11 @@ async function loadMessages(chatId, container) {
                         if (obj.lat && obj.lng) {
                             const mapsURL = `https://www.google.com/maps?q=${obj.lat},${obj.lng}`;
                             messageContent = `
-        <div class="message-location">
-          <a href="${mapsURL}" target="_blank">📍 Ver ubicación en Google Maps</a>
-          <div class="coords">Lat: ${obj.lat.toFixed(5)}, Lng: ${obj.lng.toFixed(5)}</div>
-        </div>
-      `;
+                           <div class="message-location">
+                         <a href="${mapsURL}" target="_blank"> Ver ubicación en Google Maps</a>
+        
+                          </div>
+                          `;
                         } else {
                             messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
                         }
@@ -220,9 +220,18 @@ async function loadMessages(chatId, container) {
                         messageContent = `<div class="message-text">[Error al mostrar ubicación]</div>`;
                     }
                     break;
+                case "audio":
+                   messageContent = `
+                     <div class="message-audio">
+                      <audio controls>
+                         <source src="${content}" type="audio/wav">
+                        Tu navegador no soporta la reproducción de audio.
+                       </audio>
+                      </div>`;
+    break;
             }
 
-            // 🧩 Ensamblar mensaje
+           
             div.innerHTML = `
                 ${messageContent}
                 <div class="message-time">${hora}</div>
@@ -231,7 +240,7 @@ async function loadMessages(chatId, container) {
             container.appendChild(div);
         });
 
-        // 📜 Mantener scroll abajo
+        
         container.scrollTop = container.scrollHeight;
 
     } catch (error) {
@@ -319,7 +328,7 @@ async function sendMessage() {
     const contenido = input.value.trim();
     if (!contenido || !currentChatId) return;
 
-    // 🔒 Si el cifrado está activo, convertir a Base64
+    //  Si el cifrado está activo, convertir a Base64
     const contenidoFinal = cifradoActivo
         ? btoa(unescape(encodeURIComponent(contenido))) // codifica texto UTF-8 en base64
         : contenido;
@@ -519,16 +528,12 @@ function updateGroupConversation(groupId) {
 function renderMessage(content, type, sent = true) {
     const messagesContainer = document.querySelector('#messagesContainer');
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sent ? 'sent' : 'received'); // Aquí agregamos la clase base
 
-    // 📌 Asignar clases base
-
-    messageDiv.classList.add(sent ? 'sent' : 'received');
-
-
-    // Sólo para media que guardas como ruta relativa en uploads/
+    // Construcción del contenido
     const mediaTypes = ['imagen', 'video', 'archivo', 'audio'];
-
     if (mediaTypes.includes(type) && content && !content.startsWith('http') && !content.startsWith('blob:')) {
         content = `uploads/${content}`;
     }
@@ -537,9 +542,7 @@ function renderMessage(content, type, sent = true) {
 
     switch (type) {
         case "texto":
-            messageContent = `
-                <div class="message-text">${sanitizeHTML(content)}</div>
-            `;
+            messageContent = `<div class="message-text">${sanitizeHTML(content)}</div>`;
             break;
 
         case "imagen":
@@ -547,8 +550,7 @@ function renderMessage(content, type, sent = true) {
                 <div class="message-image">
                     <img src="${content}" alt="imagen" 
                          onclick="window.open('${content}', '_blank')" />
-                </div>
-            `;
+                </div>`;
             break;
 
         case "video":
@@ -556,60 +558,33 @@ function renderMessage(content, type, sent = true) {
                 <div class="message-video">
                     <video controls>
                         <source src="${content}" type="video/mp4">
-                        Tu navegador no soporta la reproducción de video.
+                        Tu navegador no soporta video.
                     </video>
-                </div>
-            `;
+                </div>`;
             break;
 
         case "archivo":
             const fileName = decodeURIComponent(content.split('/').pop());
             messageContent = `
                 <div class="message-file">
-                    <a href="${content}" target="_blank" download>
-                         ${fileName}
-                    </a>
-                </div>
-            `;
-            break;
-        case "ubicacion":
-            console.log("🗺️ Renderizando ubicación con contenido:", content);
-            let obj;
-            try {
-                obj = (typeof content === 'string') ? JSON.parse(content) : content;
-            } catch (e) {
-                console.error("JSON ubicación inválido:", e, content);
-                messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
-                break;
-            }
-            try {
-                const obj = JSON.parse(content);
-                if (obj.lat && obj.lng) {
-                    const mapsURL = `https://www.google.com/maps?q=${obj.lat},${obj.lng}`;
-                    messageContent = `
-                        <div class="message-location">
-                            <a href="${mapsURL}" target="_blank">📍 Ver ubicación en Google Maps</a>
-                            <div class="coords">Lat: ${obj.lat.toFixed(5)}, Lng: ${obj.lng.toFixed(5)}</div>
-                        </div>
-                    `;
-                } else {
-                    messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
-                }
-            } catch (e) {
-                console.error("Error parseando ubicación:", e);
-                messageContent = `<div class="message-text">[Error al mostrar ubicación]</div>`;
-            }
+                    <a href="${content}" target="_blank" download>📎 ${fileName}</a>
+                </div>`;
             break;
 
+        case "audio":
+            messageContent = `
+                <div class="message-audio">
+                    <audio controls>
+                        <source src="${content}" type="audio/wav">
+                        Tu navegador no soporta audio.
+                    </audio>
+                </div>`;
+            break;
 
         default:
-            messageContent = `
-                <div class="message-text">[Tipo de mensaje desconocido]</div>
-            `;
-            break;
+            messageContent = `<div class="message-text">[Tipo desconocido]</div>`;
     }
 
-    // 📦 Estructura final del mensaje
     messageDiv.innerHTML = `
         ${messageContent}
         <div class="message-time">${currentTime}</div>
