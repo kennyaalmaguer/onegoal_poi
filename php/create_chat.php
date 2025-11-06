@@ -1,9 +1,12 @@
 <?php
+session_start();
 include "conexion.php";
 header('Content-Type: application/json; charset=utf-8');
 
 $data = json_decode(file_get_contents("php://input"), true);
-$id_usuario1 = intval($data['id_usuario1']);
+// El usuario en sesión
+$id_usuario1 = $_SESSION['id_usuario'] ?? null;
+
 $id_usuario2 = intval($data['id_usuario2']);
 
 if (!$id_usuario1 || !$id_usuario2) {

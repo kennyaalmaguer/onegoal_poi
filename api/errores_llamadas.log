@@ -1,0 +1,133 @@
+[04-Nov-2025 20:50:57 Europe/Berlin] PHP Warning:  require_once(../config/db.php): Failed to open stream: No such file or directory in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:50:57 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required '../config/db.php' (include_path='F:\XAMPP1\php\PEAR') in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php:12
+Stack trace:
+#0 {main}
+  thrown in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:07 Europe/Berlin] PHP Warning:  require_once(../config/db.php): Failed to open stream: No such file or directory in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required '../config/db.php' (include_path='F:\XAMPP1\php\PEAR') in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php:12
+Stack trace:
+#0 {main}
+  thrown in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:07 Europe/Berlin] PHP Warning:  require_once(../config/db.php): Failed to open stream: No such file or directory in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required '../config/db.php' (include_path='F:\XAMPP1\php\PEAR') in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php:12
+Stack trace:
+#0 {main}
+  thrown in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:08 Europe/Berlin] PHP Warning:  require_once(../config/db.php): Failed to open stream: No such file or directory in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:52:08 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required '../config/db.php' (include_path='F:\XAMPP1\php\PEAR') in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php:12
+Stack trace:
+#0 {main}
+  thrown in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 12
+[04-Nov-2025 20:54:18 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown database 'tu_base' in F:\XAMPP1\htdocs\onegoal_poi\api\db.php:2
+Stack trace:
+#0 F:\XAMPP1\htdocs\onegoal_poi\api\db.php(2): mysqli->__construct('localhost', 'root', '', 'tu_base')
+#1 F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php(12): require_once('F:\\XAMPP1\\htdoc...')
+#2 {main}
+  thrown in F:\XAMPP1\htdocs\onegoal_poi\api\db.php on line 2
+[04-Nov-2025 20:55:04 Europe/Berlin] Error en api_llamadas.php: Table 'onegoal.usuarios' doesn't exist
+[05-Nov-2025 21:07:26 Europe/Berlin] Error en api_llamadas.php: Column 'id_grupo' cannot be null
+[06-Nov-2025 00:45:01 Europe/Berlin] PHP Warning:  Undefined array key "idUsuarioEmisor" in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 80
+[06-Nov-2025 00:45:34 Europe/Berlin] PHP Warning:  Undefined array key "idUsuarioEmisor" in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 80
+[06-Nov-2025 00:45:40 Europe/Berlin] PHP Warning:  Undefined array key "idUsuarioEmisor" in F:\XAMPP1\htdocs\onegoal_poi\api\api_llamadas.php on line 80
+[06-Nov-2025 01:00:12 Europe/Berlin] Error en api_llamadas.php: Cannot add or update a child row: a foreign key constraint fails (`onegoal`.`llamada`, CONSTRAINT `llamada_ibfk_4` FOREIGN KEY (`idUsuarioReceptor`) REFERENCES `usuario` (`id_usuario`))
+[06-Nov-2025 05:21:14 Europe/Berlin] Error en api_llamadas.php: Column count doesn't match value count at row 1
+[06-Nov-2025 18:03:05 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 4
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 4
+    [tipo] => voz
+    [estado] => saliente
+)
+
+[06-Nov-2025 18:03:08 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 4
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 4
+    [tipo] => voz
+    [estado] => perdida
+)
+
+[06-Nov-2025 18:12:44 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 3
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 1
+    [tipo] => voz
+    [estado] => saliente
+)
+
+[06-Nov-2025 18:12:47 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 3
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 1
+    [tipo] => voz
+    [estado] => perdida
+)
+
+[06-Nov-2025 18:12:51 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 
+    [idGrupo] => 19
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 
+    [tipo] => voz
+    [estado] => saliente
+)
+
+[06-Nov-2025 18:13:04 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 
+    [idGrupo] => 19
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 
+    [tipo] => voz
+    [estado] => perdida
+)
+
+[06-Nov-2025 18:27:00 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 25
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 15
+    [tipo] => voz
+    [estado] => saliente
+)
+
+[06-Nov-2025 18:27:02 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 25
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 15
+    [tipo] => voz
+    [estado] => perdida
+)
+
+[06-Nov-2025 18:27:23 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 25
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 15
+    [tipo] => video
+    [estado] => saliente
+)
+
+[06-Nov-2025 18:27:25 Europe/Berlin] Datos recibidos: Array
+(
+    [idChat] => 25
+    [idGrupo] => 
+    [idUsuarioEmisor] => 11
+    [idUsuarioReceptor] => 15
+    [tipo] => video
+    [estado] => perdida
+)
+

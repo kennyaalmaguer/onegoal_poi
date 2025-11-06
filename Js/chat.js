@@ -1,5 +1,5 @@
 let currentChatId = null;
-let currentUserId = null;
+//let currentUserId = null;
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -9,25 +9,28 @@ window.addEventListener('DOMContentLoaded', () => {
     const chatPanel = document.getElementById('chatPanel');
     const chatsPanel = document.getElementById('chatsPanel');
 
+    // Variables globales
+    window.currentChatId = null;
+    window.idUsuarioDestino = null;
+    window.grupos = [];
+    window.chatsPrivados = [];
+
     // Estado inicial
     if (emptyChat) emptyChat.style.display = 'flex';
     if (messagesContainer) messagesContainer.style.display = 'none';
     if (inputContainer) inputContainer.style.display = 'none';
-
-    // Detectar clics en chats
-    document.addEventListener('click', async (e) => {
+ document.addEventListener('click', async (e) => {
         const item = e.target.closest('.chat-item');
         if (!item) return;
 
         const tipo = item.dataset.tipo; // "privado" o "grupo"
-        const userId = item.dataset.chat;
-
+        const chatId = item.dataset.chat;
         const messagesContainer = chatPanel.querySelector('.messages');
         messagesContainer.innerHTML = "";
 
         // === CHAT GRUPAL ===
         if (tipo === "grupo") {
-            console.log("Abrir chat grupal:", userId);
+            console.log("Abrir chat grupal:", chatId);
 
             if (emptyChat) emptyChat.style.display = 'none';
             if (messagesContainer) messagesContainer.style.display = 'block';
@@ -53,16 +56,19 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            currentChatId = userId;
-            await loadMessages(userId, messagesContainer);
+            currentChatId = chatId; // Importante: se guarda el id del grupo
+            idUsuarioDestino = null; // No hay usuario destino en grupo
+            await loadMessages(chatId, messagesContainer);
             return;
         }
 
         // === CHAT PRIVADO ===
+        console.log("Abrir chat privado con usuario:", chatId);
+
         const response = await fetch('php/create_chat.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_usuario1: currentUserId, id_usuario2: userId })
+            body: JSON.stringify({ id_usuario2: chatId })
         });
 
         const data = await response.json();
@@ -80,38 +86,32 @@ window.addEventListener('DOMContentLoaded', () => {
         const userStatus = document.getElementById('userStatus');
 
         const nombre = item.querySelector('.chat-name')?.textContent || 'Chat';
-        // Aseguramos que el estado venga correctamente del dataset
         const estado = item.dataset.estado_conexion || item.dataset.estado || 'desconectado';
 
         chatName.textContent = nombre;
         chatAvatar.innerHTML = item.querySelector('.chat-avatar')?.innerHTML || nombre[0].toUpperCase();
 
-        // === Estado visual coherente con tu BD ===
         if (userStatus) {
-            if (tipo === 'usuario') {
-                if (estado === 'en_linea') {
-                    userStatus.textContent = 'En línea';
-                    userStatus.style.color = '#28a745';
-                } else {
-                    userStatus.textContent = 'Desconectado';
-                    userStatus.style.color = '#dc3545';
-                }
-            } else if (tipo === 'grupo') {
-                if (estado.toLowerCase() === 'activo') {
-                    userStatus.textContent = 'Activo';
-                    userStatus.style.color = '#28a745';
-                } else {
-                    userStatus.textContent = 'Inactivo';
-                    userStatus.style.color = '#dc3545';
-                }
+            if (estado === 'en_linea') {
+                userStatus.textContent = 'En línea';
+                userStatus.style.color = '#28a745';
             } else {
-                userStatus.textContent = '';
+                userStatus.textContent = 'Desconectado';
+                userStatus.style.color = '#dc3545';
             }
         }
 
-        currentChatId = data.id_chat;
+        currentChatId = data.id_chat; // ID real del chat
+        idUsuarioDestino = chatId; // Usuario destino para llamadas
         await loadMessages(currentChatId, messagesContainer);
+        ///
+        const chatSeleccionado = obtenerChatSeleccionado();
+         if (chatSeleccionado) {
+          cargarHistorialLlamadas(chatSeleccionado);
+       }
     });
+    // Detectar clics en chats (privados o grupales)
+   
 
     // Botón atrás (modo móvil)
     const backButton = document.getElementById('backButton');
@@ -126,6 +126,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     cargarGruposUsuario();
 });
+
 async function loadMessages(chatId, container) {
     try {
         const resp = await fetch(`php/get_message.php?id_chat=${chatId}`);
@@ -228,7 +229,7 @@ async function loadMessages(chatId, container) {
                         Tu navegador no soporta la reproducción de audio.
                        </audio>
                       </div>`;
-    break;
+              break;
             }
 
            
@@ -246,6 +247,8 @@ async function loadMessages(chatId, container) {
     } catch (error) {
         console.error("Error al cargar mensajes:", error);
     }
+    cargarHistorialLlamadas(chatId);
+
 }
 
 // Reutilizamos el sanitizador de texto
@@ -715,28 +718,26 @@ function cargarGruposUsuario() {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
+                window.grupos = data.grupos; // Guardamos los grupos globalmente
                 const groupsList = document.getElementById('groupsList');
                 groupsList.innerHTML = '';
 
                 data.grupos.forEach(g => {
                     const div = document.createElement('div');
                     div.classList.add('chat-item');
-                    div.dataset.chat = g.id_chat; // ahora sí es real
+                    div.dataset.chat = g.id_grupo; // ID real del grupo
                     div.dataset.tipo = 'grupo';
                     div.dataset.estado = g.estado;
 
                     div.innerHTML = `
-        <div class="chat-avatar"><i class="fas fa-users"></i></div>
-        <div class="chat-info">
-            <div class="chat-name">${g.nombre}</div>
-            <div class="chat-last">${g.estado === 'Activo' ? ' Activo' : ' Inactivo'} — Creador: ${g.nombre_creador}</div>
-        </div>
-    `;
-
+                        <div class="chat-avatar"><i class="fas fa-users"></i></div>
+                        <div class="chat-info">
+                            <div class="chat-name">${g.nombre}</div>
+                            <div class="chat-last">${g.estado === 'Activo' ? 'Activo' : 'Inactivo'} — Creador: ${g.nombre_creador}</div>
+                        </div>
+                    `;
                     groupsList.appendChild(div);
                 });
-
-                attachGroupListeners(); // agregar event listeners dinámicamente
             }
         })
         .catch(err => console.error('Error cargando grupos:', err));
@@ -752,7 +753,7 @@ function attachGroupListeners() {
             this.classList.add('active');
 
             const groupName = this.querySelector('.chat-name').textContent;
-            currentChatId = parseInt(this.dataset.chat); // ✅ número real
+            currentChatId = parseInt(this.dataset.chat); //  número real
             document.querySelector('.chat-header .chat-name').textContent = this.querySelector('.chat-name').textContent;
             document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
 
@@ -853,3 +854,88 @@ ubicacionBtn.addEventListener("click", () => {
         timeout: 15000
     });
 });
+async function cargarHistorialLlamadas(chatSeleccionado) {
+    try {
+        if (!chatSeleccionado) {
+            console.warn("No se recibió chatSeleccionado válido para historial de llamadas");
+            return;
+        }
+
+        let url = '';
+        if (chatSeleccionado.tipo === 'grupo') {
+            url = `api/api_llamadas.php?grupoId=${chatSeleccionado.id_grupo}`;
+        } else {
+            url = `api/api_llamadas.php?chatId=${chatSeleccionado.id_chat}`;
+        }
+
+        const response = await fetch(url);
+        const text = await response.text();
+
+        let llamadas;
+        try {
+            llamadas = JSON.parse(text);
+        } catch (e) {
+            console.error("Respuesta no JSON del servidor:", text);
+            throw new Error("Respuesta inválida del servidor");
+        }
+
+        const callsList = document.getElementById('callsList');
+        callsList.innerHTML = '';
+
+        if (!llamadas || llamadas.length === 0) {
+            callsList.innerHTML = `<div class="no-calls">📞 No hay registros de llamadas aún</div>`;
+            return;
+        }
+
+        llamadas.forEach(llamada => {
+            // 💡 Aseguramos campos correctos del servidor
+            const nombre = llamada.nombre_emisor || "Usuario desconocido";
+            const inicial = llamada.inicial || nombre.charAt(0).toUpperCase();
+
+            // Determinar icono y color según tipo/estado
+            let icono = llamada.tipo === 'video' ? 'fa-video' : 'fa-phone';
+            let colorEstado;
+
+            switch (llamada.estado) {
+                case 'entrante':
+                    colorEstado = '#28a745'; // verde
+                    break;
+                case 'saliente':
+                    colorEstado = '#007bff'; // azul
+                    break;
+                case 'perdida':
+                    colorEstado = '#dc3545'; // rojo
+                    break;
+                default:
+                    colorEstado = '#6c757d'; // gris
+                    break;
+            }
+
+            const tipoTexto = llamada.tipo === 'video' ? 'Videollamada' : 'Llamada';
+            const estadoTexto =
+                llamada.estado.charAt(0).toUpperCase() + llamada.estado.slice(1);
+
+            const item = `
+                <div class="call-item">
+                    <div class="call-avatar">${inicial}</div>
+                    <div class="call-info">
+                        <div class="call-name">${nombre}</div>
+                        <div class="call-details" style="color:${colorEstado}">
+                            <i class="fas ${icono}"></i>
+                            <span>${tipoTexto} ${estadoTexto}</span>
+                        </div>
+                    </div>
+                    <div class="call-time">${new Date(llamada.fecha).toLocaleString()}</div>
+                </div>
+            `;
+            callsList.insertAdjacentHTML('beforeend', item);
+        });
+    } catch (error) {
+        console.error('Error cargando historial de llamadas:', error);
+        const callsList = document.getElementById('callsList');
+        if (callsList) {
+            callsList.innerHTML = `<div class="error-calls">⚠️ Error al cargar el historial</div>`;
+        }
+    }
+}
+

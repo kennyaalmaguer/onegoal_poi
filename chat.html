@@ -57,65 +57,12 @@
 
         <!-- Lista de llamadas (oculta por defecto) -->
         <div class="chats-list" id="callsList" style="display: none;">
-            <div class="call-item">
-                <div class="call-avatar">M</div>
-                <div class="call-info">
-                    <div class="call-name">Messi</div>
-                    <div class="call-details">
-                        <i class="fas fa-phone outgoing"></i>
-                        <span>Llamada saliente</span>
-                    </div>
-                </div>
-                <div class="call-time">Hoy 15:30</div>
-            </div>
+           
+        
 
-            <div class="call-item">
-                <div class="call-avatar">C</div>
-                <div class="call-info">
-                    <div class="call-name">Comité Organizador</div>
-                    <div class="call-details">
-                        <i class="fas fa-phone incoming"></i>
-                        <span>Llamada entrante</span>
-                    </div>
-                </div>
-                <div class="call-time">Ayer 11:20</div>
-            </div>
+        
 
-            <div class="call-item">
-                <div class="call-avatar">A</div>
-                <div class="call-info">
-                    <div class="call-name">Alejandro</div>
-                    <div class="call-details">
-                        <i class="fas fa-video outgoing"></i>
-                        <span>Videollamada saliente</span>
-                    </div>
-                </div>
-                <div class="call-time">12 mar 09:45</div>
-            </div>
 
-            <div class="call-item">
-                <div class="call-avatar">S</div>
-                <div class="call-info">
-                    <div class="call-name">Selección Argentina</div>
-                    <div class="call-details">
-                        <i class="fas fa-phone missed"></i>
-                        <span>Llamada perdida</span>
-                    </div>
-                </div>
-                <div class="call-time">10 mar 16:15</div>
-            </div>
-
-            <div class="call-item">
-                <div class="call-avatar">F</div>
-                <div class="call-info">
-                    <div class="call-name">FIFA</div>
-                    <div class="call-details">
-                        <i class="fas fa-video incoming"></i>
-                        <span>Videollamada entrante</span>
-                    </div>
-                </div>
-                <div class="call-time">8 mar 14:30</div>
-            </div>
         </div>
     </div>
 
@@ -177,9 +124,9 @@
     <div id="voiceCallModal" class="call-modal">
         <div class="call-content">
             <div class="caller-info">
-                <div class="caller-avatar">M</div>
+                <div class="caller-avatar"  id="voiceCallerAvatar">M</div>
                 <h2>Lionel Messi</h2>
-                <p class="call-status">Llamando...</p>
+                <p class="call-status" id="voiceCallStatus">Llamando...</p>
             </div>
             <div class="call-controls">
                 <button class="call-btn" id="muteBtn">
@@ -214,7 +161,7 @@
                     <!-- Tu video -->
                     <video id="localVideo" autoplay playsinline muted></video>
                     <div class="video-placeholder small" id="localPlaceholder">
-                        <div class="caller-avatar">Tú</div>
+                        <div class="caller-avatar" id="localAvatar">Tú</div>
                     </div>
                 </div>
             </div>
@@ -243,9 +190,9 @@
     <div id="incomingCallModal" class="call-modal">
         <div class="call-content">
             <div class="caller-info">
-                <div class="caller-avatar">M</div>
+                <div class="caller-avatar"  id="incomingCallerAvatar">M</div>
                 <h2>Lionel Messi</h2>
-                <p class="call-status">Llamada entrante...</p>
+                <p class="call-status" id="incomingCallStatus">Llamada entrante...</p>
             </div>
             <div class="call-controls">
                 <button class="call-btn decline" id="declineCall">

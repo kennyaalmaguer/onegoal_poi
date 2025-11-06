@@ -22,27 +22,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $stmt->get_result();
 
     if ($row = $result->fetch_assoc()) {
-      if (password_verify($password, $row['contraseña'])) {
-    $_SESSION['id_usuario'] = $row['id_usuario'];
-    $_SESSION['nombre'] = $row['nombre'];
-    $_SESSION['correo'] = $row['correo'];
-    $_SESSION['foto_perfil'] = base64_encode($row['foto_perfil']);
-    $_SESSION['estado_conexion'] = "en_linea";
+        if (password_verify($password, $row['contraseña'])) {
 
-    // Actualizamos en BD
-    $update = $conn->prepare("UPDATE Usuario SET estado_conexion = 'en_linea' WHERE id_usuario = ?");
-    $update->bind_param("i", $row['id_usuario']);
-    $update->execute();
+            // Guardar sesión PHP
+            $_SESSION['id_usuario'] = $row['id_usuario'];
+            $_SESSION['nombre'] = $row['nombre'];
+            $_SESSION['correo'] = $row['correo'];
+            $_SESSION['foto_perfil'] = base64_encode($row['foto_perfil']);
+            $_SESSION['estado_conexion'] = "en_linea";
 
-    header("Location: ../index.html");
-    exit();
+            // Actualizar estado en BD
+            $update = $conn->prepare("UPDATE Usuario SET estado_conexion = 'en_linea' WHERE id_usuario = ?");
+            $update->bind_param("i", $row['id_usuario']);
+            $update->execute();
+
+            // ⚡️ En lugar de header(), imprimimos JS para guardar datos en localStorage y redirigir
+            echo "
+            <script>
+                localStorage.setItem('idUsuarioActual', '{$row['id_usuario']}');
+                localStorage.setItem('nombreUsuarioActual', '".addslashes($row['nombre'])."');
+                localStorage.setItem('correoUsuarioActual', '".addslashes($row['correo'])."');
+                localStorage.setItem('fotoUsuarioActual', '".base64_encode($row['foto_perfil'])."');
+                localStorage.setItem('estadoConexion', 'en_linea');
+                window.location.href = '../index.html';
+            </script>
+            ";
+            exit();
 
         } else {
-      header("Location: ../login.html?error=contraseña");
+            header('Location: ../login.html?error=contraseña');
             exit();
         }
     } else {
-    header("Location: ../login.html?error=usuario");
+        header('Location: ../login.html?error=usuario');
         exit();
     }
 
