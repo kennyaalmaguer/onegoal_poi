@@ -1,6 +1,6 @@
 let currentChatId = null;
 let currentUserId = null;
-
+let lastMessageCheck = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
     const emptyChat = document.getElementById('emptyChat');
@@ -8,7 +8,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const inputContainer = document.querySelector('.input-container');
     const chatPanel = document.getElementById('chatPanel');
     const chatsPanel = document.getElementById('chatsPanel');
-    document.getElementById('messagesContainer');
 
     // Estado inicial
     if (emptyChat) emptyChat.style.display = 'flex';
@@ -19,7 +18,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', async (e) => {
         const item = e.target.closest('.chat-item');
         if (!item) return;
-
 
         const tipo = item.dataset.tipo; // puede ser "privado" o "grupo"
         const userId = item.dataset.chat; // id del usuario o grupo
@@ -64,8 +62,6 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-
-
         // Obtener o crear el chat entre ambos usuarios
         const response = await fetch('php/create_chat.php', {
             method: 'POST',
@@ -78,6 +74,7 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Error al crear/obtener chat:", data.error);
             return;
         }
+        
         // Mostrar los elementos del chat
         if (emptyChat) emptyChat.style.display = 'none';
         if (messagesContainer) messagesContainer.style.display = 'block';
@@ -90,23 +87,33 @@ window.addEventListener('DOMContentLoaded', () => {
         const estado = item.dataset.estado || item.dataset.estado_conexion; // Actualizar encabezado 
         chatName.textContent = nombre;
         chatAvatar.innerHTML = item.querySelector('.chat-avatar')?.innerHTML || nombre[0].toUpperCase();
+        
         // Estado visual 
         if (userStatus) {
             if (tipo === 'usuario') {
-                if (estado === 'online' || estado === 'Conectado') { userStatus.textContent = 'En línea'; userStatus.style.color = '#28a745'; }
-                else { userStatus.textContent = 'Desconectado'; userStatus.style.color = '#dc3545'; }
+                if (estado === 'online' || estado === 'Conectado') { 
+                    userStatus.textContent = 'En línea'; 
+                    userStatus.style.color = '#28a745'; 
+                } else { 
+                    userStatus.textContent = 'Desconectado'; 
+                    userStatus.style.color = '#dc3545'; 
+                }
+            } else if (tipo === 'grupo') {
+                if (estado === 'Activo') { 
+                    userStatus.textContent = 'Activo'; 
+                    userStatus.style.color = '#28a745'; 
+                } else { 
+                    userStatus.textContent = 'Inactivo'; 
+                    userStatus.style.color = '#dc3545'; 
+                }
+            } else { 
+                userStatus.textContent = ''; 
             }
-            else if (tipo === 'grupo') {
-                if (estado === 'Activo') { userStatus.textContent = 'Activo'; userStatus.style.color = '#28a745'; }
-                else { userStatus.textContent = 'Inactivo'; userStatus.style.color = '#dc3545'; }
-            }
-            else { userStatus.textContent = ''; }
         }
-
 
         // Guardamos el id_chat globalmente
         currentChatId = data.id_chat;
-
+        lastMessageCheck = Date.now(); // Resetear el check de mensajes
 
         await loadMessages(currentChatId, messagesContainer);
     });
@@ -123,11 +130,31 @@ window.addEventListener('DOMContentLoaded', () => {
     // Inicializar usuarios y grupos
     loadUsers();
     cargarGruposUsuario();
+
+    // Iniciar la verificación periódica de mensajes
+    startMessagePolling();
 });
+
 async function loadMessages(chatId, container) {
     try {
-        const resp = await fetch(`php/get_message.php?id_chat=${chatId}`);
+        const resp = await fetch(`php/get_message.php?id_chat=${chatId}&t=${Date.now()}`, {
+            cache: "no-store",
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
+        
+        if (!resp.ok) {
+            throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        
         const mensajes = await resp.json();
+
+        // Verificar que sea un array
+        if (!Array.isArray(mensajes)) {
+            console.error("La respuesta no es un array:", mensajes);
+            return;
+        }
 
         container.innerHTML = "";
 
@@ -199,9 +226,45 @@ async function loadMessages(chatId, container) {
 
         // 📜 Mantener scroll abajo
         container.scrollTop = container.scrollHeight;
+        
+        // Actualizar último check
+        lastMessageCheck = Date.now();
+        
+        console.log(`✅ ${mensajes.length} mensajes cargados para chat ${chatId}`);
 
     } catch (error) {
         console.error("Error al cargar mensajes:", error);
+    }
+}
+
+// 🔁 Actualizar mensajes automáticamente cada 2 segundos
+function startMessagePolling() {
+    setInterval(() => {
+        if (currentChatId) {
+            const container = document.getElementById("messagesContainer");
+            if (container) {
+                loadMessages(currentChatId, container);
+            }
+        }
+    }, 2000);
+}
+
+// Función para verificar mensajes nuevos (más eficiente)
+async function checkForNewMessages() {
+    if (!currentChatId) return;
+    
+    try {
+        const resp = await fetch(`php/check_new_messages.php?chat_id=${currentChatId}&last_check=${lastMessageCheck}`, {
+            cache: "no-store"
+        });
+        const data = await resp.json();
+        
+        if (data.has_new) {
+            const container = document.getElementById("messagesContainer");
+            await loadMessages(currentChatId, container);
+        }
+    } catch (error) {
+        console.error("Error verificando nuevos mensajes:", error);
     }
 }
 
@@ -211,16 +274,6 @@ function sanitizeHTML(str) {
     temp.textContent = str;
     return temp.innerHTML;
 }
-
-
-
-// Botón de regreso
-backButton.addEventListener('click', function () {
-    if (window.innerWidth <= 768) {
-        chatsPanel.style.display = 'flex';
-        chatPanel.classList.remove('active');
-    }
-});
 
 // Funcionalidad para los botones de filtro
 document.querySelectorAll('.round-button').forEach(button => {
@@ -234,10 +287,11 @@ document.querySelectorAll('.round-button').forEach(button => {
 
 // Función para actualizar la conversación según el chat seleccionado
 async function updateChatConversation(chatId) {
+    const messagesContainer = document.getElementById('messagesContainer');
     messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
 
     try {
-        const response = await fetch(`php/get_message.php?id_chat=${chatId}`);
+        const response = await fetch(`php/get_message.php?id_chat=${chatId}&t=${Date.now()}`);
         const messages = await response.json();
 
         messagesContainer.innerHTML = '';
@@ -259,11 +313,14 @@ async function updateChatConversation(chatId) {
         console.error("Error al cargar mensajes:", error);
     }
 }
+
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
+
 // --- Envío de mensajes ---
 sendBtn.addEventListener('click', sendMessage);
-
 
 messageInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
@@ -272,13 +329,16 @@ messageInput.addEventListener('keypress', function (e) {
 });
 
 //-------MANDAR MENSAJES---------//
-
-
 async function sendMessage() {
     const input = document.getElementById("messageInput");
     const contenido = input.value.trim();
-    if (!contenido || !currentChatId) return;
-    console.log("currentChatId:", currentChatId, "currentUserId:", currentUserId);
+    
+    if (!contenido || !currentChatId) {
+        console.log("No hay contenido o chatId");
+        return;
+    }
+
+    console.log("Enviando mensaje - currentChatId:", currentChatId, "currentUserId:", currentUserId);
     console.log("contenido:", contenido);
 
     try {
@@ -292,11 +352,16 @@ async function sendMessage() {
                 tipo: "texto"
             })
         });
+        
         const data = await resp.json();
         if (data?.success) {
             input.value = "";
+            
+            // Recargar mensajes inmediatamente después de enviar
             const messagesContainer = document.getElementById("messagesContainer");
             await loadMessages(currentChatId, messagesContainer);
+            
+            console.log("✅ Mensaje enviado y recargado");
         } else {
             console.error("Error al enviar mensaje:", data?.error);
         }
@@ -304,6 +369,7 @@ async function sendMessage() {
         console.error("Error en envío:", err);
     }
 }
+
 async function sendFileMessage(id_chat, id_usuario, file, tipo) {
     const formData = new FormData();
     formData.append("id_chat", id_chat);
@@ -322,6 +388,10 @@ async function sendFileMessage(id_chat, id_usuario, file, tipo) {
 
         if (result.success) {
             renderMessage(result.url || result.contenido, result.tipo);
+            
+            // Recargar mensajes después de enviar archivo
+            const messagesContainer = document.getElementById("messagesContainer");
+            await loadMessages(currentChatId, messagesContainer);
         } else {
             alert("❌ Error al enviar archivo: " + (result.error || "Desconocido"));
         }
@@ -329,10 +399,10 @@ async function sendFileMessage(id_chat, id_usuario, file, tipo) {
         console.error("Error al enviar archivo:", error);
     }
 }
+
 attachBtn.addEventListener('click', () => {
     fileInput.click();
 });
-
 
 fileInput.addEventListener("change", async () => {
     const file = fileInput.files[0];
@@ -358,8 +428,6 @@ function formatFileSize(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
-
-
 
 // Elementos para las listas
 const conversationsList = document.getElementById('conversationsList');
@@ -430,7 +498,6 @@ document.querySelectorAll('#groupsList .chat-item').forEach(item => {
             userStatus.style.color = '#dc3545';
         }
 
-
         updateGroupConversation(this.dataset.chat);
     });
 });
@@ -476,10 +543,8 @@ function renderMessage(content, type, sent = true) {
     const messageDiv = document.createElement('div');
 
     // 📌 Asignar clases base
-
     messageDiv.classList.add(sent ? 'sent' : 'received');
 
-   
     if (type !== "texto" && content && !content.startsWith('http') && !content.startsWith('blob:')) {
         content = `uploads/${content}`;
     }
@@ -541,12 +606,6 @@ function renderMessage(content, type, sent = true) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-/* 🔒 Evita inyecciones HTML en texto */
-function sanitizeHTML(str) {
-    const temp = document.createElement("div");
-    temp.textContent = str;
-    return temp.innerHTML;
-}
 const searchBox = document.querySelector('.search-box');
 let usuarios = [];
 let userAvatarMap = {};
@@ -590,6 +649,7 @@ async function loadUsers() {
         console.error("Error al cargar usuarios:", error);
     }
 }
+
 // Filtrar usuarios al escribir
 searchBox.addEventListener('input', function () {
     const query = this.value.toLowerCase();
@@ -619,8 +679,8 @@ searchBox.addEventListener('input', function () {
         conversationsList.appendChild(div);
     });
 });
-function startChatWith(userId, userName) {
 
+function startChatWith(userId, userName) {
     if (userId == currentUserId) {
         console.warn("No puedes iniciar un chat contigo mismo");
         return;
@@ -631,8 +691,6 @@ function startChatWith(userId, userName) {
     document.querySelector('.chat-header .user-avatar').innerHTML = userAvatarMap[userId] || userName[0];
     messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
 }
-
-
 
 //-----------ESTO ES PARA LO DE LOS GRUPOOS--------------//
 document.addEventListener('DOMContentLoaded', loadUsers);
@@ -688,6 +746,7 @@ function cargarGruposUsuario() {
         })
         .catch(err => console.error('Error cargando grupos:', err));
 }
+
 function attachGroupListeners() {
     document.querySelectorAll('#groupsList .chat-item').forEach(item => {
         item.addEventListener('click', function () {
@@ -703,10 +762,7 @@ function attachGroupListeners() {
             document.querySelector('.chat-header .chat-name').textContent = this.querySelector('.chat-name').textContent;
             document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
 
-            updateChatConversation('currentChatId'); // carga mensajes
-
-
-            updateGroupConversation(this.getAttribute('data-chat'));
+            updateChatConversation(currentChatId); // carga mensajes reales
         });
     });
 }
@@ -749,3 +805,15 @@ function activarListenersGrupos() {
         });
     });
 }
+
+// Función auxiliar para debug
+function debugCurrentState() {
+    console.log("=== DEBUG ESTADO ACTUAL ===");
+    console.log("currentUserId:", currentUserId);
+    console.log("currentChatId:", currentChatId);
+    console.log("lastMessageCheck:", lastMessageCheck);
+    console.log("========================");
+}
+
+// Ejecutar debug cada 5 segundos (opcional)
+setInterval(debugCurrentState, 5000);

@@ -2,6 +2,8 @@
 <html lang="es">
 
 <head>
+   
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap"
@@ -297,7 +299,21 @@
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="modalImage">
     </div>
+<script>
+function cargarMensajes() {
+  fetch("mensajes.php")  // un archivo PHP que devuelve los mensajes actualizados
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("mensajes").innerHTML = data;
+    });
+}
 
+// Actualiza cada 2 segundos
+setInterval(cargarMensajes, 2000);
+
+// Carga los mensajes al iniciar
+cargarMensajes();
+</script>
     <script src="Js/chat.js"></script>
     <script src="Js/chat_funciones.js"></script>
 </body>
