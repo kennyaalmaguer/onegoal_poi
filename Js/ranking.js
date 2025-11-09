@@ -139,16 +139,50 @@ document.addEventListener("DOMContentLoaded", () => {
     return 1;
   }
 
-  // Obtener medallas del usuario
-  function getUserBadges(user) {
+// En tu ranking.js, modifica la función getUserBadges:
+
+// Obtener medallas del usuario desde la base de datos
+function getUserBadges(user) {
     const badges = [];
-    for (const badgeKey in BADGES) {
-      if (BADGES[badgeKey].condition(user)) {
-        badges.push(BADGES[badgeKey]);
-      }
+    
+    // Usar las medallas que vienen del servidor
+    if (user.medallas && user.medallas.length > 0) {
+        user.medallas.forEach(medalla => {
+            switch(medalla) {
+                case 'VELOCISTA':
+                    badges.push({
+                        id: "speed",
+                        name: "⚡ VELOCISTA", 
+                        description: "Entregar pronósticos antes de 24h"
+                    });
+                    break;
+                case 'ORACULO':
+                    badges.push({
+                        id: "oracle",
+                        name: "🔮 ORÁCULO",
+                        description: "3 marcadores exactos seguidos"
+                    });
+                    break;
+                case 'COLABORADOR':
+                    badges.push({
+                        id: "collab", 
+                        name: "🤝 COLABORADOR",
+                        description: "Más de 10 tareas completadas"
+                    });
+                    break;
+                case 'CONVENCEDOR':
+                    badges.push({
+                        id: "convincer",
+                        name: "💬 CONVENCEDOR", 
+                        description: "50 mensajes en chats"
+                    });
+                    break;
+            }
+        });
     }
+    
     return badges;
-  }
+}
 
   // Renderizar ranking
   function renderRanking() {
