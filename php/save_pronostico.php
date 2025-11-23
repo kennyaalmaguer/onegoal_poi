@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 require_once 'conexion.php';
@@ -22,6 +21,9 @@ if (!$id_partido) {
     echo json_encode(['success' => false, 'mensaje' => 'ID de partido no válido.']);
     exit;
 }
+
+// DEBUG: Ver qué datos están llegando
+error_log("DEBUG Pronóstico - Usuario: $id_usuario, Partido: $id_partido, Local: $goles_local, Visitante: $goles_visitante, Goleador: $primer_goleador");
 
 try {
     $conn->begin_transaction();
@@ -81,6 +83,15 @@ try {
         ");
         $stmt_puntos->bind_param("ii", $puntos_a_otorgar, $id_usuario);
         $stmt_puntos->execute();
+        
+        // Registrar en tabla puntos
+        $stmt_registro = $conn->prepare("
+            INSERT INTO puntos (id_usuario, fuente, detalle, puntos_otorgados) 
+            VALUES (?, 'Pronostico', ?, ?)
+        ");
+        $detalle = "Pronóstico completado";
+        $stmt_registro->bind_param("isi", $id_usuario, $detalle, $puntos_a_otorgar);
+        $stmt_registro->execute();
     }
 
     $conn->commit();

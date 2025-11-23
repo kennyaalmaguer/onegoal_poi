@@ -130,6 +130,115 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
+
+// Función para verificar y mostrar resultados de partidos pasados
+async function checkAndShowMatchResults() {
+    try {
+        const response = await fetch('php/get_matches.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            const now = new Date();
+            
+            data.matches.forEach(match => {
+                const matchDate = new Date(match.date);
+                const card = document.querySelector(`.match-card[data-partido-id="${match.id}"]`);
+                
+                if (card && matchDate < now && match.resultado_final) {
+                    // Este partido ya pasó y tiene resultado
+                    showMatchResult(card, match);
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error verificando resultados:', error);
+    }
+}
+
+// Función para mostrar resultado del partido y verificar aciertos
+function showMatchResult(card, match) {
+    const form = card.querySelector('.prediction-form');
+    if (!form) return;
+    
+    // Deshabilitar el formulario
+    form.querySelectorAll('input, button').forEach(element => {
+        element.disabled = true;
+    });
+    
+    // Obtener el pronóstico del usuario
+    const pronosticoLocal = form.querySelector('input[name="goles_local"]').value;
+    const pronosticoVisitante = form.querySelector('input[name="goles_visitante"]').value;
+    const pronosticoGoleador = form.querySelector('input[name="primer_goleador"]').value;
+    
+    // Parsear resultado real
+    const [golesLocalReal, golesVisitanteReal] = match.resultado_final.split('-').map(Number);
+    const primerGoleadorReal = match.jugador_primer_gol;
+    
+    // Verificar aciertos
+    const aciertoResultado = pronosticoLocal && pronosticoVisitante && 
+                             parseInt(pronosticoLocal) === golesLocalReal && 
+                             parseInt(pronosticoVisitante) === golesVisitanteReal;
+    
+    const aciertoGoleador = pronosticoGoleador && primerGoleadorReal && 
+                            pronosticoGoleador.toLowerCase() === primerGoleadorReal.toLowerCase();
+    
+    // Calcular puntuación
+    let puntuacion = 0;
+    if (aciertoResultado) puntuacion += 3; // 3 puntos por resultado exacto
+    if (aciertoGoleador) puntuacion += 2; // 2 puntos por primer goleador
+    
+    // Crear elemento para mostrar resultados
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'match-result';
+    
+    // Determinar clase CSS según aciertos
+    let resultadoClass = 'result-neutral';
+    if (aciertoResultado && aciertoGoleador) {
+        resultadoClass = 'result-perfect';
+    } else if (aciertoResultado || aciertoGoleador) {
+        resultadoClass = 'result-partial';
+    }
+    
+    resultDiv.innerHTML = `
+        <div class="result-header ${resultadoClass}">
+            ${aciertoResultado && aciertoGoleador ? '🎯 ¡PRONÓSTICO PERFECTO!' : 
+              aciertoResultado ? '✅ ¡Resultado correcto!' : 
+              aciertoGoleador ? '⚽ ¡Primer goleador correcto!' : 
+              '❌ Pronóstico incorrecto'}
+        </div>
+        <div class="result-real">
+            <strong>Resultado Real:</strong> ${match.resultado_final} 
+            ${primerGoleadorReal ? `(Primer gol: ${primerGoleadorReal})` : ''}
+        </div>
+        ${pronosticoLocal ? `
+            <div class="result-user">
+                <strong>Tu pronóstico:</strong> ${pronosticoLocal}-${pronosticoVisitante}
+                ${pronosticoGoleador ? `(Primer gol: ${pronosticoGoleador})` : ''}
+            </div>
+        ` : ''}
+        <div class="result-score">
+            <strong>Puntuación:</strong> ${puntuacion} puntos
+        </div>
+    `;
+    
+    // Añadir estilos
+    resultDiv.style.cssText = `
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: 'Poppins', sans-serif;
+    `;
+    
+    form.appendChild(resultDiv);
+}
+
+// Llamar esta función cuando cargue la página
+checkAndShowMatchResults();
+
+
+
 // Añadir estilos CSS para las animaciones
 const style = document.createElement('style');
 style.textContent = `

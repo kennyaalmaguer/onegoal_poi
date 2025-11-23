@@ -192,23 +192,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Cargar tareas normales (grupales e individuales existentes)
-  function loadTasks() {
+ function loadTasks() {
     console.log('📥 Cargando tareas normales...');
     fetch('php/get_tareas.php')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          currentTasks = data.tasks;
-          console.log('✅ Tareas normales cargadas:', currentTasks.length, 'tareas');
-          renderTasks();
-        } else {
-          console.error('Error cargando tareas:', data.error);
-        }
+      .then(response => {
+          // Primero verificar si la respuesta es OK
+          if (!response.ok) {
+              throw new Error('Error HTTP: ' + response.status);
+          }
+          return response.text(); // Primero obtener como texto
+      })
+      .then(text => {
+          console.log('📄 Respuesta cruda:', text); // Ver qué viene realmente
+          
+          try {
+              const data = JSON.parse(text);
+              console.log('📊 Respuesta de get_tareas.php:', data);
+              
+              if (data.success) {
+                  currentTasks = data.tasks;
+                  console.log('✅ Tareas cargadas:', currentTasks.length);
+                  console.log('📋 Detalle tareas:', currentTasks);
+                  
+                  // Filtrar para ver solo tareas grupales
+                  const grupales = currentTasks.filter(task => task.scope === 'grupal');
+                  console.log('👥 Tareas grupales:', grupales);
+                  
+                  renderTasks();
+              } else {
+                  console.error('❌ Error cargando tareas:', data.error);
+              }
+          } catch (e) {
+              console.error('❌ Error parseando JSON:', e);
+              console.error('📄 Texto recibido:', text);
+          }
       })
       .catch(error => {
-        console.error('Error:', error);
+          console.error('❌ Error de red:', error);
       });
-  }
+}
 
   // Función para cargar partidos como tareas del sistema
   function loadMatchesAsTasks() {

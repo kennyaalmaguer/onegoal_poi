@@ -1,7 +1,7 @@
 <?php
 echo "<h2>Probando conexión MySQL...</h2>";
 
-$host = "127.0.0.1:3307";
+$host = "127.0.0.1:3306";
 $usuario = "root";
 $clave = "";
 $bd = "onegoal";
@@ -16,7 +16,7 @@ if ($conn->connect_error) {
     echo "<p>Usuario: " . $usuario . "</p>";
     echo "<p>Base de datos: " . $bd . "</p>";
 } else {
-    echo "<p style='color: green;'>✅ Conexión exitosa al puerto 3307!</p>";
+    echo "<p style='color: green;'>✅ Conexión exitosa al puerto 3306!</p>";
     
     // Verificar si la base de datos existe
     $result = $conn->query("SHOW TABLES");

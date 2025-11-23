@@ -464,3 +464,42 @@ nav a:hover, nav a.active {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0.3; }
 }
+
+/* Añadir estos estilos al archivo pronosticos.css */
+
+.result-perfect {
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    color: white;
+    font-weight: bold;
+}
+
+.result-partial {
+    background: linear-gradient(135deg, #FFC107, #FFA000) !important;
+    color: white;
+    font-weight: bold;
+}
+
+.result-neutral {
+    background: linear-gradient(135deg, #9E9E9E, #757575) !important;
+    color: white;
+}
+
+.result-header {
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.result-real, .result-user, .result-score {
+    margin: 8px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.result-score {
+    font-weight: bold;
+    color: #333;
+    border-bottom: none !important;
+}

@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
     4: { name: "LEYENDA", min: 101, max: Infinity }
   };
   
-  // Definición de medallas
-  const BADGES = {
+  // Definición de medallas  
+  /*const BADGES = {
     oracle: {
       id: "oracle",
       name: "🔮 ORÁCULO",
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       description: "50 mensajes en chats",
       condition: (user) => user.chatMessages >= 50
     }
-  };
+  };*/
 
   // Iniciar carga del ranking
   loadRankingData();
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // En tu ranking.js, modifica la función getUserBadges:
 
 // Obtener medallas del usuario desde la base de datos
-function getUserBadges(user) {
+/*function getUserBadges(user) {
     const badges = [];
     
     // Usar las medallas que vienen del servidor
@@ -176,6 +176,31 @@ function getUserBadges(user) {
                         name: "💬 CONVENCEDOR", 
                         description: "50 mensajes en chats"
                     });
+                    break;
+            }
+        });
+    }
+    
+    return badges;
+}*/
+
+function getUserBadges(user) {
+    const badges = [];
+    
+    if (user.medallas && user.medallas.length > 0) {
+        user.medallas.forEach(medalla => {
+            switch(medalla) {
+                case 'ORACULO':
+                    badges.push({ id: "oracle", name: "🔮 ORÁCULO", description: "3 marcadores exactos seguidos" });
+                    break;
+                case 'VELOCISTA':
+                    badges.push({ id: "speed", name: "⚡ VELOCISTA", description: "Entregar pronósticos antes de 24h" });
+                    break;
+                case 'COLABORADOR':
+                    badges.push({ id: "collab", name: "🤝 COLABORADOR", description: "Más de 10 tareas completadas" });
+                    break;
+                case 'CONVENCEDOR':
+                    badges.push({ id: "convincer", name: "💬 CONVENCEDOR", description: "50 mensajes en chats" });
                     break;
             }
         });

@@ -60,7 +60,7 @@ elseif (!empty($_FILES['archivo']) && isset($_POST['id_chat']) && isset($_POST['
     }
 
     $contenido = "uploads/" . $fileName;
-        // 🔒 Encripta si se solicitó cifrado
+        // Encripta si se solicitó cifrado
     if ($cifrado === 1) {
         $contenido = base64_encode($contenido);
     }

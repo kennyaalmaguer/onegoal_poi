@@ -1,216 +1,193 @@
 let currentChatId = null;
-<<<<<<< HEAD
-//let currentUserId = null;
-
-=======
 let currentUserId = null;
 let lastMessageCheck = 0;
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
 
-window.addEventListener('DOMContentLoaded', () => {
+// Función de debug
+function debugLog(message, data = null) {
+    console.log(`🔍 ${message}`, data || '');
+}
+
+// Inicialización principal
+document.addEventListener('DOMContentLoaded', function() {
+    debugLog("Iniciando chat.js");
+    
+    const chatsPanel = document.getElementById('chatsPanel');
+    const chatPanel = document.getElementById('chatPanel');
+    const backButton = document.getElementById('backButton');
+    
+    // Verificar elementos críticos
+    if (!chatsPanel || !chatPanel) {
+        console.error("❌ No se encontraron los paneles principales");
+        return;
+    }
+    
+    debugLog("Elementos encontrados:", {
+        chatsPanel: !!chatsPanel,
+        chatPanel: !!chatPanel,
+        backButton: !!backButton
+    });
+
+    // Botón de retroceso para móvil
+    if (backButton) {
+        backButton.addEventListener('click', function() {
+            debugLog("Botón retroceso clickeado");
+            if (window.innerWidth <= 768) {
+                chatsPanel.style.display = 'flex';
+                chatPanel.style.display = 'none';
+                
+                // Limpiar selección
+                document.querySelectorAll('.chat-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                debugLog("Volviendo a lista de chats");
+            }
+        });
+    }
+
+    // Cargar datos iniciales
+    loadUsers();
+    cargarGruposUsuario();
+    startMessagePolling();
+    
+    debugLog("Inicialización completada");
+});
+
+// MANEJADOR DE CLICS EN CHATS - VERSIÓN SIMPLIFICADA
+document.addEventListener('click', function(e) {
+    const chatItem = e.target.closest('.chat-item');
+    
+    if (!chatItem) {
+        debugLog("Click fuera de chat-item");
+        return;
+    }
+    
+    debugLog("Chat-item clickeado:", {
+        tipo: chatItem.dataset.tipo,
+        chatId: chatItem.dataset.chat,
+        elemento: chatItem
+    });
+    
+    // Para móvil: ocultar lista y mostrar chat
+    if (window.innerWidth <= 768) {
+        const chatsPanel = document.getElementById('chatsPanel');
+        const chatPanel = document.getElementById('chatPanel');
+        
+        if (chatsPanel && chatPanel) {
+            chatsPanel.style.display = 'none';
+            chatPanel.style.display = 'flex';
+            debugLog("Modo móvil: mostrando chat");
+        }
+    }
+    
+    // Resaltar chat activo
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    chatItem.classList.add('active');
+    
+    // Ocultar "chat vacío" y mostrar mensajes
     const emptyChat = document.getElementById('emptyChat');
     const messagesContainer = document.getElementById('messagesContainer');
     const inputContainer = document.querySelector('.input-container');
-    const chatPanel = document.getElementById('chatPanel');
-    const chatsPanel = document.getElementById('chatsPanel');
-<<<<<<< HEAD
+    
+    if (emptyChat) emptyChat.style.display = 'none';
+    if (messagesContainer) messagesContainer.style.display = 'block';
+    if (inputContainer) inputContainer.style.display = 'flex';
+    
+    // Manejar diferentes tipos de chat
+    const tipo = chatItem.dataset.tipo;
+    const chatId = chatItem.dataset.chat;
+    
+    if (tipo === 'grupo') {
+        handleGrupoClick(chatItem, chatId);
+    } else {
+        handlePrivadoClick(chatItem, chatId);
+    }
+});
 
-    // Variables globales
-    window.currentChatId = null;
-    window.idUsuarioDestino = null;
-    window.grupos = [];
-    window.chatsPrivados = [];
-=======
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
+// Manejar click en grupo
+async function handleGrupoClick(chatItem, chatId) {
+    debugLog("Abriendo grupo:", chatId);
+    
+    const chatName = document.getElementById('userName');
+    const userAvatar = document.getElementById('userAvatar');
+    const userStatus = document.getElementById('userStatus');
+    
+    if (chatName) chatName.textContent = chatItem.querySelector('.chat-name')?.textContent || 'Grupo';
+    if (userAvatar) userAvatar.innerHTML = '<i class="fas fa-users"></i>';
+    if (userStatus) {
+        userStatus.textContent = 'Grupo';
+        userStatus.style.color = '#6c757d';
+    }
+    
+    currentChatId = chatId;
+    await loadMessages(chatId, document.getElementById('messagesContainer'));
+}
 
-    // Estado inicial
-    if (emptyChat) emptyChat.style.display = 'flex';
-    if (messagesContainer) messagesContainer.style.display = 'none';
-    if (inputContainer) inputContainer.style.display = 'none';
- document.addEventListener('click', async (e) => {
-        const item = e.target.closest('.chat-item');
-        if (!item) return;
-
-<<<<<<< HEAD
-        const tipo = item.dataset.tipo; // "privado" o "grupo"
-        const chatId = item.dataset.chat;
-=======
-        const tipo = item.dataset.tipo; // puede ser "privado" o "grupo"
-        const userId = item.dataset.chat; // id del usuario o grupo
-
-        const chatPanel = document.getElementById('chatPanel');
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-        const messagesContainer = chatPanel.querySelector('.messages');
-        messagesContainer.innerHTML = "";
-
-        // === CHAT GRUPAL ===
-        if (tipo === "grupo") {
-            console.log("Abrir chat grupal:", chatId);
-
-            if (emptyChat) emptyChat.style.display = 'none';
-            if (messagesContainer) messagesContainer.style.display = 'block';
-            if (inputContainer) inputContainer.style.display = 'flex';
-
-            const chatAvatar = document.getElementById('userAvatar');
-            const chatName = document.getElementById('userName');
-            const userStatus = document.getElementById('userStatus');
-
-            const nombre = item.querySelector('.chat-name')?.textContent || 'Grupo';
-            const estado = item.dataset.estado || 'Activo';
-
-            chatName.textContent = nombre;
-            chatAvatar.innerHTML = '<i class="fas fa-users"></i>';
-
-            if (userStatus) {
-                if (estado.toLowerCase() === 'activo') {
-                    userStatus.textContent = 'Activo';
-                    userStatus.style.color = '#28a745';
-                } else {
-                    userStatus.textContent = 'Inactivo';
-                    userStatus.style.color = '#dc3545';
-                }
-            }
-
-            currentChatId = chatId; // Importante: se guarda el id del grupo
-            idUsuarioDestino = null; // No hay usuario destino en grupo
-            await loadMessages(chatId, messagesContainer);
-            return;
-        }
-
-<<<<<<< HEAD
-        // === CHAT PRIVADO ===
-        console.log("Abrir chat privado con usuario:", chatId);
-
-=======
-        // Obtener o crear el chat entre ambos usuarios
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
+// Manejar click en chat privado
+async function handlePrivadoClick(chatItem, userId) {
+    debugLog("Abriendo chat privado con:", userId);
+    
+    try {
         const response = await fetch('php/create_chat.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_usuario2: chatId })
+            body: JSON.stringify({ id_usuario2: userId })
         });
-
+        
         const data = await response.json();
+        debugLog("Respuesta create_chat.php:", data);
+        
         if (!data.success) {
-            console.error("Error al crear/obtener chat:", data.error);
+            console.error("Error al crear chat:", data.error);
             return;
         }
-<<<<<<< HEAD
-
-=======
         
-        // Mostrar los elementos del chat
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-        if (emptyChat) emptyChat.style.display = 'none';
-        if (messagesContainer) messagesContainer.style.display = 'block';
-        if (inputContainer) inputContainer.style.display = 'flex';
-
-        const chatAvatar = document.getElementById('userAvatar');
+        // Actualizar interfaz
         const chatName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
         const userStatus = document.getElementById('userStatus');
-
-        const nombre = item.querySelector('.chat-name')?.textContent || 'Chat';
-        const estado = item.dataset.estado_conexion || item.dataset.estado || 'desconectado';
-
-        chatName.textContent = nombre;
-        chatAvatar.innerHTML = item.querySelector('.chat-avatar')?.innerHTML || nombre[0].toUpperCase();
-<<<<<<< HEAD
-
-        if (userStatus) {
-            if (estado === 'en_linea') {
-                userStatus.textContent = 'En línea';
-                userStatus.style.color = '#28a745';
-            } else {
-                userStatus.textContent = 'Desconectado';
-                userStatus.style.color = '#dc3545';
-            }
-        }
-
-        currentChatId = data.id_chat; // ID real del chat
-        idUsuarioDestino = chatId; // Usuario destino para llamadas
-=======
         
-        // Estado visual 
-        if (userStatus) {
-            if (tipo === 'usuario') {
-                if (estado === 'online' || estado === 'Conectado') { 
-                    userStatus.textContent = 'En línea'; 
-                    userStatus.style.color = '#28a745'; 
-                } else { 
-                    userStatus.textContent = 'Desconectado'; 
-                    userStatus.style.color = '#dc3545'; 
-                }
-            } else if (tipo === 'grupo') {
-                if (estado === 'Activo') { 
-                    userStatus.textContent = 'Activo'; 
-                    userStatus.style.color = '#28a745'; 
-                } else { 
-                    userStatus.textContent = 'Inactivo'; 
-                    userStatus.style.color = '#dc3545'; 
-                }
-            } else { 
-                userStatus.textContent = ''; 
-            }
+        if (chatName) chatName.textContent = chatItem.querySelector('.chat-name')?.textContent || 'Usuario';
+        
+        // Copiar avatar del item clickeado
+        const itemAvatar = chatItem.querySelector('.chat-avatar');
+        if (userAvatar && itemAvatar) {
+            userAvatar.innerHTML = itemAvatar.innerHTML;
         }
-
-        // Guardamos el id_chat globalmente
+        
+        if (userStatus) {
+            userStatus.textContent = 'En línea';
+            userStatus.style.color = '#28a745';
+        }
+        
         currentChatId = data.id_chat;
-        lastMessageCheck = Date.now(); // Resetear el check de mensajes
-
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-        await loadMessages(currentChatId, messagesContainer);
-        ///
-        const chatSeleccionado = obtenerChatSeleccionado();
-         if (chatSeleccionado) {
-          cargarHistorialLlamadas(chatSeleccionado);
-       }
-    });
-    // Detectar clics en chats (privados o grupales)
-   
-
-    // Botón atrás (modo móvil)
-    const backButton = document.getElementById('backButton');
-    backButton?.addEventListener('click', function () {
-        if (window.innerWidth <= 768) {
-            chatsPanel.style.display = 'flex';
-            chatPanel.classList.remove('active');
-        }
-    });
-
-    // Inicializar usuarios y grupos
-    loadUsers();
-    cargarGruposUsuario();
-
-    // Iniciar la verificación periódica de mensajes
-    startMessagePolling();
-});
-
-async function loadMessages(chatId, container) {
-    try {
-        const resp = await fetch(`php/get_message.php?id_chat=${chatId}&t=${Date.now()}`, {
-            cache: "no-store",
-            headers: {
-                'Cache-Control': 'no-cache'
-            }
-        });
+        await loadMessages(currentChatId, document.getElementById('messagesContainer'));
         
-        if (!resp.ok) {
-            throw new Error(`HTTP error! status: ${resp.status}`);
-        }
+    } catch (error) {
+        console.error("Error al abrir chat privado:", error);
+    }
+}
+
+// Cargar mensajes
+async function loadMessages(chatId, container) {
+    if (!container) {
+        console.error("No hay container para mensajes");
+        return;
+    }
+    
+    try {
+        debugLog("Cargando mensajes para chat:", chatId);
+        const resp = await fetch(`php/get_message.php?id_chat=${chatId}&t=${Date.now()}`);
+        
+        if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
         
         const mensajes = await resp.json();
-
-<<<<<<< HEAD
-=======
-        // Verificar que sea un array
-        if (!Array.isArray(mensajes)) {
-            console.error("La respuesta no es un array:", mensajes);
-            return;
-        }
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-
+        debugLog("Mensajes recibidos:", mensajes.length);
+        
         container.innerHTML = "";
-
+        
         mensajes.forEach(msg => {
             if (msg.cifrado == 1 && msg.tipo === "texto") {
                 try {
@@ -222,18 +199,16 @@ async function loadMessages(chatId, container) {
 
             const div = document.createElement("div");
             div.classList.add("message", msg.id_usuario === currentUserId ? "sent" : "received");
-            //  Construir URL absoluta si no la trae completa
+            
             let content = msg.contenido;
             if (msg.tipo !== "texto" && content && !content.startsWith("http")) {
                 content = `${window.location.origin}/onegoal_poi/${content}`;
             }
 
-            //  Formatear hora
             const hora = new Date(msg.fecha_envio).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
             });
-
 
             let messageContent = "";
 
@@ -241,15 +216,12 @@ async function loadMessages(chatId, container) {
                 case "texto":
                     messageContent = `<div class="message-text">${sanitizeHTML(content)}</div>`;
                     break;
-
                 case "imagen":
                     messageContent = `
                         <div class="message-image">
-                            <img src="${content}" alt="imagen"
-                                 onclick="window.open('${content}', '_blank')" />
+                            <img src="${content}" alt="imagen" onclick="window.open('${content}', '_blank')" />
                         </div>`;
                     break;
-
                 case "video":
                     messageContent = `
                         <div class="message-video">
@@ -259,19 +231,14 @@ async function loadMessages(chatId, container) {
                             </video>
                         </div>`;
                     break;
-
                 case "archivo":
                     const fileName = decodeURIComponent(content.split('/').pop());
                     messageContent = `
                         <div class="message-file">
-                            <a href="${content}" target="_blank" download>
-                                📎 ${fileName}
-                            </a>
+                            <a href="${content}" target="_blank" download>📎 ${fileName}</a>
                         </div>`;
                     break;
-
                 case "ubicacion":
-
                     let cleanContent = content;
                     if (cleanContent.startsWith("http")) {
                         const jsonStart = cleanContent.indexOf("{");
@@ -284,11 +251,9 @@ async function loadMessages(chatId, container) {
                         if (obj.lat && obj.lng) {
                             const mapsURL = `https://www.google.com/maps?q=${obj.lat},${obj.lng}`;
                             messageContent = `
-                           <div class="message-location">
-                         <a href="${mapsURL}" target="_blank"> Ver ubicación en Google Maps</a>
-        
-                          </div>
-                          `;
+                                <div class="message-location">
+                                    <a href="${mapsURL}" target="_blank">📍 Ver ubicación en Google Maps</a>
+                                </div>`;
                         } else {
                             messageContent = `<div class="message-text">[Ubicación inválida]</div>`;
                         }
@@ -298,452 +263,59 @@ async function loadMessages(chatId, container) {
                     }
                     break;
                 case "audio":
-                   messageContent = `
-                     <div class="message-audio">
-                      <audio controls>
-                         <source src="${content}" type="audio/wav">
-                        Tu navegador no soporta la reproducción de audio.
-                       </audio>
-                      </div>`;
-              break;
+                    messageContent = `
+                        <div class="message-audio">
+                            <audio controls>
+                                <source src="${content}" type="audio/wav">
+                                Tu navegador no soporta audio.
+                            </audio>
+                        </div>`;
+                    break;
             }
 
-           
-            div.innerHTML = `
-                ${messageContent}
-                <div class="message-time">${hora}</div>
-            `;
-
+            div.innerHTML = `${messageContent}<div class="message-time">${hora}</div>`;
             container.appendChild(div);
         });
 
-        
         container.scrollTop = container.scrollHeight;
-        
-        // Actualizar último check
         lastMessageCheck = Date.now();
         
-        console.log(`✅ ${mensajes.length} mensajes cargados para chat ${chatId}`);
-
     } catch (error) {
         console.error("Error al cargar mensajes:", error);
     }
-    cargarHistorialLlamadas(chatId);
-
 }
 
-// 🔁 Actualizar mensajes automáticamente cada 2 segundos
+// Funciones auxiliares
+function sanitizeHTML(str) {
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
 function startMessagePolling() {
-    setInterval(() => {
+    setInterval(async () => {
         if (currentChatId) {
-            const container = document.getElementById("messagesContainer");
-            if (container) {
-                loadMessages(currentChatId, container);
-            }
+            await checkForNewMessages();
         }
-    }, 2000);
+    }, 3000);
 }
 
-// Función para verificar mensajes nuevos (más eficiente)
 async function checkForNewMessages() {
     if (!currentChatId) return;
     
     try {
-        const resp = await fetch(`php/check_new_messages.php?chat_id=${currentChatId}&last_check=${lastMessageCheck}`, {
-            cache: "no-store"
-        });
+        const resp = await fetch(`php/check_new_messages.php?chat_id=${currentChatId}&last_check=${lastMessageCheck}`);
         const data = await resp.json();
         
-        if (data.has_new) {
-            const container = document.getElementById("messagesContainer");
-            await loadMessages(currentChatId, container);
+        if (data.has_new && data.new_messages) {
+            lastMessageCheck = Date.now();
         }
     } catch (error) {
         console.error("Error verificando nuevos mensajes:", error);
     }
 }
 
-// Reutilizamos el sanitizador de texto
-function sanitizeHTML(str) {
-    const temp = document.createElement("div");
-    temp.textContent = str;
-    return temp.innerHTML;
-}
-
-// Funcionalidad para los botones de filtro
-document.querySelectorAll('.round-button').forEach(button => {
-    button.addEventListener('click', function () {
-        document.querySelectorAll('.round-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        this.classList.add('active');
-    });
-});
-
-// Función para actualizar la conversación según el chat seleccionado
-async function updateChatConversation(chatId) {
-    const messagesContainer = document.getElementById('messagesContainer');
-    messagesContainer.innerHTML = "<p>Cargando mensajes...</p>";
-
-    try {
-        const response = await fetch(`php/get_message.php?id_chat=${chatId}&t=${Date.now()}`);
-        const messages = await response.json();
-
-        messagesContainer.innerHTML = '';
-
-        messages.forEach(msg => {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', msg.id_usuario == currentUserId ? 'sent' : 'received');
-
-            messageDiv.innerHTML = `
-                <div class="message-text">${msg.contenido}</div>
-                <div class="message-time">${new Date(msg.fecha_envio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            `;
-
-            messagesContainer.appendChild(messageDiv);
-        });
-
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    } catch (error) {
-        console.error("Error al cargar mensajes:", error);
-    }
-}
-
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const attachBtn = document.getElementById('attachBtn');
-const fileInput = document.getElementById('fileInput');
-
-// --- Envío de mensajes ---
-sendBtn.addEventListener('click', sendMessage);
-
-messageInput.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-
-//-------MANDAR MENSAJES---------//
-<<<<<<< HEAD
-
-let cifradoActivo = false;
-
-const lockBtn = document.getElementById("lockBtn");
-lockBtn.addEventListener("click", () => {
-    cifradoActivo = !cifradoActivo;
-    lockBtn.style.color = cifradoActivo ? "fuchsia" : "";
-});
-async function sendMessage() {
-    const input = document.getElementById("messageInput");
-    const contenido = input.value.trim();
-    if (!contenido || !currentChatId) return;
-
-    //  Si el cifrado está activo, convertir a Base64
-    const contenidoFinal = cifradoActivo
-        ? btoa(unescape(encodeURIComponent(contenido))) // codifica texto UTF-8 en base64
-        : contenido;
-=======
-async function sendMessage() {
-    const input = document.getElementById("messageInput");
-    const contenido = input.value.trim();
-    
-    if (!contenido || !currentChatId) {
-        console.log("No hay contenido o chatId");
-        return;
-    }
-
-    console.log("Enviando mensaje - currentChatId:", currentChatId, "currentUserId:", currentUserId);
-    console.log("contenido:", contenido);
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-
-    try {
-        const resp = await fetch("php/send_message.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id_chat: currentChatId,
-                id_usuario: currentUserId,
-                contenido: contenidoFinal,
-                tipo: "texto",
-                cifrado: cifradoActivo ? 1 : 0
-            })
-        });
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-        const data = await resp.json();
-        if (data?.success) {
-            input.value = "";
-            
-            // Recargar mensajes inmediatamente después de enviar
-            const messagesContainer = document.getElementById("messagesContainer");
-            await loadMessages(currentChatId, messagesContainer);
-            
-            console.log("✅ Mensaje enviado y recargado");
-        } else {
-            console.error("Error al enviar mensaje:", data?.error);
-        }
-    } catch (err) {
-        console.error("Error en envío:", err);
-    }
-}
-
-async function sendFileMessage(id_chat, id_usuario, file, tipo) {
-    const formData = new FormData();
-    formData.append("id_chat", id_chat);
-    formData.append("id_usuario", id_usuario);
-    formData.append("tipo", tipo);
-    formData.append("archivo", file);
-    formData.append("cifrado", cifradoActivo ? 1 : 0);
-
-    try {
-        const resp = await fetch("php/send_message.php", {
-            method: "POST",
-            body: formData
-        });
-
-        const result = await resp.json();
-        console.log(" Respuesta servidor:", result);
-
-        if (result.success) {
-            renderMessage(result.url || result.contenido, result.tipo);
-            
-            // Recargar mensajes después de enviar archivo
-            const messagesContainer = document.getElementById("messagesContainer");
-            await loadMessages(currentChatId, messagesContainer);
-        } else {
-            alert(" Error al enviar archivo: " + (result.error || "Desconocido"));
-        }
-    } catch (error) {
-        console.error("Error al enviar archivo:", error);
-    }
-}
-
-attachBtn.addEventListener('click', () => {
-    fileInput.click();
-});
-
-fileInput.addEventListener("change", async () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    // Detectar tipo
-    let tipo = "archivo";
-    const mime = file.type;
-    if (mime.startsWith("image/")) tipo = "imagen";
-    else if (mime.startsWith("video/")) tipo = "video";
-    else if (mime.startsWith("audio/")) tipo = "audio";
-    else tipo = "archivo";
-
-    console.log("📎 Tipo detectado:", tipo);
-
-    await sendFileMessage(currentChatId, currentUserId, file, tipo);
-});
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-// Elementos para las listas
-const conversationsList = document.getElementById('conversationsList');
-const groupsList = document.getElementById('groupsList');
-const callsList = document.getElementById('callsList');
-
-// Funcionalidad para los botones de filtro
-document.querySelectorAll('.round-button').forEach(button => {
-    button.addEventListener('click', function () {
-        document.querySelectorAll('.round-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        this.classList.add('active');
-
-        // Ocultar todas las listas
-        conversationsList.style.display = 'none';
-        groupsList.style.display = 'none';
-        callsList.style.display = 'none';
-
-        // Mostrar la lista correspondiente
-        if (this.textContent === 'Conversaciones') {
-            conversationsList.style.display = 'block';
-        } else if (this.textContent === 'Grupos') {
-            groupsList.style.display = 'block';
-        } else if (this.textContent === 'Llamadas') {
-            callsList.style.display = 'block';
-        }
-    });
-});
-
-// Añadir event listeners para los grupos
-document.querySelectorAll('#groupsList .chat-item').forEach(item => {
-    item.addEventListener('click', function () {
-        // Ocultar panel izquierdo en móvil
-        if (window.innerWidth <= 768) {
-            document.getElementById('chatsPanel').style.display = 'none';
-            document.getElementById('chatPanel').classList.add('active');
-        }
-
-        // Resaltar grupo activo
-        document.querySelectorAll('.chat-item').forEach(c => c.classList.remove('active'));
-        this.classList.add('active');
-
-        // Mostrar secciones del chat
-        const emptyChat = document.getElementById('emptyChat');
-        const messagesContainer = document.getElementById('messagesContainer');
-        const inputContainer = document.querySelector('.input-container');
-        if (emptyChat) emptyChat.style.display = 'none';
-        if (messagesContainer) messagesContainer.style.display = 'flex';
-        if (inputContainer) inputContainer.style.display = 'flex';
-
-        // Actualizar encabezado
-        const groupName = this.querySelector('.chat-name').childNodes[0].textContent.trim();
-        const groupEstado = this.getAttribute('data-estado');
-
-        const userName = document.getElementById('userName');
-        const userAvatar = document.getElementById('userAvatar');
-        const userStatus = document.getElementById('userStatus');
-
-        userName.textContent = groupName;
-        userAvatar.innerHTML = '<i class="fas fa-users"></i>';
-
-        if (groupEstado === 'Activo') {
-            userStatus.textContent = 'Activo';
-            userStatus.style.color = '#28a745';
-        } else {
-            userStatus.textContent = 'Inactivo';
-            userStatus.style.color = '#dc3545';
-        }
-
-        updateGroupConversation(this.dataset.chat);
-    });
-});
-
-// Función para actualizar conversación de grupo
-function updateGroupConversation(groupId) {
-    const messagesContainer = document.getElementById('messagesContainer');
-    messagesContainer.innerHTML = '';
-
-    const conversaciones = {
-        grupo1: [
-            { type: 'received', text: '¡Hola a todos! ¿Listos para el Mundial?', time: '10:30' },
-            { type: 'sent', text: '¡Claro! Ya tengo mis boletos!', time: '10:31' }
-        ],
-        grupo2: [
-            { type: 'received', text: '¿Qué opinan del nuevo formato?', time: '09:15' },
-            { type: 'sent', text: 'Me gusta, más equipos participan', time: '09:16' }
-        ],
-        default: [
-            { type: 'received', text: 'Bienvenidos al grupo', time: '12:00' },
-            { type: 'sent', text: '¡Gracias por la invitación!', time: '12:01' }
-        ]
-    };
-
-    const mensajes = conversaciones[groupId] || conversaciones.default;
-
-    mensajes.forEach(msg => {
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', msg.type);
-        msgDiv.innerHTML = `
-            <div class="message-text">${msg.text}</div>
-            <div class="message-time">${msg.time}</div>
-        `;
-        messagesContainer.appendChild(msgDiv);
-    });
-
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function renderMessage(content, type, sent = true) {
-    const messagesContainer = document.querySelector('#messagesContainer');
-    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sent ? 'sent' : 'received'); // Aquí agregamos la clase base
-
-<<<<<<< HEAD
-    // Construcción del contenido
-    const mediaTypes = ['imagen', 'video', 'archivo', 'audio'];
-    if (mediaTypes.includes(type) && content && !content.startsWith('http') && !content.startsWith('blob:')) {
-=======
-    // 📌 Asignar clases base
-    messageDiv.classList.add(sent ? 'sent' : 'received');
-
-    if (type !== "texto" && content && !content.startsWith('http') && !content.startsWith('blob:')) {
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-        content = `uploads/${content}`;
-    }
-
-    let messageContent = "";
-
-    switch (type) {
-        case "texto":
-            messageContent = `<div class="message-text">${sanitizeHTML(content)}</div>`;
-            break;
-
-        case "imagen":
-            messageContent = `
-                <div class="message-image">
-                    <img src="${content}" alt="imagen" 
-                         onclick="window.open('${content}', '_blank')" />
-                </div>`;
-            break;
-
-        case "video":
-            messageContent = `
-                <div class="message-video">
-                    <video controls>
-                        <source src="${content}" type="video/mp4">
-                        Tu navegador no soporta video.
-                    </video>
-                </div>`;
-            break;
-
-        case "archivo":
-            const fileName = decodeURIComponent(content.split('/').pop());
-            messageContent = `
-                <div class="message-file">
-                    <a href="${content}" target="_blank" download>📎 ${fileName}</a>
-                </div>`;
-            break;
-
-        case "audio":
-            messageContent = `
-                <div class="message-audio">
-                    <audio controls>
-                        <source src="${content}" type="audio/wav">
-                        Tu navegador no soporta audio.
-                    </audio>
-                </div>`;
-            break;
-
-        default:
-            messageContent = `<div class="message-text">[Tipo desconocido]</div>`;
-    }
-
-    messageDiv.innerHTML = `
-        ${messageContent}
-        <div class="message-time">${currentTime}</div>
-    `;
-
-    messagesContainer.appendChild(messageDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-<<<<<<< HEAD
-/* Evita inyecciones HTML en texto */
-function sanitizeHTML(str) {
-    const temp = document.createElement("div");
-    temp.textContent = str;
-    return temp.innerHTML;
-}
-=======
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)
-const searchBox = document.querySelector('.search-box');
+// Cargar usuarios
 let usuarios = [];
 let userAvatarMap = {};
 
@@ -764,12 +336,16 @@ async function loadUsers() {
         const userName = document.getElementById('userName');
         const userStatus = document.getElementById('userStatus');
 
-        userAvatar.innerHTML = user.foto_perfil
-            ? `<img src="${user.foto_perfil}" alt="Perfil" class="avatar-img">`
-            : user.nombre.charAt(0).toUpperCase();
+        if (userAvatar) {
+            userAvatar.innerHTML = user.foto_perfil
+                ? `<img src="${user.foto_perfil}" alt="Perfil" class="avatar-img">`
+                : user.nombre.charAt(0).toUpperCase();
+        }
 
-        userName.textContent = user.nombre;
-        userStatus.textContent = user.estado_conexion === 'online' ? ' En línea' : ' Desconectado';
+        if (userName) userName.textContent = user.nombre;
+        if (userStatus) {
+            userStatus.textContent = user.estado_conexion === 'online' ? ' En línea' : ' Desconectado';
+        }
 
         usuarios = data.usuarios;
         userAvatarMap = {};
@@ -787,306 +363,240 @@ async function loadUsers() {
     }
 }
 
-// Filtrar usuarios al escribir
-searchBox.addEventListener('input', function () {
-    const query = this.value.toLowerCase();
-    const filtered = usuarios.filter(u => u.nombre.toLowerCase().includes(query));
-
-    conversationsList.innerHTML = '';
-    filtered.forEach(user => {
-        const div = document.createElement('div');
-        div.classList.add('chat-item');
-        div.dataset.chat = user.id_usuario;
-        div.dataset.tipo = 'usuario';
-        div.dataset.estado_conexion = user.estado_conexion;
-
-        div.innerHTML = `
-            <div class="chat-avatar">
-                ${user.foto_perfil
-                ? `<img src="${user.foto_perfil}" alt="${user.nombre}" class="avatar-img">`
-                : user.nombre[0]}
-            </div>
-            <div class="chat-info">
-                <div class="chat-name">${user.nombre}</div>
-                <div class="chat-preview">Iniciar chat</div>
-            </div>
-            <div class="chat-time">Ahora</div>
-        `;
-
-        conversationsList.appendChild(div);
-    });
-});
-
-function startChatWith(userId, userName) {
-    if (userId == currentUserId) {
-        console.warn("No puedes iniciar un chat contigo mismo");
-        return;
-    }
-
-    const messagesContainer = document.querySelector('messagesContainer');
-    document.querySelector('.chat-header .chat-name').textContent = userName;
-    document.querySelector('.chat-header .user-avatar').innerHTML = userAvatarMap[userId] || userName[0];
-    messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
-}
-
-//-----------ESTO ES PARA LO DE LOS GRUPOOS--------------//
-document.addEventListener('DOMContentLoaded', loadUsers);
-
-function startChatWith(userId, userName) {
-    // Evitar chatear contigo mismo
-    if (userId == currentUserId) {
-        console.warn("No puedes iniciar un chat contigo mismo");
-        return;
-    }
-
-    currentChatId = null;
-    document.querySelector('.chat-header .chat-name').textContent = userName;
-
-    const avatarEl = document.querySelector('.chat-header .user-avatar');
-    avatarEl.innerHTML = userAvatarMap[userId] || userName[0]; // ver solución 2
-
-    messagesContainer.innerHTML = '<p>Comienza la conversación...</p>';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    cargarGruposUsuario();
-});
-
+// Cargar grupos
 function cargarGruposUsuario() {
     fetch('php/grupo_chat.php')
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                window.grupos = data.grupos; // Guardamos los grupos globalmente
+                window.grupos = data.grupos;
                 const groupsList = document.getElementById('groupsList');
-                groupsList.innerHTML = '';
+                if (groupsList) {
+                    groupsList.innerHTML = '';
 
-                data.grupos.forEach(g => {
-                    const div = document.createElement('div');
-                    div.classList.add('chat-item');
-                    div.dataset.chat = g.id_grupo; // ID real del grupo
-                    div.dataset.tipo = 'grupo';
-                    div.dataset.estado = g.estado;
+                    data.grupos.forEach(g => {
+                        const div = document.createElement('div');
+                        div.classList.add('chat-item');
+                        div.dataset.chat = g.id_grupo;
+                        div.dataset.tipo = 'grupo';
+                        div.dataset.estado = g.estado;
 
-                    div.innerHTML = `
-                        <div class="chat-avatar"><i class="fas fa-users"></i></div>
-                        <div class="chat-info">
-                            <div class="chat-name">${g.nombre}</div>
-                            <div class="chat-last">${g.estado === 'Activo' ? 'Activo' : 'Inactivo'} — Creador: ${g.nombre_creador}</div>
-                        </div>
-                    `;
-                    groupsList.appendChild(div);
-                });
+                        div.innerHTML = `
+                            <div class="chat-avatar"><i class="fas fa-users"></i></div>
+                            <div class="chat-info">
+                                <div class="chat-name">${g.nombre}</div>
+                                <div class="chat-last">${g.estado === 'Activo' ? 'Activo' : 'Inactivo'} — Creador: ${g.nombre_creador}</div>
+                            </div>
+                        `;
+                        groupsList.appendChild(div);
+                    });
+                }
             }
         })
         .catch(err => console.error('Error cargando grupos:', err));
 }
 
-function attachGroupListeners() {
-    document.querySelectorAll('#groupsList .chat-item').forEach(item => {
-        item.addEventListener('click', function () {
-            if (window.innerWidth <= 768) {
-                chatsPanel.style.display = 'none';
-                chatPanel.classList.add('active');
-            }
-            document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-            this.classList.add('active');
+// Envío de mensajes
+let cifradoActivo = false;
+const lockBtn = document.getElementById("lockBtn");
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
 
-            const groupName = this.querySelector('.chat-name').textContent;
-            currentChatId = parseInt(this.dataset.chat); //  número real
-            document.querySelector('.chat-header .chat-name').textContent = this.querySelector('.chat-name').textContent;
-            document.querySelector('.chat-header .user-avatar').innerHTML = '<i class="fas fa-users"></i>';
-
-            updateChatConversation(currentChatId); // carga mensajes reales
-        });
+if (lockBtn) {
+    lockBtn.addEventListener("click", () => {
+        cifradoActivo = !cifradoActivo;
+        lockBtn.style.color = cifradoActivo ? "fuchsia" : "";
     });
 }
 
-function activarListenersGrupos() {
-    document.querySelectorAll('#groupsList .chat-item').forEach(item => {
-        item.addEventListener('click', function () {
-            // Ocultar lista en móviles
-            if (window.innerWidth <= 768) {
-                document.getElementById('chatsPanel').style.display = 'none';
-                document.getElementById('chatPanel').classList.add('active');
-            }
-
-            // Quitar "active" de todos y agregarlo al actual
-            document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-            this.classList.add('active');
-
-            // Obtener datos del grupo
-            const groupName = this.querySelector('.chat-name').textContent.trim();
-            const estadoGrupo = this.getAttribute('data-estado');
-
-            // Actualizar encabezado del chat
-            const userName = document.getElementById('userName');
-            const userAvatar = document.getElementById('userAvatar');
-            const userStatus = document.getElementById('userStatus');
-
-            userName.textContent = groupName;
-            userAvatar.innerHTML = '<i class="fas fa-users"></i>';
-
-            if (estadoGrupo === 'Activo') {
-                userStatus.textContent = 'Activo';
-                userStatus.style.color = '#28a745';
-            } else {
-                userStatus.textContent = 'Inactivo';
-                userStatus.style.color = '#dc3545';
-            }
-
-            // Mostrar conversación del grupo
-            updateGroupConversation(this.getAttribute('data-chat'));
-        });
-    });
+if (sendBtn) {
+    sendBtn.addEventListener('click', sendMessage);
 }
 
-<<<<<<< HEAD
-//Coso par alo de la ubicación
-const ubicacionBtn = document.getElementById("Ubicacion");
-
-ubicacionBtn.addEventListener("click", () => {
-    // pedir permiso y obtener posición
-    if (!navigator.geolocation) {
-        return alert("Geolocalización no soportada por este navegador.");
-    }
-
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const accuracy = pos.coords.accuracy; // metros
-
-        // construimos un contenido claro para la base de datos:
-        const contenido = JSON.stringify({ lat, lng, accuracy });
-
-        try {
-            const resp = await fetch("php/send_message.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    id_chat: currentChatId,
-                    id_usuario: currentUserId,
-                    contenido,
-                    tipo: "ubicacion"
-                })
-            });
-            const data = await resp.json();
-            if (data?.success) {
-                // refresca mensajes 
-                document.getElementById("messageInput").value = "";
-                const messagesContainer = document.getElementById("messagesContainer");
-                await loadMessages(currentChatId, messagesContainer);
-            } else {
-                console.error("Error al enviar ubicación:", data?.error);
-            }
-        } catch (err) {
-            console.error("Error en envío de ubicación:", err);
+if (messageInput) {
+    messageInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
+    });
+}
 
-    }, (err) => {
-        console.error(err);
-        alert("No se pudo obtener la ubicación. Verifica permisos.");
-    }, {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 15000
+async function sendMessage() {
+    const input = document.getElementById("messageInput");
+    if (!input || !currentChatId) return;
+    
+    const contenido = input.value.trim();
+    if (!contenido) return;
+
+    const contenidoFinal = cifradoActivo
+        ? btoa(unescape(encodeURIComponent(contenido)))
+        : contenido;
+
+    try {
+        const resp = await fetch("php/send_message.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id_chat: currentChatId,
+                id_usuario: currentUserId,
+                contenido: contenidoFinal,
+                tipo: "texto",
+                cifrado: cifradoActivo ? 1 : 0
+            })
+        });
+        const data = await resp.json();
+        if (data?.success) {
+            input.value = "";
+            const messagesContainer = document.getElementById("messagesContainer");
+            if (messagesContainer) {
+                await loadMessages(currentChatId, messagesContainer);
+            }
+        } else {
+            console.error("Error al enviar mensaje:", data?.error);
+        }
+    } catch (err) {
+        console.error("Error en envío:", err);
+    }
+}
+
+if (attachBtn) {
+    attachBtn.addEventListener('click', () => {
+        if (fileInput) fileInput.click();
+    });
+}
+
+if (fileInput) {
+    fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file || !currentChatId) return;
+
+        let tipo = "archivo";
+        const mime = file.type;
+        if (mime.startsWith("image/")) tipo = "imagen";
+        else if (mime.startsWith("video/")) tipo = "video";
+        else if (mime.startsWith("audio/")) tipo = "audio";
+
+        await sendFileMessage(currentChatId, currentUserId, file, tipo);
+    });
+}
+
+async function sendFileMessage(id_chat, id_usuario, file, tipo) {
+    const formData = new FormData();
+    formData.append("id_chat", id_chat);
+    formData.append("id_usuario", id_usuario);
+    formData.append("tipo", tipo);
+    formData.append("archivo", file);
+    formData.append("cifrado", cifradoActivo ? 1 : 0);
+
+    try {
+        const resp = await fetch("php/send_message.php", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await resp.json();
+        if (result.success) {
+            const messagesContainer = document.getElementById("messagesContainer");
+            if (messagesContainer) {
+                await loadMessages(currentChatId, messagesContainer);
+            }
+        } else {
+            alert("Error al enviar archivo: " + (result.error || "Desconocido"));
+        }
+    } catch (error) {
+        console.error("Error al enviar archivo:", error);
+    }
+}
+
+// Botones de filtro (Conversaciones, Grupos, Llamadas)
+document.querySelectorAll('.round-button').forEach(button => {
+    button.addEventListener('click', function () {
+        document.querySelectorAll('.round-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        this.classList.add('active');
+
+        const conversationsList = document.getElementById('conversationsList');
+        const groupsList = document.getElementById('groupsList');
+        const callsList = document.getElementById('callsList');
+
+        if (conversationsList) conversationsList.style.display = 'none';
+        if (groupsList) groupsList.style.display = 'none';
+        if (callsList) callsList.style.display = 'none';
+
+        if (this.textContent === 'Conversaciones' && conversationsList) {
+            conversationsList.style.display = 'block';
+        } else if (this.textContent === 'Grupos' && groupsList) {
+            groupsList.style.display = 'block';
+        } else if (this.textContent === 'Llamadas' && callsList) {
+            callsList.style.display = 'block';
+        }
     });
 });
-async function cargarHistorialLlamadas(chatSeleccionado) {
-    try {
-        if (!chatSeleccionado) {
-            console.warn("No se recibió chatSeleccionado válido para historial de llamadas");
+
+// Ubicación
+const ubicacionBtn = document.getElementById("Ubicacion");
+if (ubicacionBtn) {
+    ubicacionBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocalización no soportada");
             return;
         }
 
-        let url = '';
-        if (chatSeleccionado.tipo === 'grupo') {
-            url = `api/api_llamadas.php?grupoId=${chatSeleccionado.id_grupo}`;
-        } else {
-            url = `api/api_llamadas.php?chatId=${chatSeleccionado.id_chat}`;
-        }
-
-        const response = await fetch(url);
-        const text = await response.text();
-
-        let llamadas;
-        try {
-            llamadas = JSON.parse(text);
-        } catch (e) {
-            console.error("Respuesta no JSON del servidor:", text);
-            throw new Error("Respuesta inválida del servidor");
-        }
-
-        const callsList = document.getElementById('callsList');
-        callsList.innerHTML = '';
-
-        if (!llamadas || llamadas.length === 0) {
-            callsList.innerHTML = `<div class="no-calls">📞 No hay registros de llamadas aún</div>`;
+        if (!currentChatId) {
+            alert("Selecciona un chat primero");
             return;
         }
 
-        llamadas.forEach(llamada => {
-            // 💡 Aseguramos campos correctos del servidor
-            const nombre = llamada.nombre_emisor || "Usuario desconocido";
-            const inicial = llamada.inicial || nombre.charAt(0).toUpperCase();
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const accuracy = pos.coords.accuracy;
 
-            // Determinar icono y color según tipo/estado
-            let icono = llamada.tipo === 'video' ? 'fa-video' : 'fa-phone';
-            let colorEstado;
+            const contenido = JSON.stringify({ lat, lng, accuracy });
 
-            switch (llamada.estado) {
-                case 'entrante':
-                    colorEstado = '#28a745'; // verde
-                    break;
-                case 'saliente':
-                    colorEstado = '#007bff'; // azul
-                    break;
-                case 'perdida':
-                    colorEstado = '#dc3545'; // rojo
-                    break;
-                default:
-                    colorEstado = '#6c757d'; // gris
-                    break;
+            try {
+                const resp = await fetch("php/send_message.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_chat: currentChatId,
+                        id_usuario: currentUserId,
+                        contenido,
+                        tipo: "ubicacion"
+                    })
+                });
+                const data = await resp.json();
+                if (data?.success) {
+                    const messagesContainer = document.getElementById("messagesContainer");
+                    if (messagesContainer) {
+                        await loadMessages(currentChatId, messagesContainer);
+                    }
+                }
+            } catch (err) {
+                console.error("Error en envío de ubicación:", err);
             }
-
-            const tipoTexto = llamada.tipo === 'video' ? 'Videollamada' : 'Llamada';
-            const estadoTexto =
-                llamada.estado.charAt(0).toUpperCase() + llamada.estado.slice(1);
-
-            const item = `
-                <div class="call-item">
-                    <div class="call-avatar">${inicial}</div>
-                    <div class="call-info">
-                        <div class="call-name">${nombre}</div>
-                        <div class="call-details" style="color:${colorEstado}">
-                            <i class="fas ${icono}"></i>
-                            <span>${tipoTexto} ${estadoTexto}</span>
-                        </div>
-                    </div>
-                    <div class="call-time">${new Date(llamada.fecha).toLocaleString()}</div>
-                </div>
-            `;
-            callsList.insertAdjacentHTML('beforeend', item);
+        }, (err) => {
+            console.error(err);
+            alert("No se pudo obtener la ubicación");
         });
-    } catch (error) {
-        console.error('Error cargando historial de llamadas:', error);
-        const callsList = document.getElementById('callsList');
-        if (callsList) {
-            callsList.innerHTML = `<div class="error-calls">⚠️ Error al cargar el historial</div>`;
-        }
+    });
+}
+
+// Función para obtener chat seleccionado (si la necesitas)
+function obtenerChatSeleccionado() {
+    if (!currentChatId) return null;
+    
+    const activeItem = document.querySelector('.chat-item.active');
+    if (activeItem) {
+        return {
+            tipo: activeItem.dataset.tipo,
+            id_chat: currentChatId,
+            id_grupo: activeItem.dataset.tipo === 'grupo' ? currentChatId : null
+        };
     }
+    
+    return { tipo: 'privado', id_chat: currentChatId };
 }
-
-=======
-// Función auxiliar para debug
-function debugCurrentState() {
-    console.log("=== DEBUG ESTADO ACTUAL ===");
-    console.log("currentUserId:", currentUserId);
-    console.log("currentChatId:", currentChatId);
-    console.log("lastMessageCheck:", lastMessageCheck);
-    console.log("========================");
-}
-
-// Ejecutar debug cada 5 segundos (opcional)
-setInterval(debugCurrentState, 5000);
->>>>>>> 42400db (feat: mejoras en funcionalidad de chat y ranking)

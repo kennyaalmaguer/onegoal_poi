@@ -389,58 +389,61 @@ window.addEventListener('resize', function () {
     }
 });
 
-
 // =========================
-//  Registrar llamada
+//  Registrar llamada MEJORADA
 // =========================
 async function registrarLlamada(chatSeleccionado, idUsuarioEmisor, idUsuarioReceptor, tipoLlamada, estado) {
     let idChat = null;
     let idGrupo = null;
 
-    // Detectar tipo de chat correctamente
-    if (chatSeleccionado && typeof chatSeleccionado === "object") {
-        if (chatSeleccionado.tipo === "grupo") {
-            idGrupo = parseInt(chatSeleccionado.id_grupo);
-        } else {
-            idChat = parseInt(chatSeleccionado.id_chat || currentChatId);
-        }
-    } else {
-        // Fallback por si algo sale raro
-        const grupoExiste = Array.isArray(window.grupos) && window.grupos.some(g => String(g.id_grupo) === String(currentChatId));
-        if (grupoExiste) {
-            idGrupo = parseInt(currentChatId);
-        } else {
-            idChat = parseInt(currentChatId);
-        }
-    }
-
-    console.log("📞 Registrando llamada:", {
-        idChat,
-        idGrupo,
+    console.log("📞 Datos para registrar llamada:", {
+        chatSeleccionado,
         idUsuarioEmisor,
         idUsuarioReceptor,
         tipoLlamada,
-        estado
+        estado,
+        currentChatId
     });
 
+    // Determinar si es grupo o chat privado
+    if (chatSeleccionado && chatSeleccionado.tipo === "grupo") {
+        idGrupo = parseInt(chatSeleccionado.id_grupo);
+    } else {
+        idChat = parseInt(currentChatId);
+    }
+
+    // Para llamadas entrantes, el emisor es quien llama, receptor es el actual
+    if (estado === 'entrante') {
+        [idUsuarioEmisor, idUsuarioReceptor] = [idUsuarioReceptor, idUsuarioEmisor];
+    }
+
+    const datosLlamada = {
+        idChat: idChat,
+        idGrupo: idGrupo,
+        idUsuarioEmisor: parseInt(idUsuarioEmisor),
+        idUsuarioReceptor: idUsuarioReceptor ? parseInt(idUsuarioReceptor) : null,
+        tipo: tipoLlamada,
+        estado: estado
+    };
+
+    console.log("📞 Enviando datos de llamada:", datosLlamada);
+
     try {
-        const response = await fetch("http://localhost:8080/onegoal_poi/api/api_llamadas.php", {
+        const response = await fetch("php/guardar_llamada.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                idChat,
-                idGrupo,
-                idUsuarioEmisor,
-                idUsuarioReceptor: idUsuarioReceptor || null,
-                tipo: tipoLlamada,
-                estado
-            }),
+            body: JSON.stringify(datosLlamada),
         });
 
         const data = await response.json();
-        console.log("✅ Llamada registrada:", data);
+        console.log("✅ Llamada registrada en BD:", data);
+        
+        // Devolver el ID de la llamada para poder actualizar la duración después
+        return data.idLlamada;
+        
     } catch (error) {
         console.error("❌ Error al registrar llamada:", error);
+        return null;
     }
 }
 

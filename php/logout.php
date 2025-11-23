@@ -6,7 +6,7 @@ $response = ["success" => false];
 if (isset($_SESSION['id_usuario'])) {
     $id = $_SESSION['id_usuario'];
 
-    $host = "127.0.0.1:3307";
+    $host = "127.0.0.1:3306";
     $usuario = "root";
     $clave = "";
     $bd = "onegoal";

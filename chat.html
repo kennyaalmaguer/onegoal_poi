@@ -5,6 +5,7 @@
    
 
     <meta charset="UTF-8">
+     <link rel="icon" href="imagenes/LOGO.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@400;700&family=Mansalva&display=swap"
         rel="stylesheet">
@@ -22,7 +23,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/chat.css">
 </head>
-
+   
 <body>
     <!-- Panel izquierdo con lista de chats (100% en móvil) -->
     <div class="chats-panel" id="chatsPanel">
@@ -213,7 +214,7 @@
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="modalImage">
     </div>
-<script>
+<!--<script>
 function cargarMensajes() {
   fetch("mensajes.php")  // un archivo PHP que devuelve los mensajes actualizados
     .then(response => response.text())
@@ -223,13 +224,13 @@ function cargarMensajes() {
 }
 
 // Actualiza cada 2 segundos
-setInterval(cargarMensajes, 2000);
+//setInterval(cargarMensajes, 2000);
 
 // Carga los mensajes al iniciar
 cargarMensajes();
-</script>
+</script>-->
     <script src="Js/chat.js"></script>
-    <script src="Js/chat_funciones.js"></script>
+   <!--<script src="Js/chat_funciones.js"></script>-->
 </body>
 
 </html>

@@ -2,37 +2,28 @@
 session_start();
 header('Content-Type: application/json');
 
-$host = "127.0.0.1:3307";
+$host = "127.0.0.1:3306";
 $usuario = "root";
 $clave = "";
 $bd = "onegoal";
 
 $conn = new mysqli($host, $usuario, $clave, $bd);
 if ($conn->connect_error) {
-    die(json_encode(['error' => 'Error de conexión: ' . $conn->connect_error]));
+    echo json_encode(['success' => false, 'error' => 'Error de conexión: ' . $conn->connect_error]);
+    exit;
 }
 
 try {
-    // Consulta mejorada para obtener estadísticas reales
+    // CONSULTA SIMPLIFICADA - SOLO LEE MEDALLAS EXISTENTES
     $sql = "SELECT 
                 u.id_usuario,
                 u.nombre as username,
                 COALESCE(u.puntos_totales, 0) as points,
-                -- Pronósticos exactos (puntos_obtenidos >= 3)
-                (SELECT COUNT(*) FROM Pronostico p 
-                 WHERE p.id_usuario = u.id_usuario 
-                 AND p.puntos_obtenidos >= 3) as exact_predictions,
-                -- Total de pronósticos
-                (SELECT COUNT(*) FROM Pronostico p 
-                 WHERE p.id_usuario = u.id_usuario) as total_predictions,
-                -- Tareas completadas
-                (SELECT COUNT(*) FROM Usuario_tarea ut 
-                 WHERE ut.id_usuario = u.id_usuario 
-                 AND ut.estado = 'Completada') as completed_tasks,
-                -- Mensajes en chat (¡ESTA ES LA PARTE IMPORTANTE!)
-                (SELECT COUNT(*) FROM Mensaje m 
-                 WHERE m.id_usuario = u.id_usuario) as chat_messages
+                GROUP_CONCAT(DISTINCT m.nombre) as medallas
             FROM Usuario u
+            LEFT JOIN usuario_medalla um ON u.id_usuario = um.id_usuario
+            LEFT JOIN medalla m ON um.id_medalla = m.id_medalla
+            GROUP BY u.id_usuario
             ORDER BY u.puntos_totales DESC";
 
     $result = $conn->query($sql);
@@ -46,36 +37,23 @@ try {
                 'id' => $row['id_usuario'],
                 'username' => $row['username'],
                 'points' => (int)$row['points'],
-                'exactPredictions' => (int)$row['exact_predictions'],
-                'quickPredictions' => (int)$row['total_predictions'],
-                'completedTasks' => (int)$row['completed_tasks'],
-                'chatMessages' => (int)$row['chat_messages'], // ¡Aquí están los mensajes!
+                'medallas' => $row['medallas'] ? explode(',', $row['medallas']) : [],
                 'isCurrentUser' => ($currentUserId && $row['id_usuario'] == $currentUserId)
             ];
             $users[] = $user;
         }
-        
-        echo json_encode([
-            'success' => true,
-            'users' => $users,
-            'currentUser' => $currentUserId,
-            'totalUsers' => count($users),
-            'debug' => 'Consulta ejecutada correctamente'
-        ]);
-    } else {
-        echo json_encode([
-            'success' => true,
-            'users' => [],
-            'currentUser' => $currentUserId,
-            'totalUsers' => 0,
-            'message' => 'No se encontraron usuarios'
-        ]);
     }
+    
+    echo json_encode([
+        'success' => true,
+        'users' => $users,
+        'totalUsers' => count($users)
+    ]);
     
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
-        'error' => 'Error al obtener el ranking: ' . $e->getMessage()
+        'error' => 'Error: ' . $e->getMessage()
     ]);
 }
 
