@@ -36,15 +36,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $update->bind_param("i", $row['id_usuario']);
             $update->execute();
 
-            // ⚡️ En lugar de header(), imprimimos JS para guardar datos en localStorage y redirigir
+            // ⚡️ EN ESTA PARTE AGREGAMOS EL REGISTRO DEL SOCKET
             echo "
+            <script src='https://cdn.socket.io/4.7.2/socket.io.min.js'></script>
             <script>
+                // Guardar en localStorage
                 localStorage.setItem('idUsuarioActual', '{$row['id_usuario']}');
-                localStorage.setItem('nombreUsuarioActual', '".addslashes($row['nombre'])."');
-                localStorage.setItem('correoUsuarioActual', '".addslashes($row['correo'])."');
-                localStorage.setItem('fotoUsuarioActual', '".base64_encode($row['foto_perfil'])."');
+                localStorage.setItem('nombreUsuarioActual', '" . addslashes($row['nombre']) . "');
+                localStorage.setItem('correoUsuarioActual', '" . addslashes($row['correo']) . "');
+                localStorage.setItem('fotoUsuarioActual', '" . base64_encode($row['foto_perfil']) . "');
                 localStorage.setItem('estadoConexion', 'en_linea');
-                window.location.href = '../index.html';
+                
+                // Conectar al servidor de Socket.io y registrar usuario
+                const socket = io('http://localhost:3000');
+                
+                // Esperar a que se conecte el socket
+                socket.on('connect', () => {
+                    console.log('✅ Conectado al servidor de videollamadas');
+                    // Registrar el usuario en el sistema de videollamadas
+                    socket.emit('register', '{$row['id_usuario']}');
+                    
+                    // Guardar el socket en una variable global para usar después
+                    window.socketVideollamadas = socket;
+                    
+                    // Redirigir a la página principal
+                    window.location.href = '../index.html';
+                });
+                
+                // Si hay error de conexión, redirigir igualmente
+                socket.on('connect_error', (error) => {
+                    console.error('❌ Error conectando al servidor de videollamadas:', error);
+                    window.location.href = '../index.html';
+                });
+                
             </script>
             ";
             exit();

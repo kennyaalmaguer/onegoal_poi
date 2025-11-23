@@ -214,6 +214,36 @@
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="modalImage">
     </div>
+
+<!-- En index.html o donde tengas tu chat -->
+<script>
+// Este código se ejecuta cuando la página carga
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener datos del usuario desde localStorage
+    const usuarioId = localStorage.getItem('idUsuarioActual');
+    const usuarioNombre = localStorage.getItem('nombreUsuarioActual');
+    
+    if (usuarioId && window.chatManager) {
+        // Registrar el usuario en el sistema de videollamadas
+        window.chatManager.registrarUsuarioSocket(usuarioId, usuarioNombre);
+    }
+    
+    // También hacer disponible globalmente para botones
+    window.usuarioActualId = usuarioId;
+    window.usuarioActualNombre = usuarioNombre;
+});
+
+// Función global para iniciar videollamada desde cualquier botón
+function iniciarVideollamadaDesdeBoton(usuarioId, usuarioNombre) {
+    if (window.chatManager) {
+        window.chatManager.iniciarVideollamada(usuarioId, usuarioNombre);
+    } else {
+        console.error('ChatManager no está inicializado');
+        alert('Sistema de videollamadas no disponible');
+    }
+}
+</script>
+    
 <!--<script>
 function cargarMensajes() {
   fetch("mensajes.php")  // un archivo PHP que devuelve los mensajes actualizados

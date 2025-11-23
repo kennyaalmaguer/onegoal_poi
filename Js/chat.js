@@ -1,9 +1,11 @@
+// chat.js - COMPLETO CON SISTEMA DE VIDEOCALLAS
 let currentChatId = null;
 let currentUserId = null;
 let lastMessageCheck = 0;
 let usuarios = [];
 let userAvatarMap = {};
 let cifradoActivo = false;
+let idUsuarioDestino = null;
 
 // Variables para llamadas
 let localStream = null;
@@ -12,6 +14,27 @@ let peerConnection = null;
 let isCallActive = false;
 let callStartTime = null;
 let callTimer = null;
+
+// Variables para Socket.io
+let socket = null;
+let currentCallPartner = null;
+let isCaller = false;
+
+// ✅ FUNCIÓN DE DEBUG PARA VER ESTADO DE CONEXIONES
+function debugConexiones() {
+    console.log('=== DEBUG CONEXIONES ===');
+    console.log('Socket conectado:', socket?.connected);
+    console.log('Usuario actual ID:', currentUserId);
+    console.log('Usuario actual Nombre:', window.usuarioActualNombre);
+    console.log('Chat seleccionado:', currentChatId);
+    console.log('Usuario destino:', idUsuarioDestino);
+    console.log('Socket ID:', socket?.id);
+    
+    // Verificar si el usuario está registrado en el servidor
+    if (socket) {
+        socket.emit('debug-users', {});
+    }
+}
 
 // Función de debug
 function debugLog(message, data = null) {
@@ -64,14 +87,701 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar event listeners para envío de mensajes
     configurarEventListenersMensajes();
     
-    // ✅ CONFIGURAR SISTEMA DE LLAMADAS
-    configurarLlamadas();
+    // ✅ CONFIGURAR SISTEMA DE LLAMADAS CON SOCKET.IO
+    inicializarSistemaLlamadas();
     
     debugLog("Inicialización completada");
-    
-    // ✅ Para testing - simular llamada entrante después de 5 segundos
-    // setTimeout(() => simularLlamadaEntrante('voz'), 5000);
 });
+
+// ==================== SISTEMA DE LLAMADAS CON SOCKET.IO ====================
+
+// ✅ INICIALIZAR SISTEMA DE LLAMADAS
+function inicializarSistemaLlamadas() {
+    // Cargar Socket.io desde CDN si no está cargado
+    if (typeof io === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
+        script.onload = conectarSocket;
+        document.head.appendChild(script);
+    } else {
+        conectarSocket();
+    }
+}
+
+// ✅ CONECTAR SOCKET
+function conectarSocket() {
+    try {
+        socket = io('http://localhost:3000');
+        configurarEventosSocket();
+        
+        // Registrar usuario si ya está logueado
+        const usuarioId = localStorage.getItem('idUsuarioActual');
+        const usuarioNombre = localStorage.getItem('nombreUsuarioActual');
+        
+        if (usuarioId) {
+            registrarUsuarioSocket(usuarioId, usuarioNombre);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error conectando al servidor de llamadas:', error);
+    }
+}
+
+// ✅ REGISTRAR USUARIO EN SOCKET
+function registrarUsuarioSocket(userId, userName) {
+    currentUserId = userId;
+    
+    if (socket) {
+        socket.emit('register', userId);
+        console.log(`👤 Usuario registrado en sistema de llamadas: ${userId} - ${userName}`);
+        
+        // Guardar en variables globales para acceso rápido
+        window.usuarioActualId = userId;
+        window.usuarioActualNombre = userName;
+    }
+}
+
+// ✅ CONFIGURAR EVENTOS DEL SOCKET
+function configurarEventosSocket() {
+    if (!socket) return;
+
+    socket.on('connect', () => {
+        console.log('✅ Conectado al servidor de videollamadas');
+        
+        // Re-registrar usuario si está logueado
+        const usuarioId = localStorage.getItem('idUsuarioActual');
+        if (usuarioId) {
+            socket.emit('register', usuarioId);
+        }
+    });
+
+    socket.on('disconnect', () => {
+        console.log('❌ Desconectado del servidor de videollamadas');
+    });
+
+    // 📞 LLAMADA ENTRANTE
+    socket.on('video-call-offer', (data) => {
+        console.log('📞 Llamada entrante:', data.caller);
+        mostrarLlamadaEntrante(data.caller);
+    });
+
+    // ✅ LLAMADA ACEPTADA
+    socket.on('video-call-accepted', (data) => {
+        console.log('✅ Llamada aceptada por:', data.receiver);
+        ocultarModalLlamando();
+        iniciarWebRTCComoCaller();
+    });
+
+    // ❌ LLAMADA RECHAZADA
+    socket.on('video-call-rejected', () => {
+        console.log('❌ Llamada rechazada');
+        ocultarModalLlamando();
+        mostrarAlerta('El usuario no pudo atender la llamada', 'warning');
+    });
+
+    // 📞 LLAMADA CANCELADA
+    socket.on('video-call-cancelled', () => {
+        console.log('📞 Llamada cancelada por el remitente');
+        ocultarModalLlamadaEntrante();
+        mostrarAlerta('Llamada cancelada', 'info');
+    });
+
+    // 📞 LLAMADA FINALIZADA
+    socket.on('call-ended', () => {
+        console.log('📞 Llamada finalizada por el otro usuario');
+        finalizarLlamadaCompleta();
+        mostrarAlerta('Llamada finalizada', 'info');
+    });
+
+    // ❌ USUARIO NO DISPONIBLE
+    socket.on('call-user-unavailable', () => {
+        ocultarModalLlamando();
+        mostrarAlerta('El usuario no está disponible', 'warning');
+    });
+
+    // 📡 SEÑALES WEBRTC
+    socket.on('webrtc-signal', (data) => {
+        console.log('📡 Señal WebRTC recibida:', data.signal);
+        manejarSenalWebRTC(data.signal);
+    });
+}
+
+// ==================== FUNCIONES PRINCIPALES DE LLAMADAS ====================
+
+// ✅ INICIAR VIDEOLLAMADA
+function iniciarVideoLlamada() {
+    if (!validarChatSeleccionado()) return;
+    
+    const activeChat = document.querySelector('.chat-item.active');
+    if (!activeChat) {
+        mostrarAlerta('Selecciona un contacto primero', 'warning');
+        return;
+    }
+    
+    const usuarioId = activeChat.dataset.chat;
+    const usuarioNombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
+    
+    iniciarVideollamada(usuarioId, usuarioNombre);
+}
+
+// ✅ INICIAR LLAMADA DE VOZ (CORREGIDA)
+function iniciarLlamadaVoz() {
+    if (!validarChatSeleccionado()) return;
+    
+    const activeChat = document.querySelector('.chat-item.active');
+    if (!activeChat) {
+        mostrarAlerta('Selecciona un contacto primero', 'warning');
+        return;
+    }
+    
+    const usuarioId = activeChat.dataset.chat;
+    const usuarioNombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
+    
+    // LLAMADA DE VOZ REAL - no el mensaje de "en desarrollo"
+    iniciarLlamadaVozReal(usuarioId, usuarioNombre);
+}
+
+/*// ✅ FUNCIÓN REAL PARA LLAMADA DE VOZ
+function iniciarLlamadaVozReal(usuarioId, usuarioNombre) {
+    if (!validarUsuarioRegistrado()) return;
+    
+    currentCallPartner = usuarioId;
+    isCaller = true;
+    
+    if (!socket || !socket.connected) {
+        mostrarAlerta('Error de conexión con el servidor de llamadas', 'error');
+        return;
+    }
+    
+    socket.emit('video-call-offer', {
+        caller: { 
+            id: currentUserId, 
+            nombre: window.usuarioActualNombre || 'Usuario' 
+        },
+        receiver: { 
+            id: usuarioId, 
+            nombre: usuarioNombre 
+        },
+        tipo_llamada: 'voz'  // ⬅️ IMPORTANTE: Indicar que es llamada de voz
+    });
+    
+    mostrarModalLlamando(usuarioNombre);
+}*/
+
+// ✅ SISTEMA MEJORADO DE LLAMADAS
+function iniciarVideoLlamada() {
+    if (!validarChatSeleccionado()) return;
+    
+    const activeChat = document.querySelector('.chat-item.active');
+    if (!activeChat) {
+        mostrarAlerta('Selecciona un contacto primero', 'warning');
+        return;
+    }
+    
+    const usuarioId = activeChat.dataset.chat;
+    const usuarioNombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
+    
+    console.log('Iniciando videollamada con:', usuarioId, usuarioNombre);
+    iniciarVideollamada(usuarioId, usuarioNombre);
+}
+
+function iniciarLlamadaVoz() {
+    if (!validarChatSeleccionado()) return;
+    
+    const activeChat = document.querySelector('.chat-item.active');
+    if (!activeChat) {
+        mostrarAlerta('Selecciona un contacto primero', 'warning');
+        return;
+    }
+    
+    const usuarioId = activeChat.dataset.chat;
+    const usuarioNombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
+    
+    console.log('Iniciando llamada de voz con:', usuarioId, usuarioNombre);
+    iniciarLlamadaVozReal(usuarioId, usuarioNombre);
+}
+
+// ✅ FUNCIÓN MEJORADA PARA INICIAR VIDEOLLAMADA
+function iniciarVideollamada(usuarioId, usuarioNombre) {
+    if (!validarUsuarioRegistrado()) return;
+    
+    currentCallPartner = usuarioId;
+    isCaller = true;
+    
+    if (!socket || !socket.connected) {
+        mostrarAlerta('Error de conexión con el servidor de llamadas', 'error');
+        return;
+    }
+    
+    console.log('📞 Enviando oferta de videollamada a:', usuarioId);
+    
+    socket.emit('video-call-offer', {
+        caller: { 
+            id: currentUserId, 
+            nombre: window.usuarioActualNombre || 'Usuario' 
+        },
+        receiver: { 
+            id: usuarioId, 
+            nombre: usuarioNombre 
+        },
+        tipo_llamada: 'video'
+    });
+    
+    mostrarModalLlamando(usuarioNombre);
+}
+
+// ✅ FUNCIÓN MEJORADA PARA INICIAR LLAMADA DE VOZ
+function iniciarLlamadaVozReal(usuarioId, usuarioNombre) {
+    if (!validarUsuarioRegistrado()) return;
+    
+    currentCallPartner = usuarioId;
+    isCaller = true;
+    
+    if (!socket || !socket.connected) {
+        mostrarAlerta('Error de conexión con el servidor de llamadas', 'error');
+        return;
+    }
+    
+    console.log('📞 Enviando oferta de llamada de voz a:', usuarioId);
+    
+    socket.emit('video-call-offer', {
+        caller: { 
+            id: currentUserId, 
+            nombre: window.usuarioActualNombre || 'Usuario' 
+        },
+        receiver: { 
+            id: usuarioId, 
+            nombre: usuarioNombre 
+        },
+        tipo_llamada: 'voz'
+    });
+    
+    mostrarModalLlamando(usuarioNombre);
+}
+
+// ✅ ACEPTAR LLAMADA ENTRANTE
+function aceptarLlamada() {
+    if (!window.callerData) {
+        console.error('No hay datos del llamante');
+        return;
+    }
+    
+    currentCallPartner = window.callerData.id;
+    isCaller = false;
+    
+    socket.emit('video-call-accept', {
+        callerId: window.callerData.id,
+        receiver: { 
+            id: currentUserId, 
+            nombre: window.usuarioActualNombre || 'Usuario' 
+        }
+    });
+    
+    ocultarModalLlamadaEntrante();
+    iniciarWebRTCComoReceptor();
+}
+
+// ✅ RECHAZAR LLAMADA ENTRANTE
+function rechazarLlamada() {
+    if (!window.callerData) return;
+    
+    socket.emit('video-call-reject', { callerId: window.callerData.id });
+    ocultarModalLlamadaEntrante();
+    currentCallPartner = null;
+    window.callerData = null;
+}
+
+// ✅ CANCELAR LLAMADA SALIENTE
+function cancelarLlamada() {
+    if (currentCallPartner) {
+        socket.emit('video-call-cancel', { receiverId: currentCallPartner });
+        currentCallPartner = null;
+    }
+    ocultarModalLlamando();
+}
+
+// ✅ COLGAR LLAMADA EN CURSO
+function colgarLlamada() {
+    if (currentCallPartner) {
+        socket.emit('end-call', { partnerId: currentCallPartner });
+    }
+    finalizarLlamadaCompleta();
+}
+
+// ✅ FINALIZAR LLAMADA COMPLETA
+function finalizarLlamadaCompleta() {
+    // Ocultar todos los modales
+    ocultarModalLlamando();
+    ocultarModalLlamadaEntrante();
+    
+    const voiceModal = document.getElementById('voiceCallModal');
+    const videoModal = document.getElementById('videoCallModal');
+    
+    if (voiceModal) voiceModal.style.display = 'none';
+    if (videoModal) videoModal.style.display = 'none';
+    
+    // Limpiar recursos
+    limpiarRecursosMedia();
+    detenerTemporizadorLlamada();
+    
+    // Resetear estado
+    isCallActive = false;
+    currentCallPartner = null;
+    isCaller = false;
+    window.callerData = null;
+    
+    // Guardar duración si había llamada en curso
+    if (callStartTime) {
+        const duracion = calcularDuracionLlamada();
+        actualizarDuracionLlamada(duracion);
+    }
+}
+
+// ==================== WEBRTC ====================
+
+// ✅ INICIAR WEBRTC COMO LLAMANTE
+async function iniciarWebRTCComoCaller() {
+    try {
+        await obtenerStreamMedia(true); // Con video
+        mostrarModalLlamadaEnCurso();
+        configurarPeerConnection();
+        
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        socket.emit('webrtc-signal', {
+            partnerId: currentCallPartner,
+            signal: peerConnection.localDescription
+        });
+        
+    } catch (error) {
+        console.error('❌ Error iniciando WebRTC:', error);
+        mostrarAlerta('Error al acceder a la cámara/micrófono', 'error');
+        finalizarLlamadaCompleta();
+    }
+}
+
+// ✅ INICIAR WEBRTC COMO RECEPTOR
+async function iniciarWebRTCComoReceptor() {
+    try {
+        await obtenerStreamMedia(true); // Con video
+        mostrarModalLlamadaEnCurso();
+        configurarPeerConnection();
+        
+    } catch (error) {
+        console.error('❌ Error iniciando WebRTC:', error);
+        mostrarAlerta('Error al acceder a la cámara/micrófono', 'error');
+        finalizarLlamadaCompleta();
+    }
+}
+
+// ✅ OBTENER STREAM DE MEDIOS
+async function obtenerStreamMedia(conVideo = false) {
+    try {
+        const constraints = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            },
+            video: conVideo ? {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 }
+            } : false
+        };
+        
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        
+        // Mostrar video local
+        const localVideo = document.getElementById('localVideo');
+        if (localVideo && conVideo) {
+            localVideo.srcObject = localStream;
+            localVideo.play().catch(e => console.error('Error reproduciendo video local:', e));
+        }
+        
+        // Ocultar placeholder si existe
+        const localPlaceholder = document.getElementById('localPlaceholder');
+        if (localPlaceholder) localPlaceholder.style.display = 'none';
+        
+    } catch (error) {
+        console.error('❌ Error accediendo a medios:', error);
+        throw error;
+    }
+}
+
+// ✅ CONFIGURAR PEER CONNECTION
+function configurarPeerConnection() {
+    peerConnection = new RTCPeerConnection({
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+    });
+    
+    // Agregar stream local
+    localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+    });
+    
+    // Manejar stream remoto
+    peerConnection.ontrack = (event) => {
+        console.log('🎥 Stream remoto recibido');
+        remoteStream = event.streams[0];
+        const remoteVideo = document.getElementById('remoteVideo');
+        if (remoteVideo) {
+            remoteVideo.srcObject = remoteStream;
+            remoteVideo.play().catch(e => console.error('Error reproduciendo video remoto:', e));
+        }
+        
+        // Ocultar placeholder remoto si existe
+        const remotePlaceholder = document.getElementById('remotePlaceholder');
+        if (remotePlaceholder) remotePlaceholder.style.display = 'none';
+    };
+    
+    // Manejar candidatos ICE
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit('webrtc-signal', {
+                partnerId: currentCallPartner,
+                signal: { 
+                    type: 'candidate', 
+                    candidate: event.candidate 
+                }
+            });
+        }
+    };
+    
+    // Manejar cambios de estado
+    peerConnection.onconnectionstatechange = () => {
+        console.log(`Estado conexión WebRTC: ${peerConnection.connectionState}`);
+        
+        if (peerConnection.connectionState === 'connected') {
+            console.log('✅ Conexión WebRTC establecida');
+            iniciarTemporizadorLlamada();
+        } else if (peerConnection.connectionState === 'failed') {
+            console.error('❌ Conexión WebRTC fallida');
+            mostrarAlerta('Error en la conexión de video', 'error');
+            finalizarLlamadaCompleta();
+        }
+    };
+}
+
+// ✅ MANEJAR SEÑALES WEBRTC
+async function manejarSenalWebRTC(signal) {
+    if (!peerConnection) return;
+    
+    try {
+        if (signal.type === 'offer') {
+            await peerConnection.setRemoteDescription(signal);
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            
+            socket.emit('webrtc-signal', {
+                partnerId: currentCallPartner,
+                signal: answer
+            });
+            
+        } else if (signal.type === 'answer') {
+            await peerConnection.setRemoteDescription(signal);
+            
+        } else if (signal.type === 'candidate') {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+        }
+    } catch (error) {
+        console.error('❌ Error manejando señal WebRTC:', error);
+    }
+}
+
+// ==================== INTERFAZ DE USUARIO - MODALES ====================
+
+// ✅ MOSTRAR MODAL LLAMANDO
+function mostrarModalLlamando(nombreUsuario) {
+    const modal = document.getElementById('modalLlamando');
+    const texto = document.getElementById('llamandoAUsuario');
+    
+    if (texto) texto.textContent = `Llamando a ${nombreUsuario}...`;
+    if (modal) modal.style.display = 'flex';
+}
+
+// ✅ MOSTRAR LLAMADA ENTRANTE
+function mostrarLlamadaEntrante(callerData) {
+    const modal = document.getElementById('incomingCallModal');
+    const texto = document.getElementById('infoLlamadaEntrante');
+    const callerAvatar = document.getElementById('incomingCallerAvatar');
+    const callerName = document.querySelector('#incomingCallModal h2');
+    
+    // Guardar datos del caller para usar después
+    window.callerData = callerData;
+    
+    if (texto) texto.textContent = `${callerData.nombre} te está llamando`;
+    if (callerName) callerName.textContent = callerData.nombre;
+    if (callerAvatar) callerAvatar.textContent = callerData.nombre.charAt(0).toUpperCase();
+    
+    if (modal) modal.style.display = 'flex';
+    
+    // Auto-rechazar después de 30 segundos
+    setTimeout(() => {
+        if (modal && modal.style.display === 'flex') {
+            rechazarLlamada();
+        }
+    }, 30000);
+}
+
+// ✅ MOSTRAR MODAL LLAMADA EN CURSO
+function mostrarModalLlamadaEnCurso() {
+    const modal = document.getElementById('videoCallModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        // Actualizar información del contacto
+        const activeChat = document.querySelector('.chat-item.active');
+        if (activeChat) {
+            const nombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
+            const nameElement = modal.querySelector('h2');
+            if (nameElement) {
+                nameElement.textContent = nombre;
+            }
+        }
+        
+        isCallActive = true;
+    }
+}
+
+// ✅ OCULTAR MODALES
+function ocultarModalLlamando() {
+    const modal = document.getElementById('modalLlamando');
+    if (modal) modal.style.display = 'none';
+}
+
+function ocultarModalLlamadaEntrante() {
+    const modal = document.getElementById('incomingCallModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// ==================== UTILIDADES LLAMADAS ====================
+
+// ✅ VALIDAR USUARIO REGISTRADO
+function validarUsuarioRegistrado() {
+    const usuarioId = localStorage.getItem('idUsuarioActual');
+    if (!usuarioId) {
+        mostrarAlerta('Debes iniciar sesión para realizar llamadas', 'warning');
+        return false;
+    }
+    
+    if (!socket || !socket.connected) {
+        mostrarAlerta('Servidor de llamadas no disponible', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+// ✅ VALIDAR CHAT SELECCIONADO
+function validarChatSeleccionado() {
+    if (!currentChatId || !idUsuarioDestino) {
+        mostrarAlerta('Selecciona un chat primero', 'warning');
+        return false;
+    }
+    return true;
+}
+
+// ✅ LIMPIAR RECURSOS DE MEDIOS
+function limpiarRecursosMedia() {
+    // Detener streams locales
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    
+    // Detener streams remotos
+    if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+        remoteStream = null;
+    }
+    
+    // Limpiar elementos de video
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    
+    if (localVideo) {
+        localVideo.srcObject = null;
+    }
+    if (remoteVideo) {
+        remoteVideo.srcObject = null;
+    }
+    
+    // Mostrar placeholders nuevamente
+    const localPlaceholder = document.getElementById('localPlaceholder');
+    const remotePlaceholder = document.getElementById('remotePlaceholder');
+    
+    if (localPlaceholder) localPlaceholder.style.display = 'flex';
+    if (remotePlaceholder) remotePlaceholder.style.display = 'flex';
+    
+    // Cerrar conexión Peer
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+}
+
+// ==================== TEMPORIZADOR LLAMADA ====================
+
+// ✅ TEMPORIZADOR DE LLAMADA
+function iniciarTemporizadorLlamada() {
+    callStartTime = new Date();
+    callTimer = setInterval(() => {
+        if (callStartTime) {
+            const duracion = calcularDuracionLlamada();
+            actualizarTemporizadorUI(duracion);
+        }
+    }, 1000);
+}
+
+function detenerTemporizadorLlamada() {
+    if (callTimer) {
+        clearInterval(callTimer);
+        callTimer = null;
+    }
+    callStartTime = null;
+}
+
+function calcularDuracionLlamada() {
+    if (!callStartTime) return '00:00';
+    
+    const ahora = new Date();
+    const diferencia = Math.floor((ahora - callStartTime) / 1000);
+    const minutos = Math.floor(diferencia / 60);
+    const segundos = diferencia % 60;
+    
+    return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+}
+
+function actualizarTemporizadorUI(duracion) {
+    const videoStatus = document.getElementById('videoCallStatus');
+    if (videoStatus) videoStatus.textContent = duracion;
+}
+
+// ==================== FUNCIONES DE ALERTA ====================
+
+// ✅ MOSTRAR ALERTA
+function mostrarAlerta(mensaje, tipo = 'info') {
+    // Usar SweetAlert2 si está disponible, sino alert normal
+    if (window.Swal) {
+        Swal.fire({
+            icon: tipo,
+            title: mensaje,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    } else {
+        alert(mensaje);
+    }
+}
+
+// ==================== FUNCIONES ORIGINALES DEL CHAT (MANTENIDAS) ====================
 
 // ✅ FUNCIÓN: Cargar y ordenar contactos por último mensaje
 async function cargarYOrdenarContactos() {
@@ -800,276 +1510,6 @@ async function sendFileMessage(id_chat, id_usuario, file, tipo) {
     }
 }
 
-// ==================== SISTEMA DE LLAMADAS ====================
-
-// ✅ CONFIGURAR EVENT LISTENERS PARA LLAMADAS
-function configurarLlamadas() {
-    const voiceCallBtn = document.getElementById('voiceCallBtn');
-    const videoCallBtn = document.getElementById('videoCallBtn');
-    const hangupVoiceCall = document.getElementById('hangupVoiceCall');
-    const hangupVideoCall = document.getElementById('hangupVideoCall');
-    const acceptCall = document.getElementById('acceptCall');
-    const declineCall = document.getElementById('declineCall');
-
-    // Llamada de voz
-    if (voiceCallBtn) {
-        voiceCallBtn.addEventListener('click', iniciarLlamadaVoz);
-    }
-
-    // Videollamada
-    if (videoCallBtn) {
-        videoCallBtn.addEventListener('click', iniciarVideoLlamada);
-    }
-
-    // Colgar llamada
-    if (hangupVoiceCall) {
-        hangupVoiceCall.addEventListener('click', colgarLlamada);
-    }
-
-    if (hangupVideoCall) {
-        hangupVideoCall.addEventListener('click', colgarLlamada);
-    }
-
-    // Aceptar/rechazar llamada entrante
-    if (acceptCall) {
-        acceptCall.addEventListener('click', aceptarLlamada);
-    }
-
-    if (declineCall) {
-        declineCall.addEventListener('click', rechazarLlamada);
-    }
-}
-
-// ✅ INICIAR LLAMADA DE VOZ
-async function iniciarLlamadaVoz() {
-    if (!currentChatId || !idUsuarioDestino) {
-        alert('Selecciona un chat primero');
-        return;
-    }
-
-    try {
-        // Guardar llamada saliente
-        await guardarLlamada('voz', 'saliente');
-        
-        // Mostrar modal de llamada
-        mostrarModalLlamadaSaliente('voz');
-        
-        // Iniciar lógica WebRTC (simulada por ahora)
-        await iniciarWebRTC('voz');
-        
-    } catch (error) {
-        console.error('Error iniciando llamada:', error);
-        alert('Error al iniciar la llamada');
-    }
-}
-
-// ✅ INICIAR VIDEOLLAMADA
-async function iniciarVideoLlamada() {
-    if (!currentChatId || !idUsuarioDestino) {
-        alert('Selecciona un chat primero');
-        return;
-    }
-
-    try {
-        // Guardar llamada saliente
-        await guardarLlamada('video', 'saliente');
-        
-        // Mostrar modal de videollamada
-        mostrarModalLlamadaSaliente('video');
-        
-        // Iniciar WebRTC con video
-        await iniciarWebRTC('video');
-        
-    } catch (error) {
-        console.error('Error iniciando videollamada:', error);
-        alert('Error al iniciar la videollamada');
-    }
-}
-
-// ✅ MOSTRAR MODAL DE LLAMADA SALIENTE
-function mostrarModalLlamadaSaliente(tipo) {
-    const modal = tipo === 'video' ? 
-        document.getElementById('videoCallModal') : 
-        document.getElementById('voiceCallModal');
-    
-    if (modal) {
-        modal.style.display = 'flex';
-        iniciarTemporizadorLlamada();
-        isCallActive = true;
-        
-        // Actualizar información del contacto
-        const activeChat = document.querySelector('.chat-item.active');
-        if (activeChat) {
-            const nombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
-            const avatarElement = modal.querySelector('.caller-avatar');
-            if (avatarElement) {
-                avatarElement.textContent = nombre.charAt(0).toUpperCase();
-            }
-            const nameElement = modal.querySelector('h2');
-            if (nameElement) {
-                nameElement.textContent = nombre;
-            }
-        }
-    }
-}
-
-// ✅ INICIAR WEBRTC (SIMULADO)
-async function iniciarWebRTC(tipo) {
-    try {
-        // Obtener stream local
-        const constraints = {
-            audio: true,
-            video: tipo === 'video'
-        };
-        
-        localStream = await navigator.mediaDevices.getUserMedia(constraints);
-        
-        if (tipo === 'video') {
-            const localVideo = document.getElementById('localVideo');
-            if (localVideo) {
-                localVideo.srcObject = localStream;
-            }
-            // Ocultar placeholder
-            const localPlaceholder = document.getElementById('localPlaceholder');
-            if (localPlaceholder) localPlaceholder.style.display = 'none';
-        }
-        
-        // Simular llamada exitosa después de 3 segundos
-        setTimeout(() => {
-            if (isCallActive) {
-                const statusElement = tipo === 'video' ? 
-                    document.getElementById('videoCallStatus') : 
-                    document.getElementById('voiceCallStatus');
-                if (statusElement) statusElement.textContent = 'En llamada';
-            }
-        }, 3000);
-        
-    } catch (error) {
-        console.error('Error accediendo a medios:', error);
-        alert('No se pudo acceder a la cámara/micrófono');
-        colgarLlamada();
-    }
-}
-
-// ✅ COLGAR LLAMADA
-function colgarLlamada() {
-    const voiceModal = document.getElementById('voiceCallModal');
-    const videoModal = document.getElementById('videoCallModal');
-    
-    if (voiceModal) voiceModal.style.display = 'none';
-    if (videoModal) videoModal.style.display = 'none';
-    
-    detenerTemporizadorLlamada();
-    isCallActive = false;
-    
-    // Guardar duración de la llamada
-    if (callStartTime) {
-        const duracion = calcularDuracionLlamada();
-        actualizarDuracionLlamada(duracion);
-    }
-    
-    // Detener streams
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-    }
-    
-    if (remoteStream) {
-        remoteStream.getTracks().forEach(track => track.stop());
-        remoteStream = null;
-    }
-}
-
-// ✅ ACEPTAR LLAMADA ENTRANTE
-function aceptarLlamada() {
-    const incomingModal = document.getElementById('incomingCallModal');
-    if (incomingModal) incomingModal.style.display = 'none';
-    
-    // Determinar tipo de llamada y mostrar modal correspondiente
-    const tipoLlamada = 'video'; // Esto debería venir del servidor
-    mostrarModalLlamadaSaliente(tipoLlamada);
-    
-    // Actualizar estado a "contestada"
-    actualizarEstadoLlamada('entrante');
-}
-
-// ✅ RECHAZAR LLAMADA ENTRANTE
-function rechazarLlamada() {
-    const incomingModal = document.getElementById('incomingCallModal');
-    if (incomingModal) incomingModal.style.display = 'none';
-    
-    // Actualizar estado a "perdida"
-    actualizarEstadoLlamada('perdida');
-    detenerTemporizadorLlamada();
-}
-
-// ✅ SIMULAR LLAMADA ENTRANTE (PARA TESTING)
-function simularLlamadaEntrante(tipo = 'voz') {
-    const incomingModal = document.getElementById('incomingCallModal');
-    if (incomingModal) {
-        // Actualizar información del llamante
-        const callerAvatar = document.getElementById('incomingCallerAvatar');
-        const callerName = document.querySelector('#incomingCallModal h2');
-        const activeChat = document.querySelector('.chat-item.active');
-        
-        if (activeChat && callerName) {
-            const nombre = activeChat.querySelector('.chat-name')?.textContent || 'Contacto';
-            callerName.textContent = nombre;
-            if (callerAvatar) {
-                callerAvatar.textContent = nombre.charAt(0).toUpperCase();
-            }
-        }
-        
-        incomingModal.style.display = 'flex';
-        
-        // Auto-rechazar después de 30 segundos
-        setTimeout(() => {
-            if (incomingModal.style.display === 'flex') {
-                rechazarLlamada();
-            }
-        }, 30000);
-    }
-}
-
-// ✅ TEMPORIZADOR DE LLAMADA
-function iniciarTemporizadorLlamada() {
-    callStartTime = new Date();
-    callTimer = setInterval(() => {
-        if (callStartTime) {
-            const duracion = calcularDuracionLlamada();
-            actualizarTemporizadorUI(duracion);
-        }
-    }, 1000);
-}
-
-function detenerTemporizadorLlamada() {
-    if (callTimer) {
-        clearInterval(callTimer);
-        callTimer = null;
-    }
-    callStartTime = null;
-}
-
-function calcularDuracionLlamada() {
-    if (!callStartTime) return '00:00';
-    
-    const ahora = new Date();
-    const diferencia = Math.floor((ahora - callStartTime) / 1000);
-    const minutos = Math.floor(diferencia / 60);
-    const segundos = diferencia % 60;
-    
-    return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-}
-
-function actualizarTemporizadorUI(duracion) {
-    // Actualizar en ambos modales
-    const voiceStatus = document.getElementById('voiceCallStatus');
-    const videoStatus = document.getElementById('videoCallStatus');
-    
-    if (voiceStatus) voiceStatus.textContent = duracion;
-    if (videoStatus) videoStatus.textContent = duracion;
-}
-
 // ==================== BASE DE DATOS LLAMADAS ====================
 
 // ✅ GUARDAR LLAMADA EN BASE DE DATOS
@@ -1240,3 +1680,77 @@ function obtenerChatSeleccionado() {
     
     return { tipo: 'privado', id_chat: currentChatId };
 }
+
+// ==================== FUNCIONES GLOBALES PARA HTML ====================
+
+// Hacer funciones disponibles globalmente para botones HTML
+window.iniciarVideoLlamada = iniciarVideoLlamada;
+window.iniciarLlamadaVoz = iniciarLlamadaVoz;
+window.aceptarLlamada = aceptarLlamada;
+window.rechazarLlamada = rechazarLlamada;
+window.colgarLlamada = colgarLlamada;
+window.cancelarLlamada = cancelarLlamada;
+
+// Función para toggle de audio/video durante llamada
+window.toggleAudio = function() {
+    if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+            audioTrack.enabled = !audioTrack.enabled;
+            console.log('Audio:', audioTrack.enabled ? 'Activado' : 'Desactivado');
+        }
+    }
+};
+
+window.toggleVideo = function() {
+    if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+            videoTrack.enabled = !videoTrack.enabled;
+            console.log('Video:', videoTrack.enabled ? 'Activado' : 'Desactivado');
+        }
+    }
+};
+
+// ✅ CONFIGURAR EVENT LISTENERS PARA BOTONES DE LLAMADA (versión mejorada)
+function configurarBotonesLlamadas() {
+    const voiceCallBtn = document.getElementById('voiceCallBtn');
+    const videoCallBtn = document.getElementById('videoCallBtn');
+    const hangupVoiceCall = document.getElementById('hangupVoiceCall');
+    const hangupVideoCall = document.getElementById('hangupVideoCall');
+    const acceptCall = document.getElementById('acceptCall');
+    const declineCall = document.getElementById('declineCall');
+
+    // Llamada de voz
+    if (voiceCallBtn) {
+        voiceCallBtn.addEventListener('click', iniciarLlamadaVoz);
+    }
+
+    // Videollamada
+    if (videoCallBtn) {
+        videoCallBtn.addEventListener('click', iniciarVideoLlamada);
+    }
+
+    // Colgar llamada
+    if (hangupVoiceCall) {
+        hangupVoiceCall.addEventListener('click', colgarLlamada);
+    }
+
+    if (hangupVideoCall) {
+        hangupVideoCall.addEventListener('click', colgarLlamada);
+    }
+
+    // Aceptar/rechazar llamada entrante
+    if (acceptCall) {
+        acceptCall.addEventListener('click', aceptarLlamada);
+    }
+
+    if (declineCall) {
+        declineCall.addEventListener('click', rechazarLlamada);
+    }
+}
+
+// Llamar a la configuración de botones después de que el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(configurarBotonesLlamadas, 1000);
+});
