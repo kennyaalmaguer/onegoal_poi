@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-11-2025 a las 08:35:23
+-- Tiempo de generación: 23-11-2025 a las 17:53:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -367,7 +367,7 @@ CREATE TABLE `llamada` (
   `idUsuarioEmisor` int(11) NOT NULL,
   `idUsuarioReceptor` int(11) DEFAULT NULL,
   `tipo` enum('voz','video') NOT NULL,
-  `estado` enum('entrante','saliente','perdida') NOT NULL,
+  `estado` enum('procesando','contestada','perdida','rechazada') NOT NULL DEFAULT 'procesando',
   `fecha` datetime DEFAULT current_timestamp(),
   `duracion` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
