@@ -108,24 +108,41 @@ function inicializarSistemaLlamadas() {
     }
 }
 
-// ✅ CONECTAR SOCKET
 function conectarSocket() {
     try {
-        socket = io('http://localhost:3000');
+        let host = window.location.hostname;
+
+        // Si el host es IPv6, forzamos IPv4 local
+        if (host.includes(":")) {
+            host = "192.168.100.7"; // tu IPv4
+        }
+
+        const socketURL = `http://${host}:3000`;
+
+        console.log("🔌 Conectando a:", socketURL);
+
+        socket = io(socketURL, {
+            transports: ["websocket"],
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 800
+        });
+
         configurarEventosSocket();
-        
-        // Registrar usuario si ya está logueado
+
         const usuarioId = localStorage.getItem('idUsuarioActual');
         const usuarioNombre = localStorage.getItem('nombreUsuarioActual');
-        
+
         if (usuarioId) {
             registrarUsuarioSocket(usuarioId, usuarioNombre);
         }
-        
+
     } catch (error) {
         console.error('❌ Error conectando al servidor de llamadas:', error);
     }
 }
+
+
 
 // ✅ REGISTRAR USUARIO EN SOCKET
 function registrarUsuarioSocket(userId, userName) {
